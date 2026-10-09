@@ -9,9 +9,9 @@
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
-    "eval": "tsx scripts/eval.ts",
-    "warm": "tsx scripts/warm-cache.ts",
-    "check-cache": "tsx scripts/check-cache.ts"
+    "eval": "tsx --env-file-if-exists=.env.local scripts/eval.ts",
+    "warm": "tsx --env-file-if-exists=.env.local scripts/warm-cache.ts",
+    "check-cache": "tsx --env-file-if-exists=.env.local scripts/check-cache.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

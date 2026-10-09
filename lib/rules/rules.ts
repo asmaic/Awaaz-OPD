@@ -15,6 +15,8 @@ const flagMatches = (e: Extraction, re: RegExp) => e.red_flags_mentioned.some((f
 export const DENGUE_WARNING: Symptom[] = ["abdominal_pain", "persistent_vomiting", "bleeding_gums", "nosebleed", "lethargy", "restlessness"];
 const SEVERE_BREATHING = /severe|can'?t breathe|cannot breathe|not breathing|bilkul nahi|saans nahi|بالکل نہیں|سانس نہیں/i;
 const BLEEDING = /bleed|blood|khoon|خون/i;
+// Backstop when the model quotes the phrase but misses the symptom (seen live: "کیڑے مار دوائی پی لی").
+const POISON = /poison|pesticide|insecticide|overdose|zehar|zeher|keeray maar|کیڑے مار|زہر|تیزاب/i;
 
 /** Dengue season (Sept–Nov) and patient from the twin cities or locality unknown. */
 export const dengueContext = (e: Extraction, now: Date) => {
@@ -96,7 +98,14 @@ export const rules: Rule[] = [
     test: (e) => (e.age_years !== undefined && e.age_years < 12 && (e.vitals.tempC ?? 0) >= 39.5
       ? `temperature ${e.vitals.tempC}°C, ${ageTxt(e)}` : null),
   },
-  { id: "R13", level: "ORANGE", title: "Poisoning", source: "WHO ETAT priority signs", test: (e) => (has(e, "poisoning") ? "poisoning reported" : null) },
+  {
+    id: "R13", level: "ORANGE", title: "Poisoning", source: "WHO ETAT priority signs",
+    test: (e) => {
+      if (has(e, "poisoning")) return "poisoning reported";
+      const flag = e.red_flags_mentioned.find((f) => POISON.test(f));
+      return flag ? `possible poisoning: patient said “${flag}”` : null;
+    },
+  },
   { id: "R14", level: "ORANGE", title: "Severe pain", source: "ESI v4 (pain ≥ 7/10)", test: (e) => (has(e, "severe_pain") ? "severe pain reported" : null) },
   {
     id: "R15", level: "ORANGE", title: "Child priority sign", source: "WHO ETAT priority signs",

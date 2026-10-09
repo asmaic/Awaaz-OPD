@@ -2,7 +2,7 @@ import Groq, { toFile } from "groq-sdk";
 import type { Extraction } from "@/types/contracts";
 import { ExtractionZ, cleanExtraction, extractionJsonSchema } from "./schemas";
 import { EXTRACTION_PROMPT } from "./prompts";
-import { DEVANAGARI, ScriptError, TIMEOUT_MS, env } from "./gemini";
+import { DEVANAGARI, ScriptError, TIMEOUT_MS, env, parseJson } from "./gemini";
 
 let client: Groq | undefined;
 const groq = () => (client ??= new Groq({ apiKey: env("GROQ_API_KEY") }));
@@ -29,7 +29,7 @@ export async function groqExtract(text: string): Promise<Extraction> {
     },
     { timeout: TIMEOUT_MS },
   );
-  const e = cleanExtraction(ExtractionZ.parse(JSON.parse(r.choices[0]?.message.content ?? "")));
+  const e = cleanExtraction(ExtractionZ.parse(parseJson(r.choices[0]?.message.content ?? "")));
   if (DEVANAGARI.test(e.transcript_ur)) throw new ScriptError("Groq returned Devanagari");
   return e;
 }

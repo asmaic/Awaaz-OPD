@@ -22,6 +22,9 @@ export const env = (k: string) => {
 let client: GoogleGenAI | undefined;
 const ai = () => (client ??= new GoogleGenAI({ apiKey: env("GEMINI_API_KEY") }));
 
+/** JSON.parse that drops nulls: models send `"age_years": null` for "not stated", which our optional fields expect as absent. */
+export const parseJson = (text: string): unknown => JSON.parse(text, (_k, v) => (v === null ? undefined : v));
+
 /** Strip ";codecs=opus" etc. — Gemini rejects mime parameters on inline audio. */
 const baseMime = (mime: string) => mime.split(";")[0].trim();
 
@@ -38,7 +41,7 @@ async function json(model: string, system: string, parts: Part[], schema: unknow
     },
   });
   if (!r.text) throw new Error(`empty response from ${model}`);
-  return JSON.parse(r.text);
+  return parseJson(r.text);
 }
 
 /** Run `call`, retry once if the Urdu came back in Devanagari, then give up with ScriptError. */

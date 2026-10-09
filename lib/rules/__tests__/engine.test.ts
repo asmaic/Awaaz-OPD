@@ -95,6 +95,7 @@ describe("ORANGE rules", () => {
     expect(ids(sx("poisoning"))).toContain("R13");
     expect(ids(sx("severe_pain"))).toContain("R14");
     expect(ids(sx("vomiting"))).not.toContain("R13");
+    expect(ids({ ...sx("vomiting"), red_flags_mentioned: ["کیڑے مار دوائی پی لی ہے"] })).toContain("R13");
   });
   it("R15 child restlessness or swollen feet", () => {
     expect(ids({ ...sx("restlessness"), age_years: 4 })).toContain("R15");

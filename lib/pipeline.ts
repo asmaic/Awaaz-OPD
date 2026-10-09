@@ -13,7 +13,7 @@ import { matchBrand, normalizeDuration, normalizeFrequency } from "@/lib/drugs";
 import { checkInteractions } from "@/lib/interactions";
 import cases from "@/fixtures/cases.json";
 
-type Out<T> = { data: T; meta: RunMeta };
+type Out<T> = { data: T; meta: RunMeta; key: string };
 const UNCLEAR = "[UNCLEAR]";
 
 // ---------- extraction ----------
@@ -55,13 +55,13 @@ export async function runExtraction(req: ExtractReq, demo: boolean): Promise<Out
 
 /** Extraction + deterministic triage (the rules decide, never the model). */
 export async function runExtractAndTriage(req: ExtractReq, demo: boolean): Promise<Out<ExtractRes>> {
-  const { data: extraction, meta } = await runExtraction(req, demo);
+  const { data: extraction, meta, key } = await runExtraction(req, demo);
   const triage = evaluate(extraction);
   await audit({
     actor: "rules", action: "triage", payload: { level: triage.level, escalatedForUncertainty: triage.escalatedForUncertainty, caseId: req.caseId },
     ruleIds: triage.hits.map((h) => h.id), reason: triage.hits.map((h) => `${h.id}: ${h.why}`).join("; "),
   });
-  return { data: { extraction, triage }, meta };
+  return { data: { extraction, triage }, meta, key };
 }
 
 // ---------- prescription ----------
@@ -86,7 +86,7 @@ export function postProcessRx(read: RxRead): RxOut {
 export async function runPrescription(req: PrescriptionReq, demo: boolean): Promise<Out<Prescription>> {
   const vision = env("GEMINI_VISION_MODEL");
   const fallback = env("GEMINI_FALLBACK_MODEL");
-  const { data, meta } = await runAi<RxOut>({
+  const { data, meta, key } = await runAi<RxOut>({
     route: "prescription", model: vision, promptVersion: PRESCRIPTION_PROMPT_VERSION,
     input: [req.mime, Buffer.from(req.imageB64, "base64")], demo, action: "rx_read", patientId: req.patientId,
     attempts: [
@@ -95,7 +95,7 @@ export async function runPrescription(req: PrescriptionReq, demo: boolean): Prom
     ],
     golden: async () => (await goldenFixture<{ prescription: Prescription }>(req.caseId, "prescription"))?.prescription ?? null,
   });
-  return { data: { id: `rx-${randomUUID()}`, patientId: req.patientId, items: data.items, interactions: data.interactions }, meta };
+  return { data: { id: `rx-${randomUUID()}`, patientId: req.patientId, items: data.items, interactions: data.interactions }, meta, key };
 }
 
 // ---------- Urdu instructions ----------
@@ -116,11 +116,18 @@ export async function runInstructions(req: InstructionsReq, demo: boolean): Prom
     ],
     // Golden only if the confirmed items are exactly the demo prescription (wrong instructions are worse than none).
     golden: async () => {
-      const rx = await goldenFixture<{ prescription: Prescription }>("rx-demo", "prescription");
-      const demoItems = rx?.prescription.items.map((i) => ({ ...i, confirmedByDoctor: true, duration: i.duration.value === UNCLEAR ? { value: "14 days", confidence: 1 } : i.duration }));
+      const demoItems = await demoConfirmedItems();
       return demoItems && rxSignature(demoItems) === rxSignature(req.items) ? goldenFixture<{ urdu: string }>("rx-demo", "instructions") : null;
     },
   });
+}
+
+/** The demo prescription as the doctor confirms it on stage: every item confirmed, the [UNCLEAR] duration edited to 14 days. */
+export async function demoConfirmedItems(): Promise<RxItem[] | null> {
+  const rx = await goldenFixture<{ prescription: Prescription }>("rx-demo", "prescription");
+  return rx?.prescription.items.map((i) => ({
+    ...i, confirmedByDoctor: true, duration: i.duration.value === UNCLEAR ? { value: "14 days", confidence: 1 } : i.duration,
+  })) ?? null;
 }
 
 // ---------- TTS ----------

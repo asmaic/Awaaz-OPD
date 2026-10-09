@@ -15,3 +15,13 @@ describe("Devanagari guard", () => {
     await expect(urduOnly(seq("सीने", "दर्द"), (s) => s)).rejects.toBeInstanceOf(ScriptError);
   });
 });
+
+describe("parseJson", async () => {
+  const { parseJson } = await import("@/lib/ai/gemini");
+  const { ExtractionZ } = await import("@/types/contracts");
+  it("treats null optional fields as absent", () => {
+    const e = parseJson(JSON.stringify({ transcript_ur: "x", translation_en: "x", chief_complaint: "x", symptoms: [], red_flags_mentioned: [],
+      age_years: null, vitals: { spo2: null }, suggested_department: "Medicine", missing_info: [], confidence: 0.9 }));
+    expect(ExtractionZ.parse(e).age_years).toBeUndefined();
+  });
+});
