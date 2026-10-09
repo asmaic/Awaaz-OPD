@@ -42,7 +42,7 @@ async function json(model: string, system: string, parts: Part[], schema: unknow
 }
 
 /** Run `call`, retry once if the Urdu came back in Devanagari, then give up with ScriptError. */
-async function urduOnly<T>(call: () => Promise<T>, urdu: (t: T) => string): Promise<T> {
+export async function urduOnly<T>(call: () => Promise<T>, urdu: (t: T) => string): Promise<T> {
   const first = await call();
   if (!DEVANAGARI.test(urdu(first))) return first;
   stats.devanagariRetries++;

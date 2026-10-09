@@ -30,3 +30,20 @@ describe("checkInteractions", () => {
     expect(checkInteractions(["paracetamol", "omeprazole"])).toEqual([]);
   });
 });
+
+describe("normalize", async () => {
+  const { normalizeFrequency, normalizeDuration } = await import("@/lib/drugs");
+  it("frequencies", () => {
+    expect(normalizeFrequency("BD")).toBe("twice daily");
+    expect(normalizeFrequency("t.d.s")).toBe("three times daily");
+    expect(normalizeFrequency("1+0+1")).toBe("twice daily");
+    expect(normalizeFrequency("0+0+1")).toBe("once daily");
+    expect(normalizeFrequency("[UNCLEAR]")).toBe("[UNCLEAR]");
+  });
+  it("durations", () => {
+    expect(normalizeDuration("x 5/7")).toBe("5 days");
+    expect(normalizeDuration("2/52")).toBe("2 weeks");
+    expect(normalizeDuration("1/12")).toBe("1 month");
+    expect(normalizeDuration("7 days")).toBe("7 days");
+  });
+});

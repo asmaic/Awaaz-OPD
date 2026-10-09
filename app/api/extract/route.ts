@@ -1,5 +1,5 @@
-import type { ApiResult } from "@/types/contracts";
+import { ExtractReqZ } from "@/types/contracts";
+import { handle } from "@/lib/http";
+import { runExtractAndTriage } from "@/lib/pipeline";
 
-export async function POST(): Promise<Response> {
-  return Response.json({ ok: false, error: "not implemented" } satisfies ApiResult<never>, { status: 501 });
-}
+export const POST = (req: Request) => handle(req, ExtractReqZ, runExtractAndTriage);

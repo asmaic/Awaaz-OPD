@@ -1,5 +1,10 @@
-import type { ApiResult } from "@/types/contracts";
+import { ExtractReqZ, type TranscribeRes } from "@/types/contracts";
+import { handle } from "@/lib/http";
+import { runExtraction } from "@/lib/pipeline";
 
-export async function POST(): Promise<Response> {
-  return Response.json({ ok: false, error: "not implemented" } satisfies ApiResult<never>, { status: 501 });
-}
+// Same single Gemini call (and cache entry) as /api/extract; returns only the transcript.
+export const POST = (req: Request) =>
+  handle(req, ExtractReqZ, async (body, demo) => {
+    const { data, meta } = await runExtraction(body, demo);
+    return { data: { transcript_ur: data.transcript_ur, translation_en: data.translation_en } satisfies TranscribeRes, meta };
+  });

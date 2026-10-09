@@ -27,3 +27,27 @@ export function matchBrand(raw: string): { brand?: string; generic: string } | n
   const hit = fuse.search(name)[0]?.item;
   return hit ? { brand: hit.brand, generic: hit.generic } : null;
 }
+
+const FREQ: Record<string, string> = {
+  OD: "once daily", QD: "once daily", BD: "twice daily", BID: "twice daily", TDS: "three times daily", TID: "three times daily",
+  QID: "four times daily", SOS: "when needed", PRN: "when needed", HS: "at bedtime", STAT: "immediately, once",
+};
+const PER_DAY = ["", "once daily", "twice daily", "three times daily", "four times daily"];
+
+/** "BD" → "twice daily", "1+0+1" → "twice daily"; anything unrecognised is returned unchanged. */
+export function normalizeFrequency(v: string): string {
+  const t = v.trim().toUpperCase().replace(/\./g, "");
+  if (FREQ[t]) return FREQ[t];
+  const doses = /^(\d)\s*\+\s*(\d)\s*\+\s*(\d)$/.exec(t);
+  if (doses) return PER_DAY[doses.slice(1).filter((d) => d !== "0").length] || v;
+  return v;
+}
+
+/** "x 5/7" → "5 days", "2/52" → "2 weeks", "1/12" → "1 month". */
+export function normalizeDuration(v: string): string {
+  const m = /^x?\s*(\d+)\s*\/\s*(7|52|12)$/i.exec(v.trim());
+  if (!m) return v;
+  const n = Number(m[1]);
+  const unit = { "7": "day", "52": "week", "12": "month" }[m[2] as "7" | "52" | "12"];
+  return `${n} ${unit}${n === 1 ? "" : "s"}`;
+}
