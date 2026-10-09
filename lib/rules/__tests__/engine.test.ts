@@ -176,3 +176,15 @@ describe("fixtures/cases.json", () => {
     });
   }
 });
+
+describe("findLocality", () => {
+  it("matches spelling variants and rejects other cities", async () => {
+    const { findLocality } = await import("@/lib/localities");
+    expect(findLocality("Dhoke Hassu")?.name).toBe("Dhok Hassu");
+    expect(findLocality("Dhoke Kala Khan")?.name).toBe("Dhoke Kala Khan");
+    expect(findLocality("Satelite Town")?.name).toBe("Satellite Town");
+    expect(findLocality("ڈھوک حسو")?.name).toBe("Dhok Hassu");
+    expect(findLocality("G-11 Markaz")?.name).toBe("G-11");
+    for (const other of ["Lahore", "Karachi", "Peshawar", "Multan", "Gujranwala"]) expect(findLocality(other)).toBeNull();
+  });
+});
