@@ -1,0 +1,82 @@
+[
+  {
+    "id": "seed-41", "token": 41, "name": "Muhammad Aslam", "arrivedAt": "2026-10-09T08:05:00+05:00",
+    "status": "waiting", "estWaitMin": 8,
+    "extraction": {
+      "transcript_ur": "شوگر کی دوائی ختم ہو گئی ہے، دوبارہ لکھوانی ہے، باقی طبیعت ٹھیک ہے۔",
+      "translation_en": "My sugar (diabetes) medicine has run out, I need it prescribed again; otherwise I feel fine.",
+      "chief_complaint": "Diabetes medicine refill", "symptoms": ["other"], "red_flags_mentioned": [],
+      "age_years": 52, "sex": "M", "vitals": {}, "locality": "Saddar",
+      "suggested_department": "Medicine", "missing_info": ["Last blood sugar reading?"], "confidence": 0.92
+    },
+    "triage": { "level": "GREEN", "escalatedForUncertainty": false, "rulesVersion": "rules-v1",
+      "hits": [{ "id": "R19", "level": "GREEN", "title": "No urgent criteria", "why": "No danger signs or warning rules fired; confidence 0.92", "source": "Default (ESI level 4–5 equivalent)" }] }
+  },
+  {
+    "id": "seed-42", "token": 42, "name": "Shazia Parveen", "arrivedAt": "2026-10-09T08:12:00+05:00",
+    "status": "waiting", "estWaitMin": 16,
+    "extraction": {
+      "transcript_ur": "تین دن سے پیشاب میں جلن ہے، بخار نہیں ہے۔",
+      "translation_en": "Burning while urinating for three days, no fever.",
+      "chief_complaint": "Burning urination for 3 days", "symptoms": ["burning_urination"], "duration_days": 3,
+      "red_flags_mentioned": [], "age_years": 34, "sex": "F", "vitals": {}, "locality": "I-8",
+      "suggested_department": "Medicine", "missing_info": ["Any chance of pregnancy?"], "confidence": 0.9
+    },
+    "triage": { "level": "GREEN", "escalatedForUncertainty": false, "rulesVersion": "rules-v1",
+      "hits": [{ "id": "R19", "level": "GREEN", "title": "No urgent criteria", "why": "No danger signs or warning rules fired; confidence 0.90", "source": "Default (ESI level 4–5 equivalent)" }] }
+  },
+  {
+    "id": "seed-43", "token": 43, "name": "Abdul Rehman", "arrivedAt": "2026-10-09T08:20:00+05:00",
+    "status": "waiting", "estWaitMin": 15,
+    "extraction": {
+      "transcript_ur": "پیرودھائی سے آیا ہوں، دو دن سے بخار ہے اور پورا جسم ٹوٹ رہا ہے۔",
+      "translation_en": "I've come from Pirwadhai. I've had fever for two days and my whole body aches.",
+      "chief_complaint": "Fever and body ache for 2 days", "symptoms": ["fever", "body_ache"], "duration_days": 2,
+      "red_flags_mentioned": [], "age_years": 27, "sex": "M", "vitals": {}, "locality": "Pirwadhai",
+      "suggested_department": "Medicine", "missing_info": ["Any bleeding from gums or nose?", "Any vomiting or abdominal pain?"], "confidence": 0.88
+    },
+    "triage": { "level": "YELLOW", "escalatedForUncertainty": false, "rulesVersion": "rules-v1",
+      "hits": [{ "id": "R17", "level": "YELLOW", "title": "Possible dengue (no warning signs)", "why": "fever + body ache, locality Pirwadhai (twin cities), no warning signs", "source": "WHO 2009 dengue guidelines" }] },
+    "geo": { "lat": 33.632, "lng": 73.04, "label": "Pirwadhai" }
+  },
+  {
+    "id": "seed-44", "token": 44, "name": "Nasreen Akhtar", "arrivedAt": "2026-10-09T08:31:00+05:00",
+    "status": "waiting", "estWaitMin": 24,
+    "extraction": {
+      "transcript_ur": "گھٹنوں میں کافی عرصے سے درد ہے، سیڑھیاں چڑھنا مشکل ہو گیا ہے۔",
+      "translation_en": "My knees have hurt for a long time; climbing stairs has become difficult.",
+      "chief_complaint": "Chronic knee pain", "symptoms": ["other"], "red_flags_mentioned": [],
+      "age_years": 61, "sex": "F", "vitals": {}, "locality": "Westridge",
+      "suggested_department": "Medicine", "missing_info": ["Any swelling or redness of the knee?"], "confidence": 0.9
+    },
+    "triage": { "level": "GREEN", "escalatedForUncertainty": false, "rulesVersion": "rules-v1",
+      "hits": [{ "id": "R19", "level": "GREEN", "title": "No urgent criteria", "why": "No danger signs or warning rules fired; confidence 0.90", "source": "Default (ESI level 4–5 equivalent)" }] }
+  },
+  {
+    "id": "seed-45", "token": 45, "name": "Bilal Ahmed", "arrivedAt": "2026-10-09T08:38:00+05:00",
+    "status": "waiting", "estWaitMin": 32,
+    "extraction": {
+      "transcript_ur": "تین دن سے کھانسی اور گلا خراب ہے، بخار نہیں ہے۔",
+      "translation_en": "Cough and sore throat for three days, no fever.",
+      "chief_complaint": "Cough and sore throat for 3 days", "symptoms": ["cough"], "duration_days": 3,
+      "red_flags_mentioned": [], "age_years": 19, "sex": "M", "vitals": {}, "locality": "G-11",
+      "suggested_department": "Medicine", "missing_info": ["Any shortness of breath?"], "confidence": 0.93
+    },
+    "triage": { "level": "GREEN", "escalatedForUncertainty": false, "rulesVersion": "rules-v1",
+      "hits": [{ "id": "R19", "level": "GREEN", "title": "No urgent criteria", "why": "No danger signs or warning rules fired; confidence 0.93", "source": "Default (ESI level 4–5 equivalent)" }] }
+  },
+  {
+    "id": "seed-46", "token": 46, "name": "Rukhsana Bibi", "arrivedAt": "2026-10-09T08:44:00+05:00",
+    "status": "waiting", "estWaitMin": 30,
+    "extraction": {
+      "transcript_ur": "راجہ بازار سے آئی ہوں، کل سے بخار ہے اور سر میں بہت درد ہے۔",
+      "translation_en": "I've come from Raja Bazaar. I've had fever since yesterday and a bad headache.",
+      "chief_complaint": "Fever and headache since yesterday", "symptoms": ["fever", "headache"], "duration_days": 1,
+      "red_flags_mentioned": [], "age_years": 45, "sex": "F", "vitals": {}, "locality": "Raja Bazaar",
+      "suggested_department": "Medicine", "missing_info": ["Any rash or pain behind the eyes?", "Any vomiting?"], "confidence": 0.87
+    },
+    "triage": { "level": "YELLOW", "escalatedForUncertainty": false, "rulesVersion": "rules-v1",
+      "hits": [{ "id": "R17", "level": "YELLOW", "title": "Possible dengue (no warning signs)", "why": "fever + headache, locality Raja Bazaar (twin cities), no warning signs", "source": "WHO 2009 dengue guidelines" }] },
+    "geo": { "lat": 33.616, "lng": 73.064, "label": "Raja Bazaar" }
+  }
+]

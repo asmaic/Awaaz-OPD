@@ -1,0 +1,198 @@
+[
+  {
+    "caseId": "c01-heart-attack",
+    "script_ur": "ڈاکٹر صاحب، سینے میں بہت درد ہے، بائیں بازو تک جا رہا ہے، اور بہت پسینہ آ رہا ہے۔ آدھے گھنٹے سے ہے۔",
+    "script_roman": "Doctor sahab, seenay mein bohat dard hai, baayen baazu tak ja raha hai, aur bohat paseena aa raha hai. Aadhay ghantay se hai.",
+    "expectedLevel": "RED",
+    "expectedRuleIds": ["R02"],
+    "expectedSymptoms": ["chest_pain", "arm_jaw_pain", "sweating"],
+    "age": 55, "sex": "M", "locality": "Saddar"
+  },
+  {
+    "caseId": "c02-low-spo2",
+    "script_ur": "دو دن سے سانس پھول رہی ہے، کھانسی بھی ہے، گھر پہ آکسیمیٹر لگایا تو اٹھاسی آ رہا تھا۔",
+    "script_roman": "Do din se saans phool rahi hai, khansi bhi hai, ghar pe oximeter lagaya to athasi aa raha tha.",
+    "expectedLevel": "RED",
+    "expectedRuleIds": ["R01"],
+    "expectedSymptoms": ["shortness_of_breath", "cough"],
+    "vitals": { "spo2": 88 }, "duration_days": 2,
+    "age": 62, "sex": "F", "locality": "I-9"
+  },
+  {
+    "caseId": "c03-convulsion",
+    "script_ur": "میرے بیٹے کو رات سے تیز بخار تھا، پھر اچانک جھٹکے آنے لگے، دو منٹ تک رہے۔ چھ سال کا ہے۔",
+    "script_roman": "Mere betay ko raat se tez bukhar tha, phir achanak jhatkay aanay lagay, do minute tak rahay. Chhe saal ka hai.",
+    "expectedLevel": "RED",
+    "expectedRuleIds": ["R03"],
+    "expectedSymptoms": ["fever", "convulsion"],
+    "age": 6, "sex": "M", "locality": "Pirwadhai"
+  },
+  {
+    "caseId": "c04-severe-breathing",
+    "script_ur": "سانس بالکل نہیں آ رہی، ہونٹ نیلے ہو گئے ہیں، بات بھی نہیں ہو رہی۔",
+    "script_roman": "Saans bilkul nahi aa rahi, hont neelay ho gaye hain, baat bhi nahi ho rahi.",
+    "expectedLevel": "RED",
+    "expectedRuleIds": ["R04"],
+    "expectedSymptoms": ["shortness_of_breath", "blue_lips"],
+    "redFlags": ["سانس بالکل نہیں آ رہی"],
+    "age": 40, "sex": "M", "locality": "G-7"
+  },
+  {
+    "caseId": "c05-shock",
+    "script_ur": "صبح سے بہت دست لگے ہوئے تھے، اب چکر آ رہے ہیں اور جسم ٹھنڈا اور چپچپا ہو گیا ہے۔",
+    "script_roman": "Subah se bohat dast lagay huay thay, ab chakkar aa rahe hain aur jism thanda aur chipchipa ho gaya hai.",
+    "expectedLevel": "RED",
+    "expectedRuleIds": ["R05"],
+    "expectedSymptoms": ["diarrhoea", "dizziness", "cold_clammy_skin"],
+    "vitals": { "sbp": 82 },
+    "age": 35, "sex": "M", "locality": "Tench Bhata"
+  },
+  {
+    "caseId": "c06-child-dehydration",
+    "script_ur": "میری بیٹی تین سال کی ہے، کل سے پانی جیسے دست ہیں، بہت سست ہو گئی ہے، آنکھیں اندر کو دھنس گئی ہیں۔",
+    "script_roman": "Meri beti teen saal ki hai, kal se paani jaisay dast hain, bohat sust ho gayi hai, aankhein andar ko dhans gayi hain.",
+    "expectedLevel": "RED",
+    "expectedRuleIds": ["R08"],
+    "expectedSymptoms": ["diarrhoea", "lethargy", "sunken_eyes"],
+    "duration_days": 1,
+    "age": 3, "sex": "F", "locality": "Raja Bazaar"
+  },
+  {
+    "caseId": "c07-dengue-dhok-hassu",
+    "script_ur": "میں ڈھوک حسو سے آیا ہوں۔ چار دن سے تیز بخار ہے، پیٹ میں درد ہے، اور آج صبح برش کرتے ہوئے مسوڑھوں سے خون آیا۔",
+    "script_roman": "Main Dhok Hassu se aaya hoon. Chaar din se tez bukhar hai, pait mein dard hai, aur aaj subah brush karte huay masoorhon se khoon aaya.",
+    "expectedLevel": "ORANGE",
+    "expectedRuleIds": ["R10"],
+    "expectedSymptoms": ["fever", "abdominal_pain", "bleeding_gums"],
+    "duration_days": 4,
+    "age": 28, "sex": "M", "locality": "Dhok Hassu"
+  },
+  {
+    "caseId": "c08-dengue-chaklala",
+    "script_ur": "میں چکلالہ میں رہتی ہوں، تین دن سے بخار ہے اور بار بار الٹی ہو رہی ہے، کچھ بھی پیٹ میں نہیں رک رہا۔",
+    "script_roman": "Main Chaklala mein rehti hoon, teen din se bukhar hai aur baar baar ulti ho rahi hai, kuch bhi pait mein nahi ruk raha.",
+    "expectedLevel": "ORANGE",
+    "expectedRuleIds": ["R10"],
+    "expectedSymptoms": ["fever", "persistent_vomiting"],
+    "duration_days": 3,
+    "age": 19, "sex": "F", "locality": "Chaklala"
+  },
+  {
+    "caseId": "c09-dengue-g9",
+    "script_ur": "جی نائن سے ہوں، پانچ دن سے بخار ہے، کل رات ناک سے خون آیا، اور بہت سستی ہے، سارا دن نیند جیسی حالت رہتی ہے۔",
+    "script_roman": "G-9 se hoon, paanch din se bukhar hai, kal raat naak se khoon aaya, aur bohat susti hai, saara din neend jaisi halat rehti hai.",
+    "expectedLevel": "ORANGE",
+    "expectedRuleIds": ["R10"],
+    "expectedSymptoms": ["fever", "nosebleed", "lethargy"],
+    "duration_days": 5,
+    "age": 45, "sex": "M", "locality": "G-9"
+  },
+  {
+    "caseId": "c10-infant",
+    "script_ur": "میری بچی ڈیڑھ مہینے کی ہے، کل سے ہلکا بخار ہے اور دودھ ٹھیک سے نہیں پی رہی۔",
+    "script_roman": "Meri bachi derh mahinay ki hai, kal se halka bukhar hai aur doodh theek se nahi pee rahi.",
+    "expectedLevel": "ORANGE",
+    "expectedRuleIds": ["R11"],
+    "expectedSymptoms": ["fever", "other"],
+    "duration_days": 1,
+    "age": 0.12, "sex": "F", "locality": "Westridge"
+  },
+  {
+    "caseId": "c11-poisoning",
+    "script_ur": "میرے بھائی نے غلطی سے کیڑے مار دوائی پی لی ہے، آدھا گھنٹہ ہو گیا ہے، الٹیاں کر رہا ہے۔",
+    "script_roman": "Mere bhai ne ghalti se keeray maar dawai pee li hai, aadha ghanta ho gaya hai, ultiyan kar raha hai.",
+    "expectedLevel": "ORANGE",
+    "expectedRuleIds": ["R13"],
+    "expectedSymptoms": ["poisoning", "vomiting"],
+    "age": 24, "sex": "M", "locality": "Tarlai"
+  },
+  {
+    "caseId": "c12-pregnancy-bleeding",
+    "script_ur": "میں سات مہینے سے امید سے ہوں، صبح سے پیٹ میں درد ہے اور تھوڑا خون بھی آیا ہے۔",
+    "script_roman": "Main saat mahinay se umeed se hoon, subah se pait mein dard hai aur thora khoon bhi aaya hai.",
+    "expectedLevel": "ORANGE",
+    "expectedRuleIds": ["R16"],
+    "expectedSymptoms": ["pregnancy", "abdominal_pain"],
+    "redFlags": ["تھوڑا خون بھی آیا ہے"],
+    "age": 26, "sex": "F", "locality": "Gulzar-e-Quaid"
+  },
+  {
+    "caseId": "c13-dengue-satellite-town",
+    "script_ur": "سیٹلائٹ ٹاؤن سے آیا ہوں، دو دن سے بخار ہے، پورے جسم میں درد ہے، آنکھوں کے پیچھے بھی درد ہوتا ہے۔",
+    "script_roman": "Satellite Town se aaya hoon, do din se bukhar hai, poore jism mein dard hai, aankhon ke peechay bhi dard hota hai.",
+    "expectedLevel": "YELLOW",
+    "expectedRuleIds": ["R17"],
+    "expectedSymptoms": ["fever", "body_ache", "retro_orbital_pain"],
+    "duration_days": 2,
+    "age": 32, "sex": "M", "locality": "Satellite Town"
+  },
+  {
+    "caseId": "c14-dengue-g10",
+    "script_ur": "جی ٹین سے ہوں، کل سے بخار اور سر درد ہے، اور آج جسم پہ سرخ دانے نکل آئے ہیں۔",
+    "script_roman": "G-10 se hoon, kal se bukhar aur sar dard hai, aur aaj jism pe surkh daanay nikal aaye hain.",
+    "expectedLevel": "YELLOW",
+    "expectedRuleIds": ["R17"],
+    "expectedSymptoms": ["fever", "headache", "rash"],
+    "duration_days": 1,
+    "age": 22, "sex": "F", "locality": "G-10"
+  },
+  {
+    "caseId": "c15-borderline-spo2",
+    "script_ur": "ایک ہفتے سے کھانسی ہے، سیڑھیاں چڑھتے ہوئے تھوڑی سانس پھولتی ہے، نرس نے آکسیجن چیک کی تو ترانوے تھی۔",
+    "script_roman": "Aik haftay se khansi hai, seerhiyan charhtay huay thori saans phoolti hai, nurse ne oxygen check ki to tiranway thi.",
+    "expectedLevel": "YELLOW",
+    "expectedRuleIds": ["R18"],
+    "expectedSymptoms": ["cough", "shortness_of_breath"],
+    "vitals": { "spo2": 93 }, "duration_days": 7,
+    "age": 58, "sex": "M", "locality": "I-10"
+  },
+  {
+    "caseId": "c16-code-switched",
+    "script_ur": "ڈاکٹر صاحب، مجھے since yesterday fever ہے، اور headache بھی بہت ہے، body ache بھی۔ Bahria Town فیز سیون سے آئی ہوں۔",
+    "script_roman": "Doctor sahab, mujhe since yesterday fever hai, aur headache bhi bohat hai, body ache bhi. Bahria Town Phase 7 se aayi hoon.",
+    "expectedLevel": "YELLOW",
+    "expectedRuleIds": ["R17"],
+    "expectedSymptoms": ["fever", "headache", "body_ache"],
+    "duration_days": 1,
+    "age": 30, "sex": "F", "locality": "Bahria Town"
+  },
+  {
+    "caseId": "c17-gym-chest-pain",
+    "script_ur": "کل جم میں وزن اٹھاتے ہوئے سینے کے دائیں طرف کھنچاؤ سا ہوا، دبانے سے درد ہوتا ہے، باقی سب ٹھیک ہے۔",
+    "script_roman": "Kal gym mein wazan uthatay huay seenay ke daayen taraf khinchao sa hua, dabanay se dard hota hai, baqi sab theek hai.",
+    "expectedLevel": "GREEN",
+    "expectedRuleIds": ["R19"],
+    "expectedSymptoms": ["chest_pain"],
+    "duration_days": 1,
+    "age": 22, "sex": "M", "locality": "F-8"
+  },
+  {
+    "caseId": "c18-mild-fever",
+    "script_ur": "کل رات سے ہلکا سا بخار ہے، باقی کوئی تکلیف نہیں۔",
+    "script_roman": "Kal raat se halka sa bukhar hai, baqi koi takleef nahi.",
+    "expectedLevel": "GREEN",
+    "expectedRuleIds": ["R19"],
+    "expectedSymptoms": ["fever"],
+    "duration_days": 1,
+    "age": 40, "sex": "M"
+  },
+  {
+    "caseId": "c19-refill",
+    "script_ur": "BP کی دوائی ختم ہو گئی ہے، بس وہ دوبارہ لکھوانی ہے، طبیعت ٹھیک ہے۔",
+    "script_roman": "BP ki dawai khatam ho gayi hai, bas woh dobara likhwani hai, tabiyat theek hai.",
+    "expectedLevel": "GREEN",
+    "expectedRuleIds": ["R19"],
+    "expectedSymptoms": ["other"],
+    "age": 60, "sex": "F", "locality": "F-6"
+  },
+  {
+    "caseId": "c20-burning-urination",
+    "script_ur": "دو دن سے پیشاب میں جلن ہو رہی ہے، بار بار باتھ روم جانا پڑتا ہے، بخار نہیں ہے۔",
+    "script_roman": "Do din se peshaab mein jalan ho rahi hai, baar baar bathroom jaana parta hai, bukhar nahi hai.",
+    "expectedLevel": "GREEN",
+    "expectedRuleIds": ["R19"],
+    "expectedSymptoms": ["burning_urination"],
+    "duration_days": 2,
+    "age": 30, "sex": "F", "locality": "I-8"
+  }
+]

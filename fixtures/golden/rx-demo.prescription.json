@@ -1,0 +1,45 @@
+{
+  "prescription": {
+    "id": "rx-demo",
+    "patientId": "demo",
+    "items": [
+      {
+        "drug_raw": { "value": "Tab. Klaricid", "confidence": 0.93 },
+        "brand_match": "Klaricid",
+        "generic": "clarithromycin",
+        "strength": { "value": "500 mg", "confidence": 0.9 },
+        "frequency": { "value": "twice daily", "confidence": 0.95 },
+        "duration": { "value": "7 days", "confidence": 0.88 },
+        "route": { "value": "oral", "confidence": 0.9 },
+        "confirmedByDoctor": false
+      },
+      {
+        "drug_raw": { "value": "Tab. Lipiget", "confidence": 0.86 },
+        "brand_match": "Lipiget",
+        "generic": "atorvastatin",
+        "strength": { "value": "40 mg", "confidence": 0.84 },
+        "frequency": { "value": "once daily", "confidence": 0.92 },
+        "duration": { "value": "30 days", "confidence": 0.71 },
+        "route": { "value": "oral", "confidence": 0.9 },
+        "confirmedByDoctor": false
+      },
+      {
+        "drug_raw": { "value": "Cap. Risek", "confidence": 0.78 },
+        "brand_match": "Risek",
+        "generic": "omeprazole",
+        "strength": { "value": "20 mg", "confidence": 0.8 },
+        "frequency": { "value": "once daily", "confidence": 0.74 },
+        "duration": { "value": "[UNCLEAR]", "confidence": 0.31 },
+        "route": { "value": "oral", "confidence": 0.85 },
+        "confirmedByDoctor": false
+      }
+    ],
+    "interactions": [
+      {
+        "pair": ["clarithromycin", "atorvastatin"],
+        "severity": "major",
+        "note": "Clarithromycin raises atorvastatin levels and the risk of muscle damage (rhabdomyolysis). Consider pausing the statin during the antibiotic course or choosing azithromycin."
+      }
+    ]
+  }
+}

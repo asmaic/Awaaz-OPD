@@ -1,0 +1,31 @@
+{
+  "extraction": {
+    "transcript_ur": "میں ڈھوک حسو سے آیا ہوں۔ چار دن سے تیز بخار ہے، پیٹ میں درد ہے، اور آج صبح برش کرتے ہوئے مسوڑھوں سے خون آیا۔",
+    "translation_en": "I have come from Dhok Hassu. I've had a high fever for four days, my stomach hurts, and this morning my gums bled while brushing.",
+    "chief_complaint": "High fever for 4 days with abdominal pain and bleeding gums",
+    "symptoms": ["fever", "abdominal_pain", "bleeding_gums"],
+    "duration_days": 4,
+    "red_flags_mentioned": ["مسوڑھوں سے خون آیا"],
+    "age_years": 28,
+    "sex": "M",
+    "vitals": {},
+    "locality": "Dhok Hassu",
+    "suggested_department": "Medicine",
+    "missing_info": ["Any vomiting today?", "Any dizziness on standing?", "Recent platelet count?"],
+    "confidence": 0.91
+  },
+  "triage": {
+    "level": "ORANGE",
+    "escalatedForUncertainty": false,
+    "rulesVersion": "rules-v1",
+    "hits": [
+      {
+        "id": "R10",
+        "level": "ORANGE",
+        "title": "Dengue with warning signs",
+        "why": "fever for 4 days + abdominal pain + bleeding gums",
+        "source": "WHO 2009 dengue guidelines (warning signs)"
+      }
+    ]
+  }
+}

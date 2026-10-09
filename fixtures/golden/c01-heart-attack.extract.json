@@ -1,0 +1,30 @@
+{
+  "extraction": {
+    "transcript_ur": "ڈاکٹر صاحب، سینے میں بہت درد ہے، بائیں بازو تک جا رہا ہے، اور بہت پسینہ آ رہا ہے۔ آدھے گھنٹے سے ہے۔",
+    "translation_en": "Doctor, I have severe chest pain going down to my left arm, and I'm sweating a lot. It's been half an hour.",
+    "chief_complaint": "Severe chest pain radiating to left arm with sweating for 30 minutes",
+    "symptoms": ["chest_pain", "arm_jaw_pain", "sweating"],
+    "red_flags_mentioned": ["سینے میں بہت درد", "بہت پسینہ آ رہا ہے"],
+    "age_years": 55,
+    "sex": "M",
+    "vitals": {},
+    "locality": "Saddar",
+    "suggested_department": "Cardiology",
+    "missing_info": ["Any shortness of breath?", "History of heart disease or diabetes?"],
+    "confidence": 0.94
+  },
+  "triage": {
+    "level": "RED",
+    "escalatedForUncertainty": false,
+    "rulesVersion": "rules-v1",
+    "hits": [
+      {
+        "id": "R02",
+        "level": "RED",
+        "title": "Possible heart attack",
+        "why": "chest pain + sweating + arm pain, age 55",
+        "source": "ESI v4 high-risk chest pain / AHA ACS warning signs"
+      }
+    ]
+  }
+}

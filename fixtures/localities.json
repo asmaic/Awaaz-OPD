@@ -1,0 +1,30 @@
+{
+  "_note": "Coordinates are APPROXIMATE neighbourhood centroids for the demo map only. Not for navigation.",
+  "localities": [
+    { "name": "Dhok Hassu", "ur": "ڈھوک حسو", "city": "Rawalpindi", "lat": 33.6235, "lng": 73.0355 },
+    { "name": "Chaklala", "ur": "چکلالہ", "city": "Rawalpindi", "lat": 33.5900, "lng": 73.0750 },
+    { "name": "Saddar", "ur": "صدر", "city": "Rawalpindi", "lat": 33.5970, "lng": 73.0500 },
+    { "name": "Raja Bazaar", "ur": "راجہ بازار", "city": "Rawalpindi", "lat": 33.6160, "lng": 73.0640 },
+    { "name": "Satellite Town", "ur": "سیٹلائٹ ٹاؤن", "city": "Rawalpindi", "lat": 33.6400, "lng": 73.0720 },
+    { "name": "Pirwadhai", "ur": "پیرودھائی", "city": "Rawalpindi", "lat": 33.6320, "lng": 73.0400 },
+    { "name": "Westridge", "ur": "ویسٹریج", "city": "Rawalpindi", "lat": 33.6100, "lng": 73.0200 },
+    { "name": "Gulzar-e-Quaid", "ur": "گلزارِ قائد", "city": "Rawalpindi", "lat": 33.5740, "lng": 73.1110 },
+    { "name": "Dhoke Kala Khan", "ur": "ڈھوک کالا خان", "city": "Rawalpindi", "lat": 33.6290, "lng": 73.0780 },
+    { "name": "Tench Bhata", "ur": "ٹینچ بھاٹہ", "city": "Rawalpindi", "lat": 33.5900, "lng": 73.0400 },
+    { "name": "Murree Road", "ur": "مری روڈ", "city": "Rawalpindi", "lat": 33.6250, "lng": 73.0680 },
+    { "name": "Bahria Town", "ur": "بحریہ ٹاؤن", "city": "Rawalpindi", "lat": 33.5300, "lng": 73.1000 },
+    { "name": "DHA", "ur": "ڈی ایچ اے", "city": "Rawalpindi/Islamabad", "lat": 33.5300, "lng": 73.1500 },
+    { "name": "G-6", "ur": "جی سکس", "city": "Islamabad", "lat": 33.7150, "lng": 73.0850 },
+    { "name": "G-7", "ur": "جی سیون", "city": "Islamabad", "lat": 33.7050, "lng": 73.0750 },
+    { "name": "G-9", "ur": "جی نائن", "city": "Islamabad", "lat": 33.6900, "lng": 73.0300 },
+    { "name": "G-10", "ur": "جی ٹین", "city": "Islamabad", "lat": 33.6800, "lng": 73.0100 },
+    { "name": "G-11", "ur": "جی الیون", "city": "Islamabad", "lat": 33.6700, "lng": 72.9950 },
+    { "name": "F-6", "ur": "ایف سکس", "city": "Islamabad", "lat": 33.7290, "lng": 73.0750 },
+    { "name": "F-8", "ur": "ایف ایٹ", "city": "Islamabad", "lat": 33.7120, "lng": 73.0400 },
+    { "name": "I-8", "ur": "آئی ایٹ", "city": "Islamabad", "lat": 33.6680, "lng": 73.0750 },
+    { "name": "I-9", "ur": "آئی نائن", "city": "Islamabad", "lat": 33.6550, "lng": 73.0600 },
+    { "name": "I-10", "ur": "آئی ٹین", "city": "Islamabad", "lat": 33.6450, "lng": 73.0400 },
+    { "name": "Bhara Kahu", "ur": "بھارہ کہو", "city": "Islamabad", "lat": 33.7350, "lng": 73.1800 },
+    { "name": "Tarlai", "ur": "ترلائی", "city": "Islamabad", "lat": 33.6600, "lng": 73.1500 }
+  ]
+}
