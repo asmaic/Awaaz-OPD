@@ -31,8 +31,9 @@ function StoreSync() {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (!(e.ctrlKey || e.metaKey) || !e.shiftKey) return;
-      const k = e.key.toLowerCase();
+      // Ctrl+Shift+D/R per spec; Alt+Shift+D/R as backups because Chrome reserves Ctrl+Shift+D (bookmark all) and Ctrl+Shift+R (hard reload).
+      if (!(e.ctrlKey || e.metaKey || e.altKey) || !e.shiftKey) return;
+      const k = e.code === "KeyD" ? "d" : e.code === "KeyR" ? "r" : e.key.toLowerCase();
       if (k === "d") {
         e.preventDefault();
         const s = useQueue.getState();
