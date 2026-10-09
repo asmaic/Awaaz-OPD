@@ -42,7 +42,7 @@ export function IntakeResult({ res, meta, onAdd, onReset }: { res: ExtractRes; m
               {e.duration_days !== undefined && <span className="rounded-full bg-muted px-3 py-1 text-sm">{e.duration_days} days</span>}
               {e.locality && <span className="flex items-center gap-1 rounded-full bg-muted px-3 py-1 text-sm"><MapPin className="size-3.5" />{e.locality}</span>}
               {Object.entries(e.vitals).map(([k, v]) => (
-                <span key={k} className="rounded-full bg-muted px-3 py-1 font-mono text-sm">{k} {v}</span>
+                <span key={k} className="rounded-full bg-muted px-3 py-1 text-sm">{k} {v}</span>
               ))}
             </motion.div>
             {e.missing_info.length > 0 && (

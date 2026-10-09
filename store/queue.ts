@@ -37,16 +37,22 @@ function withWaits(ps: Patient[], doctors: number): Patient[] {
   return ps.map((p) => ({ ...p, estWaitMin: wait.get(p.id) ?? 0 }));
 }
 
-function geoFor(e: Extraction, t: TriageResult): Patient["geo"] {
+/** Deterministic small offset from an id, so pins from one locality don't stack and SSR/CSR agree. */
+function jitter(seed: string, salt: number) {
+  let h = salt;
+  for (const c of seed) h = (h * 31 + c.charCodeAt(0)) | 0;
+  return ((Math.abs(h) % 1000) / 1000 - 0.5) * 0.006;
+}
+
+function geoFor(e: Extraction, t: TriageResult, seed: string): Patient["geo"] {
   if (!e.locality || !t.hits.some((h) => DENGUE_RULES.includes(h.id))) return undefined;
   const key = e.locality.toLowerCase().replace(/[^a-z0-9]/g, "");
   const l = LOCALITIES.find((x) => x.name.toLowerCase().replace(/[^a-z0-9]/g, "") === key);
-  // Small jitter so several patients from one locality don't stack on one pixel.
-  return l ? { lat: l.lat + (Math.random() - 0.5) * 0.006, lng: l.lng + (Math.random() - 0.5) * 0.006, label: l.name } : undefined;
+  return l ? { lat: l.lat + jitter(seed, 7), lng: l.lng + jitter(seed, 13), label: l.name } : undefined;
 }
 
 function seeds(): Patient[] {
-  return (seedPatients as Patient[]).map((p) => ({ ...p, geo: p.geo ?? geoFor(p.extraction, p.triage) }));
+  return (seedPatients as Patient[]).map((p) => ({ ...p, geo: p.geo ?? geoFor(p.extraction, p.triage, p.id) }));
 }
 
 const uid = () => (typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`);
@@ -89,9 +95,10 @@ export const useQueue = create<QueueState>()(
 
         addPatient({ name, extraction, triage }) {
           const token = Math.max(40, ...get().patients.map((p) => p.token)) + 1;
+          const id = `p-${uid()}`;
           const patient: Patient = {
-            id: `p-${uid()}`, token, name: name.trim() || `Patient ${token}`, arrivedAt: new Date().toISOString(),
-            extraction, triage, status: "waiting", estWaitMin: 0, geo: geoFor(extraction, triage),
+            id, token, name: name.trim() || `Patient ${token}`, arrivedAt: new Date().toISOString(),
+            extraction, triage, status: "waiting", estWaitMin: 0, geo: geoFor(extraction, triage, id),
           };
           setPatients((ps) => [...ps, patient]);
           log({ actor: "nurse", action: "confirm", patientId: patient.id, payload: { token, level: triage.level }, reason: "Added to queue" });

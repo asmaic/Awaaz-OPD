@@ -22,7 +22,7 @@ export function TokenCard({ patient, onNext }: { patient: Patient; onNext: () =>
           PIMS Medicine OPD · Token
         </div>
         <div className="space-y-4 px-6 py-8 text-center">
-          <div className="font-mono text-[7rem] leading-none font-bold tracking-tighter tabular-nums">{patient.token}</div>
+          <div className="text-[7rem] leading-none font-bold tracking-tighter tabular-nums">{patient.token}</div>
           <div className="text-xl font-semibold">{patient.name}</div>
           <div className="flex items-center justify-center gap-3">
             <TriageBadge level={level} />

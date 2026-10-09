@@ -133,7 +133,7 @@ export default function IntakePage() {
 
             <div className="flex w-full max-w-xl flex-col items-center gap-2">
               <Waveform analyser={recorder.analyser} className="h-20 w-full" />
-              <div className="h-6 font-mono text-lg tabular-nums text-muted-foreground">
+              <div className="h-6 text-lg tabular-nums text-muted-foreground">
                 {recorder.recording ? `${fmt(recorder.elapsed)} / 0:30 · tap or release to stop` : recorder.error ?? ""}
               </div>
             </div>
