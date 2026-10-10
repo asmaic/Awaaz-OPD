@@ -52,3 +52,17 @@ describe("normalize", async () => {
     expect(normalizeDuration("7 days")).toBe("7 days");
   });
 });
+
+describe("templateInstructions", async () => {
+  const { templateInstructions } = await import("@/lib/drugs");
+  const f = (value: string) => ({ value, confidence: 1 });
+  const item = (drug: string, strength: string, freq: string, dur: string, confirmed = true) => ({
+    drug_raw: f(drug), brand_match: drug, strength: f(strength), frequency: f(freq), duration: f(dur), confirmedByDoctor: confirmed,
+  });
+  it("uses exactly the confirmed fields", () => {
+    expect(templateInstructions([item("Risek", "20mg", "once daily (before bkfst)", "10 days")]))
+      .toBe("Risek 20mg، دن میں ایک دفعہ (before bkfst)، 10 دن تک۔");
+    expect(templateInstructions([item("Klaricid", "500mg", "twice daily", "1 week"), item("Lipiget", "40mg", "once daily", "1 month", false)]))
+      .toBe("Klaricid 500mg، دن میں دو دفعہ، 1 ہفتے تک۔");
+  });
+});

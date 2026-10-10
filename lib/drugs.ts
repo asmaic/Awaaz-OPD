@@ -1,3 +1,4 @@
+import type { RxItem } from "@/types/contracts";
 import Fuse from "fuse.js";
 
 /** Common Pakistani brands → generic ("+" separates combination products). */
@@ -55,4 +56,25 @@ export function normalizeDuration(v: string): string {
   const n = Number(m[1]);
   const unit = { "7": "day", "52": "week", "12": "month" }[m[2] as "7" | "52" | "12"];
   return `${n} ${unit}${n === 1 ? "" : "s"}`;
+}
+
+const FREQ_UR: Record<string, string> = {
+  "once daily": "دن میں ایک دفعہ", "twice daily": "دن میں دو دفعہ", "three times daily": "دن میں تین دفعہ",
+  "four times daily": "دن میں چار دفعہ", "when needed": "ضرورت کے وقت", "at bedtime": "سونے سے پہلے", "immediately, once": "ابھی ایک دفعہ",
+};
+const UNIT_UR: Record<string, string> = { day: "دن", week: "ہفتے", month: "مہینے" };
+
+/**
+ * Urdu instructions from fixed phrases — no model, so it can't add or change anything.
+ * Used when no AI/cached answer exists (demo mode with an edited field, or every model down).
+ * Drug names and strengths stay in Latin letters, as in the prescription.
+ */
+export function templateInstructions(items: RxItem[]): string {
+  return items.filter((i) => i.confirmedByDoctor).map((i) => {
+    const freq = i.frequency.value.replace(/^([^(]+?)\s*(\(.*)?$/, (_m, base: string, note = "") =>
+      `${FREQ_UR[base.trim()] ?? base.trim()}${note ? ` ${note}` : ""}`);
+    const dur = /^(\d+)\s*(day|week|month)s?$/i.exec(i.duration.value.trim());
+    const durUr = dur ? `${dur[1]} ${UNIT_UR[dur[2].toLowerCase()]} تک` : i.duration.value;
+    return `${i.brand_match ?? i.drug_raw.value} ${i.strength.value}، ${freq}، ${durUr}۔`;
+  }).join("\n");
 }

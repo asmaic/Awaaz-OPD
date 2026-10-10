@@ -9,7 +9,7 @@ import { EXTRACTION_PROMPT_VERSION, INSTRUCTIONS_PROMPT_VERSION, PRESCRIPTION_PR
 import { blobGet, blobSet, goldenFixture, runAi, type Attempt, type RunMeta } from "@/lib/cache";
 import { audit } from "@/lib/audit";
 import { evaluate } from "@/lib/rules/engine";
-import { matchBrand, normalizeDuration, normalizeFrequency } from "@/lib/drugs";
+import { matchBrand, normalizeDuration, normalizeFrequency, templateInstructions } from "@/lib/drugs";
 import { checkInteractions } from "@/lib/interactions";
 import cases from "@/fixtures/cases.json";
 
@@ -119,6 +119,8 @@ export async function runInstructions(req: InstructionsReq, demo: boolean): Prom
       const demoItems = await demoConfirmedItems();
       return demoItems && rxSignature(demoItems) === rxSignature(req.items) ? goldenFixture<{ urdu: string }>("rx-demo", "instructions") : null;
     },
+    // Anything else (e.g. demo mode after the doctor typed another value): fixed-phrase Urdu built from exactly what was confirmed.
+    template: () => ({ urdu: templateInstructions(req.items) }),
   });
 }
 

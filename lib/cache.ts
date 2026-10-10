@@ -72,6 +72,8 @@ export interface RunOpts<T> {
   patientId?: string;
   attempts: Attempt<T>[]; // primary first
   golden?: () => Promise<T | null>;
+  /** Deterministic last resort that needs no API (e.g. template Urdu instructions). Tried after golden. */
+  template?: () => T;
 }
 
 export class DemoMissError extends Error {}
@@ -97,10 +99,13 @@ export async function runAi<T>(o: RunOpts<T>): Promise<{ data: T; meta: RunMeta;
 
   const fromGolden = async (why: string) => {
     const g = await o.golden?.();
-    if (!g) return null;
+    const t = g ? null : (o.template?.() ?? null);
+    const data = g ?? t;
+    if (!data) return null;
+    const to = g ? "golden" : "template";
     if (o.demo) await demoDelay();
-    await audit({ ...base, actor: "system", action: "fallback", payload: { route: o.route, to: "golden" }, reason: why });
-    return { data: g, key, meta: { cached: true, ms: Date.now() - t0, fallback: "golden" } };
+    await audit({ ...base, actor: "system", action: "fallback", payload: { route: o.route, to }, reason: why });
+    return { data, key, meta: { cached: g !== null, ms: Date.now() - t0, fallback: to } };
   };
 
   if (o.demo) {
