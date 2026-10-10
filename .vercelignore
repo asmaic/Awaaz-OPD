@@ -3,7 +3,6 @@
 !.env.example
 .data
 .cache/*
-!.cache/golden
 .next
 node_modules
 public/generated

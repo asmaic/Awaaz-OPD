@@ -1,4 +1,4 @@
-// pnpm warm — run the demo path + all 20 cases live (cached), then copy every entry into .cache/golden (committed),
+// pnpm warm — run the demo path + all 20 cases live (cached), then copy every entry into fixtures/golden-cache (committed),
 // so demo mode works from a fresh clone with no network.
 // pnpm warm --from-audit — instead promote every AI response used in a browser rehearsal (from .data/audit.jsonl):
 // the doctor screen's sample photo is a browser-made JPEG this script can't reproduce, so rehearse once, then run this.
@@ -27,7 +27,7 @@ async function fromAudit() {
   const hashes = new Set((await readAudit(100_000)).filter((e) => e.inputHash && (e.actor === "ai" || e.action === "cache_hit")).map((e) => e.inputHash!));
   let promoted = 0;
   for (const k of hashes) if (await promote(k)) promoted++;
-  console.log(`Promoted ${promoted}/${hashes.size} rehearsal entries to .cache/golden.`);
+  console.log(`Promoted ${promoted}/${hashes.size} rehearsal entries to fixtures/golden-cache.`);
 }
 
 async function main() {
@@ -49,7 +49,7 @@ async function main() {
 
   let promoted = 0;
   for (const k of new Set(keys)) if (await promote(k)) promoted++;
-  console.log(`\nPromoted ${promoted} entries to .cache/golden. ${failures ? `${failures} step(s) failed.` : "All steps OK."}`);
+  console.log(`\nPromoted ${promoted} entries to fixtures/golden-cache. ${failures ? `${failures} step(s) failed.` : "All steps OK."}`);
   if (failures) process.exitCode = 1;
 }
 

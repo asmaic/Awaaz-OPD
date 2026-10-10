@@ -92,7 +92,7 @@ pnpm test                       # 118 unit tests
 pnpm eval                       # 20-case triage evaluation
 pnpm check-cache                # confirms the demo works offline
 ```
-**Deploying:** set `GEMINI_API_KEY`, the four `GEMINI_*` model variables and `DEMO_MODE=true` (keyless replay) or `false`. On Vercel, runtime cache and audit go to `/tmp` automatically (`AWAAZ_WRITE_DIR` overrides). The committed `.cache/golden` ships with the build.
+**Deploying:** set `GEMINI_API_KEY`, the four `GEMINI_*` model variables and `DEMO_MODE=true` (keyless replay) or `false`. On Vercel, runtime cache and audit go to `/tmp` automatically (`AWAAZ_WRITE_DIR` overrides). The committed saved answers in `fixtures/golden-cache` ship with the build.
 
 ## Responsible AI and data
 - **Synthetic data only.** All patients, cases, prescriptions, facility status and pharmacy stock are invented for the demo. No real patient data is used.

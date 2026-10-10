@@ -50,7 +50,7 @@ scripts/                  eval, warm-cache, check-cache                        (
 
 ## Commands
 `pnpm dev` · `pnpm demo` (production build, no hot reload: use for the live demo) · `pnpm typecheck` · `pnpm lint` · `pnpm test` · `pnpm build` · `pnpm eval` · `pnpm warm` · `pnpm check-cache`
-After a browser rehearsal: `pnpm warm --from-audit` promotes every AI answer it used into `.cache/golden` (commit it) so demo mode replays it offline.
+After a browser rehearsal: `pnpm warm --from-audit` promotes every AI answer it used into `fixtures/golden-cache` (commit it) so demo mode replays it offline.
 
 ## Tools
 - Use Context7 for library docs whenever touching `@google/genai`, `groq-sdk`, `motion`, `react-leaflet`, `zustand` or Next.js APIs. Don't rely on memory for these; their APIs changed recently. For Next.js, `node_modules/next/dist/docs/` is authoritative.

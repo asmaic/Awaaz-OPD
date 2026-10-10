@@ -7,7 +7,8 @@ import { audit } from "@/lib/audit";
 import { WRITE_ROOT } from "@/lib/paths";
 
 // Committed, read-only: the demo path must work from a fresh clone or a fresh deploy.
-const GOLDEN = path.join(process.cwd(), ".cache", "golden");
+// Not under .cache/: the Vercel CLI never uploads a folder named .cache, so the deployed demo had no saved answers.
+const GOLDEN = path.join(process.cwd(), "fixtures", "golden-cache");
 const CACHE = path.join(WRITE_ROOT, ".cache");
 
 /** sha256(route | model | promptVersion | rulesVersion | input bytes…) */
@@ -31,7 +32,7 @@ export async function cacheSet<T>(key: string, value: Stored<T>): Promise<void> 
   await writeFile(path.join(CACHE, `${key}.json`), JSON.stringify(value));
 }
 
-// Binary blobs (TTS audio) live next to the JSON entries: .cache/audio/<key>.wav, .cache/golden/audio/<key>.wav
+// Binary blobs (TTS audio) live next to the JSON entries: .cache/audio/<key>.wav, fixtures/golden-cache/audio/<key>.wav
 export async function blobGet(key: string): Promise<Buffer | null> {
   return (await tryRead(path.join(GOLDEN, "audio", `${key}.wav`))) ?? tryRead(path.join(CACHE, "audio", `${key}.wav`));
 }
@@ -40,7 +41,7 @@ export async function blobSet(key: string, data: Buffer): Promise<void> {
   await writeFile(path.join(CACHE, "audio", `${key}.wav`), data);
 }
 
-/** Copy a cache entry (and its audio, if any) into .cache/golden so it is committed. Used by scripts/warm-cache. */
+/** Copy a cache entry (and its audio, if any) into fixtures/golden-cache so it is committed. Used by scripts/warm-cache. */
 export async function promote(key: string): Promise<boolean> {
   await mkdir(path.join(GOLDEN, "audio"), { recursive: true });
   try {
