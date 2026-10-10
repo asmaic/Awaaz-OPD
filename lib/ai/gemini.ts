@@ -4,6 +4,7 @@ import { ExtractionZ, RxReadZ, cleanExtraction, extractionJsonSchema, prescripti
 import { EXTRACTION_PROMPT, INSTRUCTIONS_PROMPT, PRESCRIPTION_PROMPT } from "./prompts";
 import { z } from "zod";
 import { ensureWav } from "@/lib/wav";
+import { SbarZ, type Sbar } from "@/types/features";
 
 export class ScriptError extends Error {}
 export const DEVANAGARI = /[ऀ-ॿ]/;
@@ -98,4 +99,9 @@ export async function tts(text: string, voice = "Kore", model = env("GEMINI_TTS_
   const audio = r.candidates?.[0]?.content?.parts?.find((p) => p.inlineData?.data)?.inlineData;
   if (!audio?.data) throw new Error(`no audio from ${model}`);
   return ensureWav(Buffer.from(audio.data, "base64"), audio.mimeType);
+}
+
+/** SBAR handover draft. Validation + the "no new numbers" check happen in lib/pipeline.ts. */
+export async function handoverNote(record: unknown, system: string, model = env("GEMINI_MODEL")): Promise<Sbar> {
+  return SbarZ.parse(await json(model, system, [{ text: JSON.stringify(record) }], z.toJSONSchema(SbarZ)));
 }

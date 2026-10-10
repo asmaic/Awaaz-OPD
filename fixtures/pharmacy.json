@@ -1,0 +1,21 @@
+{
+  "_note": "MOCK hospital pharmacy stock for the demo. Prices are illustrative (Rs per tablet/capsule), not real market prices.",
+  "stock": [
+    { "brand": "Klaricid", "generic": "clarithromycin", "strength": "500mg", "unitPrice": 118, "inStock": false },
+    { "brand": "Claritek", "generic": "clarithromycin", "strength": "500mg", "unitPrice": 72, "inStock": true },
+    { "brand": "Lipiget", "generic": "atorvastatin", "strength": "40mg", "unitPrice": 28, "inStock": true },
+    { "brand": "Lipiget", "generic": "atorvastatin", "strength": "20mg", "unitPrice": 18, "inStock": true },
+    { "brand": "Risek", "generic": "omeprazole", "strength": "20mg", "unitPrice": 21, "inStock": false },
+    { "brand": "Omeprazole (hospital generic)", "generic": "omeprazole", "strength": "20mg", "unitPrice": 6, "inStock": true },
+    { "brand": "Panadol", "generic": "paracetamol", "strength": "500mg", "unitPrice": 3, "inStock": true },
+    { "brand": "Brufen", "generic": "ibuprofen", "strength": "400mg", "unitPrice": 5, "inStock": true },
+    { "brand": "Augmentin", "generic": "amoxicillin+clavulanate", "strength": "625mg", "unitPrice": 64, "inStock": true },
+    { "brand": "Amoxil", "generic": "amoxicillin", "strength": "500mg", "unitPrice": 14, "inStock": true },
+    { "brand": "Flagyl", "generic": "metronidazole", "strength": "400mg", "unitPrice": 4, "inStock": true },
+    { "brand": "Novidat", "generic": "ciprofloxacin", "strength": "500mg", "unitPrice": 26, "inStock": false },
+    { "brand": "Ciprofloxacin (hospital generic)", "generic": "ciprofloxacin", "strength": "500mg", "unitPrice": 9, "inStock": true },
+    { "brand": "Glucophage", "generic": "metformin", "strength": "500mg", "unitPrice": 7, "inStock": true },
+    { "brand": "Concor", "generic": "bisoprolol", "strength": "5mg", "unitPrice": 19, "inStock": true },
+    { "brand": "Disprin", "generic": "aspirin", "strength": "300mg", "unitPrice": 2, "inStock": true }
+  ]
+}
