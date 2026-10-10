@@ -54,7 +54,7 @@ Run `pnpm eval` over **20 synthetic Urdu cases** (6 RED, 6 ORANGE, 4 YELLOW, 4 G
 | Symptom extraction precision / recall | **98% / 98%** |
 | Urdu returned in the wrong script | 0 retries needed |
 | Live latency (one call each) | voice/text → triage ≈ 1.5–2 s · prescription read < 10 s · Urdu speech ≈ 6–8 s · handover letter ≈ 3 s |
-| Automated tests | **95** (`pnpm test`): every triage rule with boundary cases, all 20 cases, drug matching, referral, handover, pharmacy, override flags |
+| Automated tests | **98** (`pnpm test`): every triage rule with boundary cases, all 20 cases, drug matching, referral, handover, pharmacy, override flags |
 
 *Caveat:* the cases are synthetic scripts written by the team and run as text. Recorded-audio accuracy has been spot-checked live, not benchmarked.
 
@@ -83,7 +83,7 @@ Shortcuts: **Alt+Shift+D** demo mode (tiny dot in the footer), **Alt+Shift+R** r
 pnpm install
 cp .env.example .env.local      # add GEMINI_API_KEY (and optionally GROQ_API_KEY)
 pnpm dev                        # http://localhost:3000
-pnpm test                       # 95 unit tests
+pnpm test                       # 98 unit tests
 pnpm eval                       # 20-case triage evaluation
 pnpm check-cache                # confirms the demo works offline
 ```
