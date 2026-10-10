@@ -67,3 +67,11 @@ export function RuleExplainer({ hits, escalated, className }: { hits: RuleHit[];
 }
 
 export const prettySymptom = (s: string) => s.replaceAll("_", " ");
+
+/** "55 y · M", "3 mo", "F" — only what the patient actually said; null when neither age nor sex is known. */
+export function ageSexLabel(e: { age_years?: number; sex?: "M" | "F" | "unknown" }): string | null {
+  const parts: string[] = [];
+  if (e.age_years !== undefined) parts.push(e.age_years < 1 ? `${Math.round(e.age_years * 12)} mo` : `${e.age_years} y`);
+  if (e.sex === "M" || e.sex === "F") parts.push(e.sex);
+  return parts.length ? parts.join(" · ") : null;
+}

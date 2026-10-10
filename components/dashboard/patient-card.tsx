@@ -3,16 +3,11 @@ import { forwardRef } from "react";
 import { motion } from "motion/react";
 import { Ambulance, Check, Clock, Hand, Hospital, PhoneCall, Siren, Stethoscope } from "lucide-react";
 import { tokenCode } from "@/lib/overrides";
-import { LEVEL_META } from "@/components/triage";
+import { LEVEL_META, ageSexLabel } from "@/components/triage";
 import { cn } from "@/lib/utils";
 import { effectiveLevel } from "@/store/queue";
 import type { Patient } from "@/types/contracts";
 
-const ageSex = (p: Patient) => {
-  const a = p.extraction.age_years;
-  const age = a === undefined ? "?" : a < 1 ? `${Math.round(a * 12)}mo` : `${a}y`;
-  return `${age} · ${p.extraction.sex ?? "?"}`;
-};
 
 /** The first clause that carries the complaint: skips short openers like "ڈاکٹر صاحب" (Doctor sahab) and "… سے آیا ہوں" (I've come from …). */
 const firstClause = (ur: string) => {
@@ -64,7 +59,7 @@ export const PatientCard = forwardRef<HTMLLIElement, Props>(function PatientCard
         <div className="min-w-0 space-y-0.5">
           <div className="flex min-w-0 items-baseline gap-2">
             <span className="truncate text-xl font-bold">{p.name}</span>
-            <span className="shrink-0 font-mono text-sm text-mute">{ageSex(p)}</span>
+            {ageSexLabel(p.extraction) && <span className="shrink-0 font-mono text-sm text-mute">{ageSexLabel(p.extraction)}</span>}
             {p.override && <span className="shrink-0 rounded-[3px] border border-dashed px-1.5 font-mono text-[11px] tracking-wide uppercase" title={p.override.reason}>Overridden</span>}
           </div>
           <div className="truncate text-base">{p.extraction.chief_complaint}</div>
@@ -72,7 +67,7 @@ export const PatientCard = forwardRef<HTMLLIElement, Props>(function PatientCard
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pt-0.5 text-sm">
             {top && <span className="font-mono text-xs text-mute" title={top.why}>{top.id} · {top.title}</span>}
             <span className="flex items-center gap-1 font-semibold">
-              {withDoc ? <><Stethoscope className="size-4 text-scrub" /> With doctor</> : <><Clock className="size-4 text-mute" /> est. {p.estWaitMin} min</>}
+              {withDoc ? <><Stethoscope className="size-4 text-scrub" /> With doctor</> : <><Clock className="size-4 text-mute" /> {p.estWaitMin === 0 ? "Next" : `est. ${p.estWaitMin} min`}</>}
             </span>
             {p.erNotifiedAt && <span className="flex items-center gap-1 font-semibold text-triage-red"><Siren className="size-4" /> ER notified</span>}
           </div>

@@ -33,7 +33,7 @@ export function TransparencyPanel({ audit, patients, now }: { audit: AuditEntry[
           {reviewed.map((r) => (
             <li key={r.id} className={cn("rounded-md border p-2.5 text-sm", r.flags.some((f) => f.severity === "high") ? "border-triage-red/50 bg-triage-red/5" : r.flags.length ? "border-amber-400/60 bg-amber-50/60 dark:bg-amber-950/30" : "")}>
               <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                <span className="font-semibold">Token {r.token ?? "?"}</span>
+                <span className="font-semibold">{r.token ? `Token ${r.token}` : "Patient no longer in queue"}</span>
                 <Lvl l={r.from} /><ArrowRight className="size-3.5 text-muted-foreground" /><Lvl l={r.to} />
                 <span className="ml-auto text-xs text-muted-foreground tabular-nums">{new Date(r.ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
               </div>

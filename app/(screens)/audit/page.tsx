@@ -125,7 +125,7 @@ export default function AuditPage() {
                   <tr onClick={() => toggle(e.id)} className="cursor-pointer hover:bg-muted/40">
                     <td className="px-3 py-2.5"><ChevronRight className={cn("size-4 text-muted-foreground transition-transform", isOpen && "rotate-90")} /></td>
                     <td className="px-3 py-2.5 whitespace-nowrap tabular-nums">{new Date(e.ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</td>
-                    <td className="px-3 py-2.5"><span className="flex items-center gap-2 capitalize"><Icon className="size-4 text-muted-foreground" />{e.actor}</span></td>
+                    <td className="px-3 py-2.5"><span className="flex items-center gap-2"><Icon className="size-4 text-muted-foreground" />{e.actor === "ai" ? "AI" : e.actor[0].toUpperCase() + e.actor.slice(1)}</span></td>
                     <td className="px-3 py-2.5">
                       <span className={cn("rounded-[3px] bg-muted px-1.5 py-0.5 font-mono text-xs font-medium", ACTION_STYLE[e.action])}>{e.action}</span>
                     </td>

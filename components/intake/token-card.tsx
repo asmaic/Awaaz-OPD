@@ -23,7 +23,7 @@ export function TokenCard({ patient, onNext }: { patient: Patient; onNext: () =>
           PIMS Medicine OPD · Token
         </div>
         <div className="space-y-4 px-6 py-8 text-center">
-          <div className="text-[7rem] leading-none font-bold tracking-tighter tabular-nums">{patient.token}</div>
+          <div className="signage text-[8rem] font-extrabold tabular-nums">{patient.token}</div>
           <div className="text-xl font-semibold">{patient.name}</div>
           <div className="font-mono text-sm tracking-[0.3em] text-muted-foreground" title="Shown on the queue board when you are called">CHECK #{tokenCode(patient)}</div>
           <div className="flex items-center justify-center gap-3">
@@ -36,7 +36,7 @@ export function TokenCard({ patient, onNext }: { patient: Patient; onNext: () =>
           )}
         </div>
         <div className="border-t border-dashed" />
-        <div className="flex gap-2 p-4">
+        <div className="flex gap-2 p-4 print:hidden">
           <Button variant="outline" className="h-11 flex-1 rounded-md" onClick={() => window.print()}><Printer className="size-4" /> Print</Button>
           <Button variant="outline" className="h-11 flex-1 rounded-md" nativeButton={false} render={<Link href="/dashboard" />}>Queue board</Button>
           <Button className="h-11 flex-1 rounded-md bg-scrub text-primary-foreground hover:bg-scrub-deep" onClick={onNext}>Next patient <ArrowRight className="size-4" /></Button>

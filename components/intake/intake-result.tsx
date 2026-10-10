@@ -4,7 +4,8 @@ import { motion } from "motion/react";
 import { Building2, ClipboardList, Cpu, Languages, MapPin, Plus, Scale, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Typewriter } from "@/components/intake/typewriter";
-import { LEVEL_META, RuleExplainer, TriageBadge, prettySymptom } from "@/components/triage";
+import { LEVEL_META, RuleExplainer, TriageBadge, ageSexLabel, prettySymptom } from "@/components/triage";
+import { humanDuration } from "@/lib/handover";
 import { cn } from "@/lib/utils";
 import type { ApiResult, ExtractRes } from "@/types/contracts";
 
@@ -36,10 +37,10 @@ export function IntakeResult({ res, meta, onAdd, onReset }: { res: ExtractRes; m
               “{e.translation_en}”
             </motion.p>
             <motion.div {...fade(0.1)} className="flex flex-wrap gap-2">
-              {e.symptoms.map((s) => (
+              {e.symptoms.filter((s) => s !== "other").map((s) => (
                 <span key={s} className="rounded-[3px] border bg-background px-3 py-1 text-sm font-medium capitalize">{prettySymptom(s)}</span>
               ))}
-              {e.duration_days !== undefined && <span className="rounded-[3px] bg-muted px-3 py-1 text-sm">{e.duration_days} days</span>}
+              {e.duration_days !== undefined && <span className="rounded-[3px] bg-muted px-3 py-1 text-sm">{humanDuration(e.duration_days)}</span>}
               {e.locality && <span className="flex items-center gap-1 rounded-[3px] bg-muted px-3 py-1 text-sm"><MapPin className="size-3.5" />{e.locality}</span>}
               {Object.entries(e.vitals).map(([k, v]) => (
                 <span key={k} className="rounded-[3px] bg-muted px-3 py-1 text-sm">{k} {v}</span>
@@ -82,7 +83,7 @@ export function IntakeResult({ res, meta, onAdd, onReset }: { res: ExtractRes; m
             </div>
             <div className="border-l-2 border-ink pl-3">
               <div className="register-label">Patient</div>
-              <div className="font-semibold">{e.age_years !== undefined ? `${e.age_years < 1 ? `${Math.round(e.age_years * 12)} mo` : `${e.age_years} y`}` : "age ?"} · {e.sex ?? "?"}</div>
+              <div className="font-semibold">{ageSexLabel(e) ?? <span className="font-normal text-mute">Age and sex not stated</span>}</div>
             </div>
           </div>
           <div>

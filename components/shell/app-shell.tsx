@@ -101,7 +101,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <>
       <StoreSync />
       <div className="flex min-h-dvh flex-col bg-background">
-        <header className="sticky top-0 z-40 bg-[#15201d] text-[#f2f4f1] dark:bg-[#0a100e]">
+        <header className="sticky top-0 z-40 print:hidden bg-[#15201d] text-[#f2f4f1] dark:bg-[#0a100e]">
           <div className="mx-auto flex h-16 max-w-[1800px] items-stretch gap-10 px-6">
             <Brand className="self-center" />
             <nav className="flex flex-1 items-stretch" aria-label="Screens">
@@ -128,7 +128,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
         <div className="flex flex-1 flex-col">{children}</div>
-        <footer className="flex items-center justify-between border-t px-6 py-2 font-mono text-[11px] tracking-wide text-mute">
+        <footer className="flex items-center justify-between print:hidden border-t px-6 py-2 font-mono text-[11px] tracking-wide text-mute">
           <span>SYNTHETIC DATA · AI EXTRACTS · RULES DECIDE · CLINICIANS CONFIRM</span>
           <span
             aria-label={demo ? "demo mode on" : undefined}

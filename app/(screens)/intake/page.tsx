@@ -123,8 +123,8 @@ export default function IntakePage() {
                 onClick={onClick}
                 aria-label={recorder.recording ? "Stop recording" : "Start recording"}
                 className={cn(
-                  "relative grid size-52 touch-none place-items-center rounded-full text-white ring-8 transition-colors duration-200 select-none",
-                  recorder.recording ? "bg-triage-red ring-triage-red/15" : "bg-scrub ring-scrub/12 hover:bg-scrub-deep",
+                  "relative grid size-52 touch-none place-items-center rounded-full ring-8 transition-colors duration-200 select-none",
+                  recorder.recording ? "bg-triage-red text-white ring-triage-red/15" : "bg-scrub text-primary-foreground ring-scrub/12 hover:bg-scrub-deep",
                 )}
               >
                 {recorder.recording ? <Square className="size-16 fill-current" /> : <Mic className="size-20" strokeWidth={1.75} />}
