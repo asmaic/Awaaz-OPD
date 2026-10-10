@@ -8,6 +8,7 @@ import { LEVEL_META } from "@/components/triage";
 import { effectiveLevel } from "@/store/queue";
 import type { Patient } from "@/types/contracts";
 import { DengueMapFallback } from "./dengue-map-fallback";
+import { useMapKey } from "@/components/map/use-map-key";
 
 // One icon object per colour. A new icon on every render makes react-leaflet call setIcon, which rebuilds the
 // pin element and replays the drop animation — the dashboard re-renders every second for its clock.
@@ -27,6 +28,7 @@ const pinIcon = (hex: string) => {
 };
 
 function DengueMap({ patients }: { patients: Patient[] }) {
+  const mapKey = useMapKey();
   const [offline, setOffline] = useState(() => typeof navigator !== "undefined" && !navigator.onLine);
   // Switch to the static fallback only when the browser is really offline (one failed tile is normal), and after the
   // current Leaflet event finishes — unmounting mid tile-load made pending tiles append to a removed map.
@@ -39,7 +41,7 @@ function DengueMap({ patients }: { patients: Patient[] }) {
         @keyframes awaaz-pin-drop { 0% { transform: translateY(-40px); opacity: 0 } 60% { transform: translateY(3px); opacity: 1 } 100% { transform: translateY(0) } }
         .awaaz-pin { animation: awaaz-pin-drop 0.5s cubic-bezier(.2,.8,.3,1.2) both; filter: drop-shadow(0 2px 3px rgba(0,0,0,.3)); }
       `}</style>
-      <MapContainer center={[33.63, 73.06]} zoom={11} scrollWheelZoom={false} className="size-full">
+      <MapContainer key={mapKey} center={[33.63, 73.06]} zoom={11} scrollWheelZoom={false} className="size-full">
         <TileLayer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="&copy; OpenStreetMap" eventHandlers={tileEvents} />
         {patients.map((p) => p.geo && (
           <Marker key={p.id} position={[p.geo.lat, p.geo.lng]} icon={pinIcon(LEVEL_META[effectiveLevel(p)].hex)}>
