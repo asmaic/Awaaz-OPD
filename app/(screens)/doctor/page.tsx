@@ -105,7 +105,7 @@ export default function DoctorPage() {
             <TriageBadge level={effectiveLevel(patient)} />
             <span className="min-w-0 flex-1 truncate text-lg text-muted-foreground">{patient.extraction.chief_complaint}</span>
             <Button variant="outline" className="h-11 rounded-xl" onClick={() => setReferOpen(true)}>
-              <Hospital className="size-4" /> Refer + handover letter
+              <Hospital className="size-4" /> Treat here or transfer?
             </Button>
           </>
         ) : <span className="text-muted-foreground">No patients in the queue — add one at Intake.</span>}

@@ -4,7 +4,7 @@ Four features built on the core intake → triage → queue → prescription flo
 
 | # | Feature | Where it shows | Decides | AI? |
 |---|---------|----------------|---------|-----|
-| 1 | Referral and bed finder | Dashboard → **Find bed** on RED/ORANGE cards; Doctor → **Refer + handover letter** | `lib/referral.ts` rules | No |
+| 1 | Referral and bed finder | Dashboard → **Transfer?** on RED/ORANGE cards; Doctor → **Treat here or transfer?** | `lib/referral.ts` rules | No |
 | 2 | Handover letter (SBAR) | Referral dialog → **Call ahead + handover note** | Doctor signs | Gemini drafts; numbers are checked; template fallback |
 | 5 | Pharmacy stock and substitutes | Doctor screen, under the prescription table | Doctor taps **Swap** | No |
 | 10 | Override transparency | Dashboard → **Priority changes today**; override dialog | Flags only, nothing is blocked | No |
@@ -13,7 +13,7 @@ All facility, stock and price data is **mock** (`fixtures/facilities.json`, `fix
 
 ---
 
-## 1. Referral and bed finder: "Where should this patient go?"
+## 1. Treat here or transfer: "Can we treat this patient here?"
 
 **Problem.** RED patients at PIMS often wait in a full ER, or get referred by phone to a hospital that is also full.
 
@@ -26,15 +26,16 @@ All facility, stock and price data is **mock** (`fixtures/facilities.json`, `fix
    - A child under 12 at RED/ORANGE → paediatric ICU
    - Other danger signs (R01, R03, R04, R05, R07, R09) → ICU bed
 2. **Live board.** `GET /api/facilities` returns simulated ER load, free beds and busy capabilities for 6 twin-city hospitals: PIMS, Polyclinic, CDA, Holy Family, Benazir Bhutto and RIC. The values drift deterministically each minute (`statusAt`), so every window shows the same numbers. The dialog polls every 30 s.
-3. **Origin.** The patient's locality if known (fuzzy match, same as rule R17), otherwise this OPD (PIMS).
-4. **Score (lower is better).**
+3. **Origin is always PIMS.** The patient is standing in our OPD, so travel is measured from here, never from their home locality.
+4. **Treat here by default.** PIMS keeps the patient unless it has no needed service, that service is busy, or (only for needs that require admission: ICU, PICU, stroke unit, labour room, cath lab) it has no free bed. **A crowded ER alone is never a reason to transfer.** The reasons are returned as `homeGaps`, and `decision` is `treat_here`, `transfer` or `no_option`.
+5. **Transfer target score (lower is better).** Only when PIMS can't cover the patient:
    - A hospital missing a needed capability is **excluded**.
    - Otherwise: travel minutes + ER load × 40 + 45 if it has no free beds + 30 per needed capability that is busy.
    - Travel = straight-line km × 1.4 road factor at 30 km/h + 3 min to load. There is no live traffic.
-5. **Explanation.** The pick comes with a plain reason, e.g. *"cath lab free · 25 min from PIMS · ER 61% full · 6 beds free"*. The board shows every option, including why each one lost ("cath lab busy", "no cath lab").
+6. **Explanation.** The pick comes with a plain reason, e.g. *"cath lab free · 25 min from PIMS · ER 61% full · 6 beds free"*. The board shows every option, including why each one lost ("cath lab busy", "no cath lab").
 
-**Demo:** the heart-attack patient (c01) → **Find bed**. PIMS is 3 min away, but its cath lab is busy and its ER is about 95% full, so the rules send the patient to **Rawalpindi Institute of Cardiology**. The map shows a dashed route.
-*If the patient names their area (e.g. "Saddar se aaya hoon"), the route and minutes start from there instead.*
+**Demo:** the heart-attack patient (c01) → **Transfer?**. PIMS's cath lab is busy, so the dialog says *"Stabilise here, then transfer to Rawalpindi Institute of Cardiology"* with *"Why not PIMS: cath lab busy at PIMS"*. The map shows a dashed route from PIMS.
+For any patient PIMS can handle (e.g. the dengue ORANGE case, even with the ER full), the dialog says **"Treat here in the PIMS ER"**.
 
 ## 2. AI handover / referral letter (SBAR)
 
@@ -96,7 +97,7 @@ All facility, stock and price data is **mock** (`fixtures/facilities.json`, `fix
 | API (A) | `app/api/facilities/route.ts` (GET), `app/api/handover/route.ts` (POST) |
 | Client (shared) | `lib/mock.ts`: `api.handover`, `api.facilities` (mock versions use the same pure logic) |
 | Data (mock) | `fixtures/facilities.json`, `fixtures/pharmacy.json` |
-| UI (B's folders) | New: `components/referral/*`, `components/dashboard/transparency-panel.tsx`, `components/doctor/stock-panel.tsx`. Edited: `patient-card.tsx` (Find bed, check code), `override-dialog.tsx` (name, flag preview), `token-card.tsx` (check code), dashboard and doctor pages (wiring), `store/queue.ts` (override payload), `voice-back.tsx` (see below) |
+| UI (B's folders) | New: `components/referral/*`, `components/dashboard/transparency-panel.tsx`, `components/doctor/stock-panel.tsx`. Edited: `patient-card.tsx` (Transfer?, check code), `override-dialog.tsx` (name, flag preview), `token-card.tsx` (check code), dashboard and doctor pages (wiring), `store/queue.ts` (override payload), `voice-back.tsx` (see below) |
 | Tests | `lib/__tests__/{referral,handover,pharmacy,overrides}.test.ts`, 31 new tests |
 
 ## Related fix
@@ -112,7 +113,7 @@ curl localhost:3000/api/facilities | jq '.data.facilities[] | [.short, .erLoad, 
 ```
 
 Manual check (verified in Chrome on 10 Oct 2026):
-1. **Dashboard:** RED card → **Find bed**. RIC is recommended, PIMS shows "cath lab busy". Press **Call ahead**: the AI letter appears, the number check passes, and the QR code renders. Enter a name, then **Sign**.
+1. **Dashboard:** RED card → **Transfer?**. RIC is recommended, PIMS shows "cath lab busy". Press **Call ahead**: the AI letter appears, the number check passes, and the QR code renders. Enter a name, then **Sign**.
 2. **Override** token 41 GREEN → RED, "VIP patient". The dialog previews 2 flags and the panel shows them. After two more GREEN upgrades by the same nurse, the pattern flag appears.
 3. **Doctor:** sample prescription → Klaricid out of stock → **Swap** to Claritek (saves Rs 644). The table and audit update.
 
