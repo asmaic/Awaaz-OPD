@@ -4,9 +4,11 @@ import path from "node:path";
 import type { AuditEntry } from "@/types/contracts";
 import { RULES_VERSION } from "@/lib/rules/rules";
 import { audit } from "@/lib/audit";
+import { WRITE_ROOT } from "@/lib/paths";
 
-const CACHE = path.join(process.cwd(), ".cache");
-const GOLDEN = path.join(CACHE, "golden"); // committed: the demo path must work from a fresh clone
+// Committed, read-only: the demo path must work from a fresh clone or a fresh deploy.
+const GOLDEN = path.join(process.cwd(), ".cache", "golden");
+const CACHE = path.join(WRITE_ROOT, ".cache");
 
 /** sha256(route | model | promptVersion | rulesVersion | input bytes…) */
 export function cacheKey(route: string, model: string, promptVersion: string, input: (string | Buffer)[]): string {
