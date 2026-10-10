@@ -7,8 +7,10 @@ import { OverridePayloadZ, type OverrideEvent, type OverrideFlag, type ReviewedO
 const rank = (l: TriageLevel) => TRIAGE_LEVELS.indexOf(l); // 0 = RED
 
 /** Reasons that describe a person, not a clinical finding. */
-const NON_CLINICAL = /\b(vip|sifarish|sifaarish|relative|rishtedar|friend|staff|colleague|request|reference|ref|mna|mpa|officer|minister|sahab|boss|important)\b/i;
+const NON_CLINICAL = /\b(vip|sifarish|sifaarish|relative|rishtedar|friend|colleague|mna|mpa|officer|minister|boss|important)\b/i;
 export const MIN_REASON = 15;
+/** Calendar day in the hospital's local time zone ("2026-10-10"), not UTC. */
+export const localDay = (ts: string | number) => new Date(ts).toLocaleDateString("en-CA");
 /** Upgrades of GREEN patients by one person in a day before it is flagged as a pattern. */
 export const PATTERN_THRESHOLD = 3;
 
@@ -45,7 +47,7 @@ export function reviewOverrides(events: OverrideEvent[]): ReviewedOverride[] {
   return events.map((ev) => {
     const flags = flagsFor(ev);
     if (ev.rulesLevel === "GREEN" && rank(ev.to) < rank("GREEN")) {
-      const k = `${ev.by.trim().toLowerCase()}|${ev.ts.slice(0, 10)}`;
+      const k = `${ev.by.trim().toLowerCase()}|${localDay(ev.ts)}`;
       const n = (greenUpsByDay.get(k) ?? 0) + 1;
       greenUpsByDay.set(k, n);
       if (n >= PATTERN_THRESHOLD) {

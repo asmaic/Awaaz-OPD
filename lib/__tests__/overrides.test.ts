@@ -81,3 +81,10 @@ describe("clinical reasons with everyday words are not flagged", () => {
       reason: "Known diabetic, family history of MI, now sweaty" })).toEqual([]);
   });
 });
+
+describe("NON_CLINICAL list (review note)", () => {
+  it("'staff nurse noticed…' style reasons are not flagged", () => {
+    expect(flagsFor({ id: "z", ts: "2026-10-10T01:00:00Z", patientId: "p", by: "Nurse Hina", from: "YELLOW", to: "ORANGE", rulesLevel: "YELLOW",
+      reason: "Staff nurse noticed new confusion, as per request of ward sahab on referral" })).toEqual([]);
+  });
+});

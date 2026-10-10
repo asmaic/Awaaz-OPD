@@ -73,3 +73,17 @@ describe("humanDuration", async () => {
     expect(humanDuration(undefined)).toBeUndefined();
   });
 });
+
+describe("complaintWords", async () => {
+  const { complaintWords } = await import("@/lib/handover");
+  it("drops greeting and 'I've come from' openers, keeps the complaint", () => {
+    expect(complaintWords("I've come from Pirwadhai. I've had fever for two days and my whole body aches."))
+      .toBe("I've had fever for two days and my whole body aches.");
+    expect(complaintWords("Doctor, I have severe chest pain going down to my left arm. It's been half an hour."))
+      .toBe("I have severe chest pain going down to my left arm. It's been half an hour.");
+    expect(complaintWords("I am from G-9. Fever for five days.")).toBe("Fever for five days.");
+  });
+  it("never returns empty", () => {
+    expect(complaintWords("I've come from Saddar.")).toBe("I've come from Saddar.");
+  });
+});

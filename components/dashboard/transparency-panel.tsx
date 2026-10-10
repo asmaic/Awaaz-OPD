@@ -2,7 +2,7 @@
 import { ArrowRight, Eye, ShieldAlert, ShieldCheck } from "lucide-react";
 import { LEVEL_META } from "@/components/triage";
 import { cn } from "@/lib/utils";
-import { overrideEvents, reviewOverrides } from "@/lib/overrides";
+import { localDay, overrideEvents, reviewOverrides } from "@/lib/overrides";
 import type { AuditEntry, Patient, TriageLevel } from "@/types/contracts";
 
 const Lvl = ({ l }: { l: TriageLevel }) => {
@@ -13,8 +13,8 @@ const Lvl = ({ l }: { l: TriageLevel }) => {
 
 /** Public "Priority changes today": every override, who made it and why, with automatic flags. Nothing is hidden. */
 export function TransparencyPanel({ audit, patients, now }: { audit: AuditEntry[]; patients: Patient[]; now: number }) {
-  const today = now ? new Date(now).toISOString().slice(0, 10) : null; // `now` is 0 until mounted
-  const reviewed = reviewOverrides(overrideEvents(audit, patients)).filter((r) => !today || r.ts.slice(0, 10) === today).reverse();
+  const today = now ? localDay(now) : null; // `now` is 0 until mounted
+  const reviewed = reviewOverrides(overrideEvents(audit, patients)).filter((r) => !today || localDay(r.ts) === today).reverse();
   const flagged = reviewed.filter((r) => r.flags.length).length;
 
   return (

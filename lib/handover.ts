@@ -63,6 +63,17 @@ export function unsupportedNumbers(sbar: Sbar, record: HandoverRecord): string[]
   return [...new Set(nums)].filter((n) => !source.includes(n));
 }
 
+/**
+ * The patient's words without greeting / "where I'm from" openers, which the letter reports separately
+ * (English counterpart of firstClause in components/dashboard/patient-card.tsx).
+ */
+export function complaintWords(en: string): string {
+  const sentences = en.trim().replace(/^[“"']|[”"']$/g, "").split(/(?<=[.!?])\s+/);
+  const opener = /^(doctor( sahib| sahab)?[,.!]?$|(i('ve| have) come|i('m| am)|i live|i'm coming) (here )?(from|in) )/i;
+  const kept = sentences.map((x) => x.replace(/^doctor( sahib| sahab)?,\s*/i, "")).filter((x) => x && !opener.test(x));
+  return (kept.length ? kept : sentences).join(" ");
+}
+
 const list = (xs: string[]) => (xs.length > 1 ? `${xs.slice(0, -1).join(", ")} and ${xs.at(-1)}` : xs[0] ?? "");
 
 /** Deterministic SBAR from the record — used when no AI answer is available, and in mock mode. */
@@ -74,7 +85,7 @@ export function templateSbar(r: HandoverRecord): Sbar {
     v.sbp !== undefined && `systolic BP ${v.sbp}`, v.rr !== undefined && `respiratory rate ${v.rr}`].filter(Boolean) as string[];
   const rules = r.triage.rules.filter((h) => h.id !== "R19");
   return {
-    situation: `${who}, triaged ${r.triage.level} at OPD. Main complaint: ${r.chief_complaint}. In their words: "${r.patient_words_en}"`,
+    situation: `${who}, triaged ${r.triage.level} at OPD. Main complaint: ${r.chief_complaint}. In their words: "${complaintWords(r.patient_words_en)}"`,
     background: [
       r.symptoms.length && `Reported symptoms: ${list(r.symptoms)}${r.duration ? ` for ${r.duration}` : ""}.`,
       vitals.length ? `Vitals recorded: ${list(vitals)}.` : "No vitals recorded at intake.",
