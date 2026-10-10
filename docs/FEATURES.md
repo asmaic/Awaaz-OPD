@@ -107,7 +107,7 @@ For any patient PIMS can handle (e.g. the dengue ORANGE case, even with the ER f
 ## Testing
 
 ```bash
-pnpm test            # all unit tests (98)
+pnpm test            # all unit tests (118)
 pnpm dev             # then:
 curl localhost:3000/api/facilities | jq '.data.facilities[] | [.short, .erLoad, .freeBeds, .busy]'
 ```
@@ -118,3 +118,76 @@ Manual check (verified in Chrome on 10 Oct 2026):
 3. **Doctor:** sample prescription → Klaricid out of stock → **Swap** to Claritek (saves Rs 644). The table and audit update.
 
 In demo mode (Alt+Shift+D) the facility board and pharmacy need no network at all. The handover note serves a cached rehearsal or the template.
+
+---
+
+## 11. Outbreak explorer (syndromic surveillance)
+
+**Problem.** Outbreaks (dengue every autumn, flu or COVID-like waves, diarrhoea from contaminated water) are spotted late, from paper registers, after they've spread.
+
+**How it works** (`lib/surveillance.ts`, pure and unit-tested):
+- **Case definitions, not diagnoses.** Patients are grouped the way WHO / Pakistan IDSR surveillance does, by symptoms:
+
+  | Syndrome | Definition (short) | Source |
+  |---|---|---|
+  | Suspected dengue | fever + ≥ 2 of aches, headache, retro-orbital pain, rash, vomiting, bleeding, abdominal pain, lethargy (or R09/R10/R17), **no cough** | WHO 2009 |
+  | Influenza-like illness | fever + cough, onset ≤ 10 days (flu, COVID-19…) | WHO ILI |
+  | SARI | ILI + breathlessness, low SpO2 or RED/ORANGE | WHO SARI |
+  | Acute watery diarrhoea | diarrhoea < 14 days | WHO / IDSR |
+  | Undifferentiated fever | fever without cough, diarrhoea or dengue signs. **Malaria and typhoid sit here**: they need a rapid test, not symptoms | IDSR AFI |
+
+- **Data.** A **synthetic** 28-day history (`fixtures/surveillance-history.json`, 367 cases from `pnpm gen:surveillance`, seeded). Every case runs through the real rules engine. The rows store "days ago", so the demo never goes stale. Today's live queue is added on top.
+- **Outbreak detection per locality.** This week's count vs the mean of the previous 3 weeks, as a **Poisson test** (minimum baseline 1.5/week so tiny areas don't false-alarm).
+  - **ALERT:** ≥ 4 cases and p < 0.005.
+  - **WATCH:** ≥ 3 cases and p < 0.05.
+  - Also reported: week-on-week growth, doubling time, age bands, sex split.
+- **On the synthetic data the detector finds exactly the planted events:**
+  - Dengue alerts in Dhok Hassu and Pirwadhai.
+  - A flu-like wave in G-9 / G-10 / G-11 (G-7 on watch).
+  - **No** alert for a diarrhoea cluster in Tench Bhata that ended two weeks ago.
+  - No false alarms for background fever.
+- **AI alert to the District Health Officer** (`lib/sitrep.ts`, `POST /api/sitrep`):
+  - Gemini writes the computed numbers up as an alert with recommended actions and a 1–2 line Urdu summary for community health workers.
+  - The draft is **rejected if it contains any number not in the facts**, then falls back to another model and finally a template.
+  - It says "suspected", never "confirmed".
+- **UI** (`/outbreaks`, `components/outbreaks/*`):
+  - Syndrome tabs with ALERT badges, stat tiles, a map (circle size = cases this week, colour + label = status, click to filter), an epidemic curve (hover any day), alerts with p-values, a by-locality table, recent cases (today's queue marked), the case definition and source, age bands.
+  - **Draft alert** button.
+- **From a patient:** `<SyndromeLinks patient={p} />` (`components/outbreaks/syndrome-link.tsx`) renders chips such as "Suspected dengue" that open `/outbreaks?syndrome=dengue&focus=<patientId>`. The patient's locality is outlined.
+
+**Found while testing live:** the model wrote "dengue" partly in **Malayalam and Bengali letters** inside the Urdu summary. The script guard now rejects **all Indic scripts** (U+0900–U+0DFF), not just Devanagari, for every Urdu output in the app.
+
+## 12. WhatsApp intake (viability: yes for WhatsApp, no for missed calls)
+
+**What works:** a patient sends a **voice note or text on WhatsApp** from home.
+1. Twilio calls `POST /api/whatsapp`.
+2. The message goes through the same extraction + rules pipeline.
+3. The patient gets a **fixed-text Urdu + English reply**, with no AI-written advice:
+   - Priority, plus what to do: RED → "come to the Emergency now or call 1122".
+   - A 4-character **counter code**.
+   - "This is triage, not a diagnosis".
+4. The case waits in a server inbox (`GET /api/remote-intake`). The dashboard pulls it into the queue with `useRemoteIntake()` (`components/remote/use-remote-intake.ts`).
+
+**Security and privacy:**
+- **Twilio signature verification** (HMAC-SHA1). Unsigned requests get 403 unless `WHATSAPP_ALLOW_UNSIGNED=true` is set for local testing.
+- Voice notes are downloaded **only from Twilio's own servers** (no SSRF).
+- Only a masked phone number (`••4567`) and a one-way hash are stored.
+- The reply is always 200 with a message, so the patient is never left without an answer.
+
+**Tested:**
+- Signed Urdu text (severe breathing) → RED/R04 reply with code.
+- Empty message → help reply.
+- Tampered signature → 403.
+- Non-Twilio media URL → refused with a polite fallback.
+- Inbox stores only the masked number.
+- *Not yet tested end to end with real Twilio:* that needs an account and a public URL.
+
+**To go live:**
+1. Create a free Twilio account → Messaging → WhatsApp **Sandbox**.
+2. Deploy, then set the sandbox's "When a message comes in" URL to `https://<deploy>/api/whatsapp`.
+3. Set `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN` and `WHATSAPP_WEBHOOK_URL`.
+4. Each phone sends the sandbox's one-time "join <code>" message.
+
+**Not viable in this event:**
+- **Missed-call intake.** Twilio doesn't sell Pakistani numbers, so patients would pay for an international call. Local missed-call services need a contract with a Pakistani telco.
+- **Production WhatsApp** (beyond the sandbox) needs Meta business verification, which takes days.

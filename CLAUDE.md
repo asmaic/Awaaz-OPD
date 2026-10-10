@@ -23,7 +23,7 @@ Next.js 16 (App Router, read AGENTS.md) + TypeScript strict + pnpm · Tailwind v
 - All AI calls live in `lib/ai/*`, always go through `lib/cache.ts`, and always write an `AuditEntry` via `lib/audit.ts`.
 - The LLM extracts; `lib/rules` decides triage. Never put triage logic in prompts or UI.
 - Read model IDs only from env (`GEMINI_MODEL`, `GEMINI_FALLBACK_MODEL`, `GEMINI_VISION_MODEL`, `GEMINI_TTS_MODEL`). Never call a "flash" (non-lite) model in loops — its free quota is ~20 requests/day.
-- Urdu output must be Perso-Arabic (Nastaliq) script; reject Devanagari with `/[ऀ-ॿ]/`.
+- Urdu output must be Perso-Arabic (Nastaliq) script; reject any Indic script with `/[\u0900-\u0DFF]/` (Devanagari through Sinhala; the model has mixed in Malayalam/Bengali letters).
 - Synthetic patient data only. Never log API keys.
 - Triage colours: RED `#DC2626`, ORANGE `#EA580C`, YELLOW `#CA8A04`, GREEN `#16A34A` (Tailwind: `bg-triage-red` etc.). Always pair colour with an icon and a text label.
 - Urdu text: use the `urdu` utility class (Nastaliq font, RTL, tall line-height).
@@ -39,6 +39,7 @@ lib/rules/*               engine, rules, __tests__                             (
 lib/{cache,audit,drugs,interactions,wav}.ts                                    (A)
 lib/mock.ts               `api` client, mock ↔ real switch                     (shared)
 lib/{referral,handover,pharmacy,overrides}.ts  add-on feature logic, pure      (A) — docs/FEATURES.md
+lib/{surveillance,sitrep,whatsapp}.ts  outbreak explorer + WhatsApp intake    (A) — docs/FEATURES.md §11–12
 types/features.ts         add-on feature types                                 (shared)
 app/api/*/route.ts        extract, transcribe, prescription, instructions, tts, audit, handover, facilities   (A)
 app/(screens)/*           intake, dashboard, doctor, audit                     (B)
@@ -48,7 +49,7 @@ scripts/                  eval, warm-cache, check-cache                        (
 ```
 
 ## Commands
-`pnpm dev` · `pnpm typecheck` · `pnpm lint` · `pnpm test` · `pnpm build` · `pnpm eval` · `pnpm warm` · `pnpm check-cache`
+`pnpm dev` · `pnpm demo` (production build, no hot reload: use for the live demo) · `pnpm typecheck` · `pnpm lint` · `pnpm test` · `pnpm build` · `pnpm eval` · `pnpm warm` · `pnpm check-cache`
 After a browser rehearsal: `pnpm warm --from-audit` promotes every AI answer it used into `.cache/golden` (commit it) so demo mode replays it offline.
 
 ## Tools
