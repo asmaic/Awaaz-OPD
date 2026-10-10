@@ -3,7 +3,9 @@ import { appendFile, mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import type { AuditEntry } from "@/types/contracts";
 
-const DIR = path.join(process.cwd(), ".data");
+import { WRITE_ROOT } from "@/lib/paths";
+
+const DIR = path.join(WRITE_ROOT, ".data");
 const FILE = path.join(DIR, "audit.jsonl");
 
 /** Append one event as a JSON line to .data/audit.jsonl. Never pass secrets or raw audio/image bytes. */

@@ -3,6 +3,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   cacheComponents: true,
+  // API routes read these at runtime with fs (golden demo answers, cases, golden fixtures); make sure deploys ship them.
+  outputFileTracingIncludes: { "/api/**/*": ["./.cache/golden/**/*", "./fixtures/**/*"] },
   partialPrefetching: true,
   reactCompiler: true,
   turbopack: {
