@@ -13,6 +13,8 @@ export const DEVANAGARI = /[\u0900-\u0DFF]/;
 /** Per-call timeouts before falling back. Vision and TTS are slower than text/audio extraction. */
 export const TIMEOUT_MS = 6000;
 const SLOW_TIMEOUT_MS = 15000;
+// Audio extraction measured 3.7–26 s for a 15 s clip; 15 s cut off a working fallback-model call on the live site.
+const AUDIO_TIMEOUT_MS = 25000;
 /** Counters read by scripts/eval.ts. */
 export const stats = { devanagariRetries: 0 };
 
@@ -68,12 +70,38 @@ export async function urduOnly<T>(call: () => Promise<T>, urdu: (t: T) => string
   return second;
 }
 
-const extract = (input: Part, model: string, timeoutMs = TIMEOUT_MS): Promise<Extraction> =>
-  urduOnly(async () => cleanExtraction(ExtractionZ.parse(await json(model, EXTRACTION_PROMPT, [input], extractionJsonSchema, timeoutMs))), (e) => e.transcript_ur);
+const STRICT_SCRIPT = `\nIMPORTANT: your previous answers wrote transcript_ur in Hindi/Devanagari or another Indian script. Write transcript_ur ONLY in Urdu Perso-Arabic letters (e.g. سینے میں درد), never Devanagari, Bengali or Gurmukhi.`;
+export const URDU_TRANSCRIPT_UNAVAILABLE = "(اردو متن دستیاب نہیں — انگریزی ترجمہ دیکھیں)";
 
-// Audio is slow: measured 3.7–26 s for a 15 s Urdu clip, so 6 s cut off working requests. Text stays at TIMEOUT_MS.
+/**
+ * Last resort when the transcript keeps coming back in the wrong script: keep the extraction (symptoms and translation
+ * drive triage, not the Urdu text), replace the transcript with a notice, ask the nurse to confirm, and cap confidence
+ * below 0.5 so rule R20 raises the priority one level. Uncertainty may only raise priority, never block the patient.
+ */
+export function withUnreadableTranscript(e: Extraction): Extraction {
+  return {
+    ...e,
+    transcript_ur: URDU_TRANSCRIPT_UNAVAILABLE,
+    missing_info: ["Urdu transcript unclear: please confirm the complaint with the patient.", ...e.missing_info].slice(0, 3),
+    confidence: Math.min(e.confidence, 0.49),
+  };
+}
+
+async function extract(input: Part, model: string, timeoutMs = TIMEOUT_MS): Promise<Extraction> {
+  const once = async (system: string) => cleanExtraction(ExtractionZ.parse(await json(model, system, [input], extractionJsonSchema, timeoutMs)));
+  try {
+    return await urduOnly(() => once(EXTRACTION_PROMPT), (e) => e.transcript_ur);
+  } catch (err) {
+    if (!(err instanceof ScriptError)) throw err;
+    // Seen live: the model wrote the transcript in an Indic script twice. One stricter try, then degrade, never fail.
+    const strict = await once(EXTRACTION_PROMPT + STRICT_SCRIPT);
+    return DEVANAGARI.test(strict.transcript_ur) ? withUnreadableTranscript(strict) : strict;
+  }
+}
+
+// Audio is slow (see AUDIO_TIMEOUT_MS). Text stays at TIMEOUT_MS.
 export const extractFromAudio = (b64: string, mime: string, model = env("GEMINI_MODEL")) =>
-  extract({ inlineData: { mimeType: baseMime(mime), data: b64 } }, model, SLOW_TIMEOUT_MS);
+  extract({ inlineData: { mimeType: baseMime(mime), data: b64 } }, model, AUDIO_TIMEOUT_MS);
 
 export const extractFromText = (text: string, model = env("GEMINI_MODEL")) =>
   extract({ text: `Patient said:\n${text}` }, model);

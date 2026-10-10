@@ -8,3 +8,6 @@ export const POST = (req: Request) =>
     const { data, meta } = await runExtraction(body, demo);
     return { data: { transcript_ur: data.transcript_ur, translation_en: data.translation_en } satisfies TranscribeRes, meta };
   });
+
+// Audio extraction can need a few retries (wrong-script transcripts, model fallback); allow up to 60 s on Vercel.
+export const maxDuration = 60;

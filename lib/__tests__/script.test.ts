@@ -46,3 +46,36 @@ describe("Indic-script guard covers more than Devanagari", async () => {
     expect(DEVANAGARI.test("ڈینگی سے بچاؤ کے لیے BP چیک کریں۔ 500 mg")).toBe(false);
   });
 });
+
+describe("unreadable transcript never blocks the patient", async () => {
+  const { withUnreadableTranscript, URDU_TRANSCRIPT_UNAVAILABLE, DEVANAGARI } = await import("@/lib/ai/gemini");
+  const { evaluate } = await import("@/lib/rules/engine");
+  const base = { transcript_ur: "सीने में दर्द", translation_en: "Chest pain to the arm, sweating", chief_complaint: "Chest pain", symptoms: ["chest_pain", "sweating", "arm_jaw_pain"] as const,
+    red_flags_mentioned: [], vitals: {}, suggested_department: "Medicine" as const, missing_info: ["Since when?"], confidence: 0.9, age_years: 55 };
+  it("keeps symptoms, swaps in an Urdu notice, asks the nurse, lowers confidence", () => {
+    const e = withUnreadableTranscript({ ...base, symptoms: [...base.symptoms] });
+    expect(e.transcript_ur).toBe(URDU_TRANSCRIPT_UNAVAILABLE);
+    expect(DEVANAGARI.test(e.transcript_ur)).toBe(false);
+    expect(e.missing_info[0]).toMatch(/confirm the complaint/);
+    expect(e.confidence).toBeLessThan(0.5);
+    expect(e.symptoms).toEqual(["chest_pain", "sweating", "arm_jaw_pain"]);
+  });
+  it("triage still runs, and uncertainty raises (never lowers) the level", () => {
+    const green = withUnreadableTranscript({ ...base, symptoms: ["cough"] });
+    expect(evaluate(green).level).toBe("YELLOW"); // GREEN escalated by R20
+    const red = withUnreadableTranscript({ ...base, symptoms: [...base.symptoms] });
+    expect(evaluate(red).level).toBe("RED");
+  });
+});
+
+describe("friendly errors", async () => {
+  const { friendlyError } = await import("@/lib/http");
+  it("hides internals when every AI path failed", () => {
+    const m = friendlyError("all AI paths failed — primary: model returned Indic script instead of Urdu (Perso-Arabic) twice | fallback-model: This operation was aborted");
+    expect(m).not.toMatch(/Indic|aborted|GROQ/);
+    expect(m).toMatch(/sample case/);
+  });
+  it("leaves other errors alone", () => {
+    expect(friendlyError("invalid request: text Required")).toBe("invalid request: text Required");
+  });
+});
