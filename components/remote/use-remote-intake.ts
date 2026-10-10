@@ -6,6 +6,7 @@ import type { ApiResult } from "@/types/contracts";
 import type { RemoteIntake } from "@/lib/whatsapp";
 
 const SEEN_KEY = "awaaz-remote-seen"; // last receivedAt pulled into this browser's queue
+let inFlight = false; // one poll at a time in this window
 
 /**
  * Polls /api/remote-intake and adds new WhatsApp patients to the queue (name shows the masked phone + counter code).
@@ -16,11 +17,21 @@ export function useRemoteIntake(intervalMs = 5000) {
     if (process.env.NEXT_PUBLIC_USE_MOCK === "true") return;
     let alive = true;
     const tick = async () => {
+      if (inFlight) return;
+      inFlight = true;
+      try { await pull(); } finally { inFlight = false; }
+    };
+    const pull = async () => {
       let after = "";
       try { after = localStorage.getItem(SEEN_KEY) ?? ""; } catch {}
       const r = (await fetch(`/api/remote-intake${after ? `?after=${encodeURIComponent(after)}` : ""}`).then((x) => x.json()).catch(() => null)) as ApiResult<RemoteIntake[]> | null;
       if (!alive || !r?.ok) return;
       for (const rec of r.data) {
+        // Another dashboard window (synced over BroadcastChannel) may already have added it: the counter code is unique.
+        if (useQueue.getState().patients.some((x) => x.name.endsWith(`· ${rec.code}`))) {
+          try { localStorage.setItem(SEEN_KEY, rec.receivedAt); } catch {}
+          continue;
+        }
         const p = useQueue.getState().addPatient({ name: `WhatsApp ${rec.phone} · ${rec.code}`, extraction: rec.extraction, triage: rec.triage });
         toast(`📱 WhatsApp patient · Token ${p.token}`, { description: `${rec.triage.level} · ${rec.extraction.chief_complaint} · code ${rec.code}` });
         try { localStorage.setItem(SEEN_KEY, rec.receivedAt); } catch {}

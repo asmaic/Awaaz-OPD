@@ -2,6 +2,7 @@
 // CASE DEFINITIONS, never by an AI diagnosis. Pure and deterministic; the AI only drafts the alert text.
 import type { Extraction, Symptom, TriageLevel } from "@/types/contracts";
 import history from "@/fixtures/surveillance-history.json";
+import { findLocality } from "@/lib/localities";
 
 export type SyndromeId = "dengue" | "ili" | "sari" | "awd" | "afi";
 
@@ -75,7 +76,8 @@ export const syndromesOf = (c: CaseRecord): SyndromeId[] => SYNDROMES.filter((s)
 export function fromPatient(p: { id: string; arrivedAt: string; extraction: Extraction; triage: { level: TriageLevel; hits: { id: string }[] }; override?: { level: TriageLevel } }): CaseRecord {
   const e = p.extraction;
   return {
-    id: p.id, ts: p.arrivedAt, locality: e.locality, age: e.age_years, sex: e.sex, symptoms: e.symptoms, durationDays: e.duration_days,
+    // Canonical name, so "ڈھوک حسو" or "Dhoke Hassu" from a live patient counts toward the same Dhok Hassu cluster as history.
+    id: p.id, ts: p.arrivedAt, locality: findLocality(e.locality)?.name ?? e.locality, age: e.age_years, sex: e.sex, symptoms: e.symptoms, durationDays: e.duration_days,
     level: p.override?.level ?? p.triage.level, ruleIds: p.triage.hits.map((h) => h.id), live: true,
   };
 }

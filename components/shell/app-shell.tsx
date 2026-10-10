@@ -91,6 +91,7 @@ const NAV = [
   { href: "/intake", label: "Intake", ur: "داخلہ" },
   { href: "/dashboard", label: "Queue board", ur: "قطار" },
   { href: "/doctor", label: "Doctor", ur: "ڈاکٹر" },
+  { href: "/outbreaks", label: "Outbreaks", ur: "وبا" },
   { href: "/audit", label: "Audit log", ur: "ریکارڈ" },
 ];
 

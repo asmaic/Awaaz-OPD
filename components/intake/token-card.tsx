@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { TriageBadge } from "@/components/triage";
 import { effectiveLevel } from "@/store/queue";
 import { tokenCode } from "@/lib/overrides";
+import { SyndromeLinks } from "@/components/outbreaks/syndrome-link";
 import type { Patient } from "@/types/contracts";
 
 /** Printable-style token slip shown after a patient joins the queue. */
@@ -30,6 +31,7 @@ export function TokenCard({ patient, onNext }: { patient: Patient; onNext: () =>
             <TriageBadge level={level} />
             <span className="flex items-center gap-1 text-muted-foreground"><Clock className="size-4" /> est. {patient.estWaitMin} min</span>
           </div>
+          <SyndromeLinks patient={patient} className="flex justify-center gap-1 print:hidden" />
           <p className="urdu text-xl text-muted-foreground">اپنی باری کا انتظار کریں، اسکرین پر نمبر دیکھیں۔</p>
           {level === "RED" && (
             <p className="rounded-md bg-triage-red/10 px-4 py-2 font-semibold text-triage-red">Emergency team has been notified</p>

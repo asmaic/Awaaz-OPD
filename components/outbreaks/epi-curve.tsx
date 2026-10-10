@@ -36,7 +36,7 @@ export function EpiCurve({ daily, label }: { daily: { date: string; count: numbe
               {d.count > 0 && (
                 <path
                   d={`M${x},${y(0)} V${y(d.count) + Math.min(4, bh)} q0,-${Math.min(4, bh)} ${Math.min(4, bh)},-${Math.min(4, bh)} H${x + bw - 2 - Math.min(4, bh)} q${Math.min(4, bh)},0 ${Math.min(4, bh)},${Math.min(4, bh)} V${y(0)} Z`}
-                  className={thisWeek ? "fill-teal-700 dark:fill-teal-400" : "fill-teal-300 dark:fill-teal-800"}
+                  className={thisWeek ? "fill-scrub" : "fill-scrub/35"}
                   opacity={hover === null || hover === i ? 1 : 0.55}
                 />
               )}

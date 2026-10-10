@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import { Ambulance, Check, Clock, Hand, Hospital, PhoneCall, Siren, Stethoscope } from "lucide-react";
 import { tokenCode } from "@/lib/overrides";
 import { LEVEL_META, ageSexLabel } from "@/components/triage";
+import { SyndromeLinks } from "@/components/outbreaks/syndrome-link";
 import { cn } from "@/lib/utils";
 import { effectiveLevel } from "@/store/queue";
 import type { Patient } from "@/types/contracts";
@@ -70,6 +71,7 @@ export const PatientCard = forwardRef<HTMLLIElement, Props>(function PatientCard
               {withDoc ? <><Stethoscope className="size-4 text-scrub" /> With doctor</> : <><Clock className="size-4 text-mute" /> {p.estWaitMin === 0 ? "Next" : `est. ${p.estWaitMin} min`}</>}
             </span>
             {p.erNotifiedAt && <span className="flex items-center gap-1 font-semibold text-triage-red"><Siren className="size-4" /> ER notified</span>}
+            <SyndromeLinks patient={p} className="flex gap-1" />
           </div>
         </div>
         <div className="flex w-32 flex-col justify-center gap-1">

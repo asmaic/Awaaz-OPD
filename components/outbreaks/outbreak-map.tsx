@@ -8,7 +8,7 @@ import { findLocality } from "@/lib/localities";
 const STATUS = {
   alert: { fill: "#DC2626", label: "⚠ ALERT" },
   watch: { fill: "#CA8A04", label: "◐ Watch" },
-  none: { fill: "#0f766e", label: "Usual level" },
+  none: { fill: "#1e5b52", label: "Usual level" },
 };
 
 /** One circle per locality: area ∝ cases this week; colour = status (always repeated as text in the tooltip). */
@@ -28,7 +28,7 @@ export default function OutbreakMap({ stats, focus, onPick }: { stats: LocalityS
             key={s.locality}
             center={[lat, lng]}
             radius={Math.max(5, 4 + Math.sqrt(s.thisWeek) * 5)}
-            pathOptions={{ color: isFocus ? "#111827" : "#ffffff", weight: isFocus ? 4 : 2, fillColor: st.fill, fillOpacity: s.thisWeek ? 0.7 : 0.25 }}
+            pathOptions={{ color: isFocus ? "#15201d" : "#ffffff", weight: isFocus ? 4 : 2, fillColor: st.fill, fillOpacity: s.thisWeek ? 0.7 : 0.25 }}
             eventHandlers={{ click: () => onPick(s.locality) }}
           >
             <Tooltip direction="top" permanent={!!isFocus}>

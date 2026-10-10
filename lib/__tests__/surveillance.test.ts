@@ -81,3 +81,13 @@ describe("analyse (synthetic 28-day history)", () => {
     expect(f.data_note).toMatch(/Synthetic/);
   });
 });
+
+describe("live patients join the canonical locality", () => {
+  it("maps Urdu and misspelt locality names to the fixture name", () => {
+    const base = { id: "x", arrivedAt: "2026-10-10T09:00:00+05:00", triage: { level: "ORANGE" as const, hits: [] } };
+    const ex = (locality: string) => ({ transcript_ur: "", translation_en: "", chief_complaint: "", symptoms: [], red_flags_mentioned: [], vitals: {},
+      suggested_department: "Medicine" as const, missing_info: [], confidence: 0.9, locality });
+    expect(fromPatient({ ...base, extraction: ex("ڈھوک حسو") }).locality).toBe("Dhok Hassu");
+    expect(fromPatient({ ...base, extraction: ex("Dhoke Hassu") }).locality).toBe("Dhok Hassu");
+  });
+});

@@ -17,7 +17,7 @@ export function SyndromeLinks({ patient, className }: { patient: Patient; classN
         <Link
           key={id}
           href={`/outbreaks?syndrome=${id}&focus=${encodeURIComponent(patient.id)}`}
-          className="inline-flex items-center gap-1 rounded-full border border-teal-600/40 bg-teal-50 px-2 py-0.5 text-xs font-semibold text-teal-800 hover:bg-teal-100 dark:bg-teal-950 dark:text-teal-300"
+          className="inline-flex items-center gap-1 rounded-[3px] border border-scrub/40 bg-scrub-tint px-1.5 py-0.5 font-mono text-[11px] font-semibold tracking-wide text-scrub uppercase transition-colors hover:bg-scrub hover:text-primary-foreground"
           title="See other patients with this syndrome and where it is spreading"
         >
           <Radar className="size-3.5" /> {SYNDROME[id].label}
