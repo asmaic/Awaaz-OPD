@@ -43,6 +43,5 @@ next-env.d.ts
 
 # awaaz
 .cache/*
-!.cache/golden
 .data
 /public/generated
