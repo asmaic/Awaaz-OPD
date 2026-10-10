@@ -28,7 +28,9 @@ PIMS Islamabad was built for 2,000–3,000 outpatients a day and now receives **
 | **4. Prescription reader** | Photo of a handwritten prescription | **Gemini vision** reads each medicine with a confidence per field and writes `[UNCLEAR]` instead of guessing; brand names are fuzzy-matched to generics | Editable table, drug-interaction alerts, pharmacy stock and cheaper same-generic substitutes. The doctor must confirm any unclear field. |
 | **5. Urdu voice-back** | Doctor-confirmed medicines only | **Gemini** writes simple Urdu instructions; **Gemini TTS** speaks them | Spoken + on-screen Urdu instructions |
 | **6. Treat here or transfer + handover** | RED/ORANGE patient | Rules keep the patient in our ER unless we lack, or are busy on, a service they need (or have no bed for an admission); a crowded ER alone never sends anyone away. Only then do rules pick the transfer hospital (service, travel from here, load, beds). **Gemini** drafts an SBAR handover letter, rejected if it adds any number not in the record | "Treat here", or "Stabilise here, then transfer to X" with the reason + route + signed, printable letter with QR |
-| **7. Accountability** | Every AI output, rule, override and confirmation | — | Audit log; a public "Priority changes today" panel flags queue-jumping |
+| **7. Outbreak explorer** | Every patient (28-day history + today) | **None for detection.** WHO/IDSR symptom case definitions + a per-locality Poisson outbreak test. **Gemini** drafts the alert to the District Health Officer, rejected if it adds any number | Click "Suspected dengue" on a patient → map, epidemic curve, alerting localities, doubling time, ready-to-send alert with an Urdu summary |
+| **8. WhatsApp intake** | Voice note or text from home | Same Gemini extraction + rules | Fixed Urdu/English reply with priority, "come now / call 1122" for RED, and a counter code; the patient joins the queue |
+| **9. Accountability** | Every AI output, rule, override and confirmation | — | Audit log; a public "Priority changes today" panel flags queue-jumping |
 
 **Design principle: the LLM extracts and drafts, rules decide, a clinician confirms.** The model never assigns the triage level, never picks the hospital and never finalises a prescription.
 
@@ -54,7 +56,8 @@ Run `pnpm eval` over **20 synthetic Urdu cases** (6 RED, 6 ORANGE, 4 YELLOW, 4 G
 | Symptom extraction precision / recall | **98% / 98%** |
 | Urdu returned in the wrong script | 0 retries needed |
 | Live latency (one call each) | voice/text → triage ≈ 1.5–2 s · prescription read < 10 s · Urdu speech ≈ 6–8 s · handover letter ≈ 3 s |
-| Automated tests | **98** (`pnpm test`): every triage rule with boundary cases, all 20 cases, drug matching, referral, handover, pharmacy, override flags |
+| Automated tests | **118** (`pnpm test`): every triage rule with boundary cases, all 20 cases, drug matching, referral, handover, pharmacy, override flags, outbreak case definitions + detection, WhatsApp signature and safety |
+| Outbreak detection (synthetic 28 days) | Flags exactly the planted events (dengue in Dhok Hassu/Pirwadhai, a flu-like wave in G-9/10/11); no alert for an ended diarrhoea cluster; no false alarms on background fever |
 
 *Caveat:* the cases are synthetic scripts written by the team and run as text. Recorded-audio accuracy has been spot-checked live, not benchmarked.
 
@@ -64,7 +67,8 @@ Run `pnpm eval` over **20 synthetic Urdu cases** (6 RED, 6 ORANGE, 4 YELLOW, 4 G
 - **Medication safety and cost:** unreadable fields are flagged instead of guessed, interactions are caught (e.g. clarithromycin + atorvastatin), and in-stock generics are suggested (demo: *Klaricid → Claritek saves Rs 644 per course*).
 - **Fair queues:** every override is public, with a name and a reason; vague reasons and patterns get flagged.
 - **Public health:** live dengue clusters by neighbourhood during the season.
-- **SDGs:** **3** (good health, universal health coverage), **10** (reduced inequalities: Urdu speakers and patients who can't fill forms), **16** (accountable institutions: transparent queues).
+- **Outbreaks:** dengue or flu-like clusters flagged by neighbourhood within days, with a ready-to-send alert to the district.
+- **SDGs:** **3** (good health, universal health coverage, **3.3** communicable disease and **3.d** early warning), **10** (reduced inequalities: Urdu speakers and patients who can't fill forms), **16** (accountable institutions: transparent queues).
 - **Adoption:** runs in a browser on one laptop per counter, with free-tier APIs. Saved answers keep it working through Wi-Fi drops.
 
 ## Try it (judges' walkthrough)
@@ -74,7 +78,8 @@ Open the live demo. Use two browser windows side by side: **/intake** and **/das
 3. **Dashboard →** **Transfer?** on the ORANGE dengue card → *"Treat here in the PIMS ER"*: our ER can handle it, even when it's crowded. Then **Transfer?** on the RED heart-attack card → *"Stabilise here, then transfer to Rawalpindi Institute of Cardiology"* because the PIMS cath lab is busy → **Call ahead + handover note** → **Sign**.
 4. **Dashboard →** **Override** a GREEN patient to RED with the reason *"VIP patient"*. It is flagged on **Priority changes today**.
 5. **Doctor →** **Call in** the RED patient → **Use the sample prescription** → type **14 days** for the unclear Risek field → note the interaction alert → **Swap** Klaricid for Claritek → **Confirm** → **Play in Urdu**.
-6. **Audit →** the full chain from voice to signed letter.
+6. **Outbreaks →** open **/outbreaks** (or click a patient's "Suspected dengue" chip): Dengue shows ALERT for Dhok Hassu and Pirwadhai → **Draft alert** to the District Health Officer. Switch to *Flu-like (ILI)* to see the G-sector wave.
+7. **Audit →** the full chain from voice to signed letter.
 
 Shortcuts: **Alt+Shift+D** demo mode (tiny dot in the footer), **Alt+Shift+R** reset the queue. The mic also works: hold the button and speak Urdu.
 
@@ -82,8 +87,9 @@ Shortcuts: **Alt+Shift+D** demo mode (tiny dot in the footer), **Alt+Shift+R** r
 ```bash
 pnpm install
 cp .env.example .env.local      # add GEMINI_API_KEY (and optionally GROQ_API_KEY)
-pnpm dev                        # http://localhost:3000
-pnpm test                       # 98 unit tests
+pnpm dev                        # http://localhost:3000 (development, hot reload)
+pnpm demo                       # production build + start: use this for the live demo
+pnpm test                       # 118 unit tests
 pnpm eval                       # 20-case triage evaluation
 pnpm check-cache                # confirms the demo works offline
 ```

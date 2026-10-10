@@ -25,3 +25,12 @@ describe("parseJson", async () => {
     expect(ExtractionZ.parse(e).age_years).toBeUndefined();
   });
 });
+
+describe("Indic-script guard covers more than Devanagari", async () => {
+  const { DEVANAGARI } = await import("@/lib/ai/gemini");
+  it("rejects Malayalam / Bengali mixed into Urdu (seen live), accepts clean Urdu", () => {
+    expect(DEVANAGARI.test("ڈെങ്കি سے بچاؤ")).toBe(true);
+    expect(DEVANAGARI.test("ডেঙ্গু")).toBe(true);
+    expect(DEVANAGARI.test("ڈینگی سے بچاؤ کے لیے BP چیک کریں۔ 500 mg")).toBe(false);
+  });
+});

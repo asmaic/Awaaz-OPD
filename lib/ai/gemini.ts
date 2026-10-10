@@ -5,9 +5,11 @@ import { EXTRACTION_PROMPT, INSTRUCTIONS_PROMPT, PRESCRIPTION_PROMPT } from "./p
 import { z } from "zod";
 import { ensureWav } from "@/lib/wav";
 import { SbarZ, type Sbar } from "@/types/features";
+import { SitrepZ, type Sitrep } from "@/lib/sitrep";
 
 export class ScriptError extends Error {}
-export const DEVANAGARI = /[ऀ-ॿ]/;
+// Any Indic script (Devanagari … Sinhala, U+0900–U+0DFF). Seen live: "dengue" came back partly in Malayalam + Bengali letters.
+export const DEVANAGARI = /[\u0900-\u0DFF]/;
 /** Per-call timeouts before falling back. Vision and TTS are slower than text/audio extraction. */
 export const TIMEOUT_MS = 6000;
 const SLOW_TIMEOUT_MS = 15000;
@@ -51,7 +53,7 @@ export async function urduOnly<T>(call: () => Promise<T>, urdu: (t: T) => string
   if (!DEVANAGARI.test(urdu(first))) return first;
   stats.devanagariRetries++;
   const second = await call();
-  if (DEVANAGARI.test(urdu(second))) throw new ScriptError("model returned Devanagari instead of Urdu script twice");
+  if (DEVANAGARI.test(urdu(second))) throw new ScriptError("model returned Indic script instead of Urdu (Perso-Arabic) twice");
   return second;
 }
 
@@ -105,4 +107,9 @@ export async function tts(text: string, voice = "Kore", model = env("GEMINI_TTS_
 /** SBAR handover draft. Validation + the "no new numbers" check happen in lib/pipeline.ts. */
 export async function handoverNote(record: unknown, system: string, model = env("GEMINI_MODEL")): Promise<Sbar> {
   return SbarZ.parse(await json(model, system, [{ text: JSON.stringify(record) }], z.toJSONSchema(SbarZ)));
+}
+
+/** Outbreak alert draft. The number check happens in lib/pipeline.ts. */
+export async function sitrepNote(facts: unknown, system: string, model = env("GEMINI_MODEL")): Promise<Sitrep> {
+  return urduOnly(async () => SitrepZ.parse(await json(model, system, [{ text: JSON.stringify(facts) }], z.toJSONSchema(SitrepZ))), (r) => r.urdu_summary);
 }

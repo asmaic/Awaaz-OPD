@@ -11,7 +11,9 @@
     "test": "vitest run",
     "eval": "tsx --env-file-if-exists=.env.local scripts/eval.ts",
     "warm": "tsx --env-file-if-exists=.env.local scripts/warm-cache.ts",
-    "check-cache": "tsx --env-file-if-exists=.env.local scripts/check-cache.ts"
+    "check-cache": "tsx --env-file-if-exists=.env.local scripts/check-cache.ts",
+    "demo": "next build && next start",
+    "gen:surveillance": "tsx scripts/gen-surveillance.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
