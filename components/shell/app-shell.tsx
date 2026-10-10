@@ -2,17 +2,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useSyncExternalStore } from "react";
-import { Activity, LayoutDashboard, Mic, Moon, ScrollText, Stethoscope, Sun } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { startQueueSync, useQueue } from "@/store/queue";
 
-const NAV = [
-  { href: "/intake", label: "Intake", icon: Mic },
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/doctor", label: "Doctor", icon: Stethoscope },
-  { href: "/audit", label: "Audit", icon: ScrollText },
-];
 
 /** True once the persisted store has been loaded from localStorage (client only). */
 export function useHydrated() {
@@ -74,7 +68,7 @@ function ThemeToggle() {
     <button
       type="button"
       onClick={() => applyTheme(!dark)}
-      className="grid size-10 place-items-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+      className="grid size-10 place-items-center self-center rounded-md text-white/60 transition-colors hover:bg-white/10 hover:text-white"
       aria-label="Toggle dark mode"
     >
       {dark ? <Sun className="size-5" /> : <Moon className="size-5" />}
@@ -82,19 +76,23 @@ function ThemeToggle() {
   );
 }
 
-export function Brand({ className }: { className?: string }) {
+export function Brand({ className, inverted = true }: { className?: string; inverted?: boolean }) {
   return (
-    <Link href="/" className={cn("flex items-center gap-2.5", className)}>
-      <span className="grid size-9 place-items-center rounded-xl bg-teal-600 text-white shadow-sm shadow-teal-600/30">
-        <Activity className="size-5" strokeWidth={2.5} />
-      </span>
-      <span className="leading-tight">
-        <span className="block text-lg font-bold tracking-tight">Awaaz OPD</span>
-        <span className="block text-xs text-muted-foreground">Har awaaz suni jaye</span>
-      </span>
+    <Link href="/" className={cn("group flex items-baseline gap-2", className)} aria-label="Awaaz OPD home">
+      <span className={cn("signage text-[2rem] font-extrabold uppercase", inverted ? "text-[#f2f4f1]" : "text-ink")}>Awaaz</span>
+      <span className={cn("signage rounded-[3px] px-1.5 py-0.5 text-base font-bold uppercase", inverted ? "bg-[#f2f4f1] text-[#15201d]" : "bg-ink text-paper")}>OPD</span>
+      <span className={cn("urdu text-lg leading-none", inverted ? "text-[#f2f4f1]/70" : "text-mute")}>آواز</span>
     </Link>
   );
 }
+
+/** Bilingual wayfinding, the way Pakistani hospital signs are written: English over Urdu. */
+const NAV = [
+  { href: "/intake", label: "Intake", ur: "داخلہ" },
+  { href: "/dashboard", label: "Queue board", ur: "قطار" },
+  { href: "/doctor", label: "Doctor", ur: "ڈاکٹر" },
+  { href: "/audit", label: "Audit log", ur: "ریکارڈ" },
+];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
@@ -102,24 +100,26 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <>
       <StoreSync />
-      <div className="flex min-h-dvh flex-col bg-slate-50 dark:bg-background">
-        <header className="sticky top-0 z-40 border-b bg-background/85 backdrop-blur-md">
-          <div className="mx-auto flex h-16 max-w-[1800px] items-center gap-6 px-6">
-            <Brand />
-            <nav className="flex flex-1 items-center gap-1">
-              {NAV.map(({ href, label, icon: Icon }) => {
+      <div className="flex min-h-dvh flex-col bg-background">
+        <header className="sticky top-0 z-40 bg-[#15201d] text-[#f2f4f1] dark:bg-[#0a100e]">
+          <div className="mx-auto flex h-16 max-w-[1800px] items-stretch gap-10 px-6">
+            <Brand className="self-center" />
+            <nav className="flex flex-1 items-stretch" aria-label="Screens">
+              {NAV.map(({ href, label, ur }) => {
                 const active = path?.startsWith(href);
                 return (
                   <Link
                     key={href}
                     href={href}
+                    aria-current={active ? "page" : undefined}
                     className={cn(
-                      "flex items-center gap-2 rounded-xl px-3.5 py-2 text-[15px] font-medium transition-colors",
-                      active ? "bg-foreground text-background" : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                      "relative flex flex-col justify-center border-l border-white/10 px-5 transition-colors last:border-r",
+                      active ? "bg-white/10 text-white" : "text-white/60 hover:bg-white/5 hover:text-white",
                     )}
                   >
-                    <Icon className="size-4" />
-                    {label}
+                    <span className="text-[15px] leading-tight font-semibold">{label}</span>
+                    <span className="urdu text-[13px] leading-[1.5] text-current/70" dir="rtl">{ur}</span>
+                    {active && <span className="absolute inset-x-0 bottom-0 h-[3px] bg-scrub dark:bg-scrub" />}
                   </Link>
                 );
               })}
@@ -128,11 +128,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
         <div className="flex flex-1 flex-col">{children}</div>
-        <footer className="flex items-center justify-between px-6 py-2 text-xs text-muted-foreground/70">
-          <span>Synthetic data only · AI extracts, rules decide, clinicians confirm</span>
+        <footer className="flex items-center justify-between border-t px-6 py-2 font-mono text-[11px] tracking-wide text-mute">
+          <span>SYNTHETIC DATA · AI EXTRACTS · RULES DECIDE · CLINICIANS CONFIRM</span>
           <span
             aria-label={demo ? "demo mode on" : undefined}
-            className={cn("size-1.5 rounded-full transition-colors", demo ? "bg-teal-500" : "bg-transparent")}
+            className={cn("size-1.5 rounded-full transition-colors", demo ? "bg-scrub" : "bg-transparent")}
           />
         </footer>
       </div>

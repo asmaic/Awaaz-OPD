@@ -90,21 +90,21 @@ export default function DoctorPage() {
   return (
     <main className="mx-auto w-full max-w-[1800px] flex-1 space-y-5 px-6 py-5">
       {/* Patient strip */}
-      <section className="flex flex-wrap items-center gap-4 rounded-2xl border bg-card px-5 py-4 shadow-sm">
-        <UserRound className="size-6 text-teal-600" />
+      <section className="flex flex-wrap items-center gap-4 rounded-lg border bg-card px-5 py-4 shadow-sm">
+        <UserRound className="size-6 text-scrub" />
         {!hydrated ? <Skeleton className="h-8 w-80" /> : patient ? (
           <>
             <select
               value={patient.id}
               onChange={(e) => setPickedId(e.target.value)}
               aria-label="Patient being seen"
-              className="h-11 rounded-xl border bg-background px-3 text-lg font-semibold"
+              className="h-11 rounded-md border bg-background px-3 text-lg font-semibold"
             >
               {active.map((p) => <option key={p.id} value={p.id}>Token {p.token} · {p.name}{p.status === "with_doctor" ? " (with doctor)" : ""}</option>)}
             </select>
             <TriageBadge level={effectiveLevel(patient)} />
             <span className="min-w-0 flex-1 truncate text-lg text-muted-foreground">{patient.extraction.chief_complaint}</span>
-            <Button variant="outline" className="h-11 rounded-xl" onClick={() => setReferOpen(true)}>
+            <Button variant="outline" className="h-11 rounded-md" onClick={() => setReferOpen(true)}>
               <Hospital className="size-4" /> Treat here or transfer?
             </Button>
           </>
@@ -113,37 +113,37 @@ export default function DoctorPage() {
 
       <div className="grid gap-5 lg:grid-cols-[minmax(340px,0.8fr)_minmax(0,1.4fr)]">
         {/* Left: capture / photo */}
-        <section className="space-y-3 rounded-2xl border bg-card p-5 shadow-sm">
+        <section className="space-y-3 rounded-lg border bg-card p-5 shadow-sm">
           <header className="flex items-center justify-between">
-            <h2 className="flex items-center gap-2 text-lg font-semibold"><FileScan className="size-5 text-teal-600" /> Prescription photo</h2>
-            {captured && <Button variant="ghost" className="rounded-xl" onClick={restart}><RotateCcw className="size-4" /> New photo</Button>}
+            <h2 className="flex items-center gap-2 text-lg font-semibold"><FileScan className="size-5 text-scrub" /> Prescription photo</h2>
+            {captured && <Button variant="ghost" className="rounded-md" onClick={restart}><RotateCcw className="size-4" /> New photo</Button>}
           </header>
           {captured ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={captured.previewUrl} alt="Captured prescription" className="max-h-[68vh] w-full rounded-xl border object-contain" />
+            <img src={captured.previewUrl} alt="Captured prescription" className="max-h-[68vh] w-full rounded-md border object-contain" />
           ) : (
             <CapturePanel onCapture={read} />
           )}
         </section>
 
         {/* Right: extraction & confirmation */}
-        <section className="space-y-4 rounded-2xl border bg-card p-5 shadow-sm">
+        <section className="space-y-4 rounded-lg border bg-card p-5 shadow-sm">
           <header className="flex items-center justify-between gap-3">
-            <h2 className="flex items-center gap-2 text-lg font-semibold"><ScanText className="size-5 text-teal-600" /> What the AI read</h2>
+            <h2 className="flex items-center gap-2 text-lg font-semibold"><ScanText className="size-5 text-scrub" /> What the AI read</h2>
             {rx && phase !== "confirmed" && (
-              <span className={unresolved ? "rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-800 dark:bg-amber-950 dark:text-amber-300" : "rounded-full bg-teal-100 px-3 py-1 text-sm font-medium text-teal-800 dark:bg-teal-950 dark:text-teal-300"}>
+              <span className={unresolved ? "rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-800 dark:bg-amber-950 dark:text-amber-300" : "rounded-full bg-scrub-tint px-3 py-1 text-sm font-medium text-scrub"}>
                 {unresolved ? `${unresolved} field${unresolved > 1 ? "s need" : " needs"} your review` : "All fields reviewed"}
               </span>
             )}
           </header>
 
           {phase === "capture" && (
-            <div className="grid h-72 place-items-center rounded-xl border border-dashed text-center text-muted-foreground">
+            <div className="grid h-72 place-items-center rounded-md border border-dashed text-center text-muted-foreground">
               <div>
                 <p className="text-lg">Capture or pick a prescription on the left.</p>
                 <button
                   type="button"
-                  className="mt-2 text-teal-700 underline-offset-4 hover:underline dark:text-teal-400"
+                  className="mt-2 text-scrub underline-offset-4 hover:underline"
                   onClick={async () => read(await urlToJpeg(SAMPLES[0].url, SAMPLES[0].caseId))}
                 >
                   Use the sample prescription
@@ -155,7 +155,7 @@ export default function DoctorPage() {
           {phase === "reading" && (
             <div className="space-y-3">
               <p className="flex items-center gap-2 text-muted-foreground"><Loader2 className="size-4 animate-spin" /> Reading handwriting, matching brands, checking interactions…</p>
-              {[0, 1, 2].map((i) => <Skeleton key={i} className="h-16 rounded-xl" />)}
+              {[0, 1, 2].map((i) => <Skeleton key={i} className="h-16 rounded-md" />)}
             </div>
           )}
 
@@ -180,7 +180,7 @@ export default function DoctorPage() {
                   <Button
                     onClick={confirm}
                     disabled={!!unresolved || phase === "confirming"}
-                    className="h-12 rounded-xl bg-teal-600 px-5 text-base text-white hover:bg-teal-700"
+                    className="h-12 rounded-md bg-scrub px-5 text-base text-white hover:bg-scrub-deep"
                   >
                     {phase === "confirming" ? <Loader2 className="size-5 animate-spin" /> : <CheckCheck className="size-5" />}
                     Confirm prescription

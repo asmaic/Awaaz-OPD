@@ -22,9 +22,9 @@ export function IntakeResult({ res, meta, onAdd, onReset }: { res: ExtractRes; m
   return (
     <div className="grid gap-6 lg:grid-cols-[1.15fr_1fr]">
       {/* What the patient said */}
-      <section className="space-y-5 rounded-2xl border bg-card p-6 shadow-sm">
+      <section className="space-y-5 rounded-lg border bg-card p-6 shadow-sm">
         <header className="flex items-center justify-between gap-3">
-          <h2 className="flex items-center gap-2 text-lg font-semibold"><Languages className="size-5 text-teal-600" /> What the patient said</h2>
+          <h2 className="flex items-center gap-2 text-lg font-semibold"><Languages className="size-5 text-scrub" /> What the patient said</h2>
           <span className="flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground">
             <Cpu className="size-3.5" /> {meta.model ?? "model"} · {meta.cached ? "cached" : `${meta.ms} ms`}{meta.fallback ? ` · fallback: ${meta.fallback}` : ""}
           </span>
@@ -32,7 +32,7 @@ export function IntakeResult({ res, meta, onAdd, onReset }: { res: ExtractRes; m
         <Typewriter key={e.transcript_ur} text={e.transcript_ur} onDone={onTyped} className="urdu min-h-20 text-[1.7rem] text-foreground" />
         {typed && (
           <>
-            <motion.p {...fade(0)} className="border-l-4 border-teal-600/40 pl-4 text-lg text-muted-foreground italic">
+            <motion.p {...fade(0)} className="border-l-4 border-scrub pl-4 text-lg text-muted-foreground italic">
               “{e.translation_en}”
             </motion.p>
             <motion.div {...fade(0.1)} className="flex flex-wrap gap-2">
@@ -46,7 +46,7 @@ export function IntakeResult({ res, meta, onAdd, onReset }: { res: ExtractRes; m
               ))}
             </motion.div>
             {e.missing_info.length > 0 && (
-              <motion.div {...fade(0.2)} className="rounded-xl bg-amber-50 p-4 dark:bg-amber-950/40">
+              <motion.div {...fade(0.2)} className="rounded-md bg-amber-50 p-4 dark:bg-amber-950/40">
                 <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-amber-800 dark:text-amber-300">
                   <ClipboardList className="size-4" /> Nurse, please ask:
                 </div>
@@ -67,7 +67,7 @@ export function IntakeResult({ res, meta, onAdd, onReset }: { res: ExtractRes; m
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ type: "spring", stiffness: 400, damping: 30, delay: 0.3 }}
-          className={cn("flex flex-col gap-5 rounded-2xl border-2 bg-card p-6 shadow-lg", m.border)}
+          className={cn("flex flex-col gap-5 rounded-lg border-2 bg-card p-6 shadow-sm", m.border)}
         >
           <div className="flex flex-wrap items-center justify-between gap-3">
             <TriageBadge level={t.level} size="xl" />
@@ -76,11 +76,11 @@ export function IntakeResult({ res, meta, onAdd, onReset }: { res: ExtractRes; m
             </span>
           </div>
           <div className="grid grid-cols-2 gap-3 text-base">
-            <div className="rounded-xl bg-muted/60 p-3">
+            <div className="rounded-md bg-muted/60 p-3">
               <div className="text-xs text-muted-foreground uppercase">Department</div>
               <div className="flex items-center gap-2 font-semibold"><Building2 className="size-4" />{e.suggested_department}</div>
             </div>
-            <div className="rounded-xl bg-muted/60 p-3">
+            <div className="rounded-md bg-muted/60 p-3">
               <div className="text-xs text-muted-foreground uppercase">Patient</div>
               <div className="font-semibold">{e.age_years !== undefined ? `${e.age_years < 1 ? `${Math.round(e.age_years * 12)} mo` : `${e.age_years} y`}` : "age ?"} · {e.sex ?? "?"}</div>
             </div>
@@ -99,10 +99,10 @@ export function IntakeResult({ res, meta, onAdd, onReset }: { res: ExtractRes; m
                 value={name}
                 onChange={(ev) => setName(ev.target.value)}
                 placeholder="Patient name (optional)"
-                className="h-12 w-full rounded-xl border bg-background pr-3 pl-9 text-base outline-none focus:ring-3 focus:ring-teal-600/30"
+                className="h-12 w-full rounded-md border bg-background pr-3 pl-9 text-base outline-none focus:ring-3 focus:ring-scrub/30"
               />
             </label>
-            <Button type="submit" className="h-12 rounded-xl bg-teal-600 px-5 text-base text-white hover:bg-teal-700">
+            <Button type="submit" className="h-12 rounded-md bg-scrub px-5 text-base text-white hover:bg-scrub-deep">
               <Plus className="size-5" /> Add to queue
             </Button>
           </form>

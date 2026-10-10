@@ -64,46 +64,57 @@ export default function DashboardPage() {
   }, [patients, hydrated]);
 
   return (
-    <main className="mx-auto grid w-full max-w-[1800px] flex-1 grid-rows-[auto_1fr] gap-5 px-6 py-5 text-lg">
-      {/* Header */}
-      <header className="flex flex-wrap items-center gap-x-8 gap-y-3 rounded-2xl border bg-card px-6 py-4 shadow-sm">
-        <div className="min-w-0">
-          <h1 className="text-2xl font-bold tracking-tight">PIMS Medicine OPD <span className="font-normal text-muted-foreground">— demo</span></h1>
-          <p className="h-7 text-base text-muted-foreground tabular-nums">
-            {hydrated && now > 0 && <>
-              {new Date(now).toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" })} ·{" "}
-              {new Date(now).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
-            </>}
-          </p>
+    <main className="mx-auto grid w-full max-w-[1800px] flex-1 grid-rows-[auto_1fr] gap-6 px-6 py-6 text-lg">
+      {/* Board header: department sign, tally per level, clock */}
+      <header className="grid items-end gap-x-10 gap-y-4 border-b-2 border-ink pb-4 lg:grid-cols-[auto_1fr_auto]">
+        <div>
+          <div className="register-label">PIMS Islamabad · demo</div>
+          <h1 className="signage text-6xl font-extrabold uppercase">Medicine OPD</h1>
+          <div className="urdu text-lg leading-[1.8] text-mute">شعبہ طب · قطار</div>
         </div>
-        <ul className="flex flex-1 flex-wrap items-center gap-2">
+
+        <ul className="flex items-stretch self-stretch" aria-label="Patients waiting by level">
           {TRIAGE_LEVELS.map((l) => {
             const m = LEVEL_META[l];
             const Icon = m.icon;
             return (
-              <li key={l} className={cn("flex items-center gap-2 rounded-xl px-3 py-2", m.soft)}>
-                <Icon className={cn("size-5", m.text)} />
-                <span className={cn("font-semibold", m.text)}>{m.label}</span>
-                <span className="text-2xl font-bold tabular-nums">{hydrated ? counts[l] : "–"}</span>
+              <li key={l} className="flex min-w-24 flex-col justify-end border-l px-4 first:border-l-0">
+                <span className={cn("mb-auto h-1.5 w-full rounded-[1px]", m.bg)} />
+                <span className={cn("mt-2 flex items-center gap-1 font-mono text-[11px] font-semibold tracking-[0.12em] uppercase", m.text)}><Icon className="size-3.5" />{m.label}</span>
+                <span className="signage text-5xl font-extrabold tabular-nums">{hydrated ? counts[l] : "–"}</span>
               </li>
             );
           })}
-          <li className="flex items-center gap-2 px-2 text-muted-foreground"><Users className="size-5" /> {hydrated ? queue.length : "–"} in queue</li>
+          <li className="flex min-w-24 flex-col justify-end border-l px-4">
+            <span className="mt-2 flex items-center gap-1 font-mono text-[11px] font-semibold tracking-[0.12em] text-mute uppercase"><Users className="size-3.5" />Waiting</span>
+            <span className="signage text-5xl font-extrabold tabular-nums">{hydrated ? queue.length : "–"}</span>
+          </li>
         </ul>
-        <label className="flex w-64 items-center gap-3">
-          <Stethoscope className="size-5 shrink-0 text-teal-600" />
-          <span className="shrink-0 text-base whitespace-nowrap">Doctors <b className="font-mono">{doctors}</b></span>
-          <Slider min={1} max={8} step={1} value={[doctors]} onValueChange={(v) => setDoctorsOnDuty(Array.isArray(v) ? v[0] : v)} />
-        </label>
+
+        <div className="flex flex-col items-end gap-2">
+          <div className="text-right">
+            <div className="signage h-12 text-5xl font-extrabold tabular-nums">
+              {hydrated && now > 0 && new Date(now).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+            </div>
+            <div className="h-4 font-mono text-[11px] tracking-[0.12em] text-mute uppercase">
+              {hydrated && now > 0 && new Date(now).toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" })}
+            </div>
+          </div>
+          <label className="flex w-60 items-center gap-3">
+            <Stethoscope className="size-4 shrink-0 text-scrub" />
+            <span className="register-label shrink-0">Doctors <b className="text-ink">{doctors}</b></span>
+            <Slider min={1} max={8} step={1} value={[doctors]} onValueChange={(v) => setDoctorsOnDuty(Array.isArray(v) ? v[0] : v)} />
+          </label>
+        </div>
       </header>
 
       <div className="grid min-h-0 gap-5 lg:grid-cols-[minmax(0,1fr)_380px] 2xl:grid-cols-[minmax(0,1fr)_460px]">
         {/* Queue */}
         <section className="min-h-0">
           {!hydrated ? (
-            <div className="space-y-3">{[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-28 rounded-2xl" />)}</div>
+            <div className="space-y-3">{[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-28 rounded-lg" />)}</div>
           ) : queue.length === 0 ? (
-            <div className="grid h-64 place-items-center rounded-2xl border border-dashed text-muted-foreground">
+            <div className="grid h-64 place-items-center rounded-lg border border-dashed text-muted-foreground">
               Queue is empty. New patients from Intake appear here instantly.
             </div>
           ) : (
@@ -130,16 +141,16 @@ export default function DashboardPage() {
 
         {/* Side panel */}
         <aside className="flex flex-col gap-5">
-          <div className="overflow-hidden rounded-2xl border bg-card shadow-sm">
-            <div className="flex items-center justify-between px-4 py-3">
-              <h2 className="flex items-center gap-2 text-base font-semibold"><MapPin className="size-5 text-triage-orange" /> Suspected dengue · twin cities</h2>
-              <span className="rounded-full bg-muted px-2 py-0.5 text-sm">{hydrated ? denguePins.length : 0}</span>
+          <div className="overflow-hidden rounded-md border bg-card">
+            <div className="flex items-baseline justify-between border-b px-4 py-2.5">
+              <h2 className="register-label flex items-center gap-1.5"><MapPin className="size-3.5 text-triage-orange" /> Suspected dengue · twin cities</h2>
+              <span className="signage text-2xl font-extrabold tabular-nums">{hydrated ? denguePins.length : 0}</span>
             </div>
             <div className="relative z-0 h-72 2xl:h-96">{hydrated && <DengueMap patients={denguePins} />}</div>
           </div>
-          <div className="rounded-2xl border bg-card p-4 shadow-sm">
-            <h2 className="mb-2 flex items-center gap-2 text-base font-semibold"><Activity className="size-5 text-teal-600" /> Recent AI activity</h2>
-            {hydrated && <ActivityFeed entries={audit} patients={patients} />}
+          <div className="rounded-md border bg-card">
+            <h2 className="register-label flex items-center gap-1.5 border-b px-4 py-2.5"><Activity className="size-3.5 text-scrub" /> Recent activity</h2>
+            <div className="p-2">{hydrated && <ActivityFeed entries={audit} patients={patients} />}</div>
           </div>
           {hydrated && <TransparencyPanel audit={audit} patients={patients} now={now} />}
         </aside>

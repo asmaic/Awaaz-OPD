@@ -20,7 +20,7 @@ export function Typewriter({ text, className, msPerWord = 70, onDone }: { text: 
   return (
     <p className={className}>
       {words.slice(0, n).join("")}
-      {!finished && <span className="ms-1 inline-block h-[1em] w-0.5 animate-pulse bg-teal-600 align-middle" />}
+      {!finished && <span className="ms-1 inline-block h-[1em] w-0.5 animate-pulse bg-scrub align-middle" />}
     </p>
   );
 }

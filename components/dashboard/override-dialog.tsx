@@ -27,7 +27,7 @@ export function OverrideDialog({ patient, onClose }: { patient: Patient | null; 
 
   return (
     <Dialog open={!!patient} onOpenChange={(o) => !o && close()}>
-      <DialogContent className="rounded-2xl p-6 sm:max-w-lg">
+      <DialogContent className="rounded-lg p-6 sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="text-xl">Override triage · Token {patient?.token}</DialogTitle>
           <DialogDescription className="text-base">
@@ -44,7 +44,7 @@ export function OverrideDialog({ patient, onClose }: { patient: Patient | null; 
                 type="button"
                 onClick={() => setLevel(l)}
                 className={cn(
-                  "flex flex-col items-center gap-1 rounded-xl border-2 p-3 text-sm font-semibold transition-all",
+                  "flex flex-col items-center gap-1 rounded-md border-2 p-3 text-sm font-semibold transition-all",
                   chosen === l ? cn(m.bg, "border-transparent text-white shadow-md") : "hover:bg-muted",
                 )}
               >
@@ -61,7 +61,7 @@ export function OverrideDialog({ patient, onClose }: { patient: Patient | null; 
             onChange={(e) => setReason(e.target.value)}
             rows={3}
             placeholder="e.g. Patient looks pale and drowsy on re-assessment"
-            className="rounded-xl border bg-background p-3 text-base outline-none focus:ring-3 focus:ring-teal-600/30"
+            className="rounded-md border bg-background p-3 text-base outline-none focus:ring-3 focus:ring-scrub/30"
           />
         </label>
         <label className="grid gap-1.5">
@@ -70,11 +70,11 @@ export function OverrideDialog({ patient, onClose }: { patient: Patient | null; 
             value={by}
             onChange={(e) => setBy(e.target.value)}
             placeholder="e.g. Nurse Ayesha or Dr. Bilal"
-            className="h-11 rounded-xl border bg-background px-3 text-base outline-none focus:ring-3 focus:ring-teal-600/30"
+            className="h-11 rounded-md border bg-background px-3 text-base outline-none focus:ring-3 focus:ring-scrub/30"
           />
         </label>
         {flags.length > 0 && (
-          <div role="status" className="flex gap-2 rounded-xl border border-amber-400 bg-amber-50 p-3 text-sm text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
+          <div role="status" className="flex gap-2 rounded-md border border-amber-400 bg-amber-50 p-3 text-sm text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
             <ShieldAlert className="mt-0.5 size-4 shrink-0" />
             <div>
               <div className="font-semibold">This change will be flagged on the public “Priority changes” panel:</div>
@@ -83,9 +83,9 @@ export function OverrideDialog({ patient, onClose }: { patient: Patient | null; 
           </div>
         )}
         <DialogFooter className="-mx-6 -mb-6 rounded-b-2xl p-4">
-          <Button variant="outline" className="h-10 rounded-xl" onClick={close}>Cancel</Button>
+          <Button variant="outline" className="h-10 rounded-md" onClick={close}>Cancel</Button>
           <Button
-            className="h-10 rounded-xl bg-teal-600 text-white hover:bg-teal-700"
+            className="h-10 rounded-md bg-scrub text-white hover:bg-scrub-deep"
             disabled={!valid}
             onClick={() => { if (patient && chosen) { override(patient.id, chosen, reason, by.trim()); close(); } }}
           >

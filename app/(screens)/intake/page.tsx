@@ -123,8 +123,8 @@ export default function IntakePage() {
                 onClick={onClick}
                 aria-label={recorder.recording ? "Stop recording" : "Start recording"}
                 className={cn(
-                  "relative grid size-48 touch-none place-items-center rounded-full text-white shadow-2xl transition-all duration-300 select-none",
-                  recorder.recording ? "scale-105 bg-triage-red shadow-triage-red/40" : "bg-teal-600 shadow-teal-600/40 hover:scale-105 hover:bg-teal-700",
+                  "relative grid size-48 touch-none place-items-center rounded-full text-white shadow-sm transition-all duration-300 select-none",
+                  recorder.recording ? "scale-105 bg-triage-red shadow-triage-red/40" : "bg-scrub  hover:scale-105 hover:bg-scrub-deep",
                 )}
               >
                 {recorder.recording ? <Square className="size-16 fill-current" /> : <Mic className="size-20" strokeWidth={1.75} />}
@@ -142,12 +142,12 @@ export default function IntakePage() {
               <button
                 type="button"
                 onClick={() => fileRef.current?.click()}
-                className="flex h-12 items-center gap-2 rounded-xl border bg-card px-4 text-base font-medium shadow-sm hover:bg-muted"
+                className="flex h-12 items-center gap-2 rounded-md border bg-card px-4 text-base font-medium shadow-sm hover:bg-muted"
               >
                 <Upload className="size-4" /> Upload clip
               </button>
               <input ref={fileRef} type="file" accept="audio/*" hidden onChange={(e) => onUpload(e.target.files?.[0])} />
-              <div className="flex h-12 items-center overflow-hidden rounded-xl border bg-card shadow-sm">
+              <div className="flex h-12 items-center overflow-hidden rounded-md border bg-card shadow-sm">
                 <select
                   value={sample}
                   onChange={(e) => setSample(e.target.value)}

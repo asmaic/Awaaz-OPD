@@ -18,19 +18,20 @@ export function TransparencyPanel({ audit, patients, now }: { audit: AuditEntry[
   const flagged = reviewed.filter((r) => r.flags.length).length;
 
   return (
-    <div className="rounded-2xl border bg-card p-4 shadow-sm">
-      <div className="mb-2 flex items-center justify-between gap-2">
-        <h2 className="flex items-center gap-2 text-base font-semibold"><Eye className="size-5 text-teal-600" /> Priority changes today</h2>
-        <span className={cn("rounded-full px-2 py-0.5 text-sm", flagged ? "bg-amber-100 font-semibold text-amber-800 dark:bg-amber-950 dark:text-amber-300" : "bg-muted")}>
+    <div className="rounded-md border bg-card">
+      <div className="flex items-center justify-between gap-2 border-b px-4 py-2.5">
+        <h2 className="register-label flex items-center gap-1.5"><Eye className="size-3.5 text-scrub" /> Priority changes today</h2>
+        <span className={cn("rounded-[3px] px-1.5 py-0.5 font-mono text-[11px] tracking-wide uppercase", flagged ? "bg-amber-100 font-semibold text-amber-800 dark:bg-amber-950 dark:text-amber-300" : "bg-muted text-mute")}>
           {reviewed.length} change{reviewed.length === 1 ? "" : "s"}{flagged ? ` · ${flagged} flagged` : ""}
         </span>
       </div>
+      <div className="p-3">
       {reviewed.length === 0 ? (
-        <p className="flex items-center gap-2 text-sm text-muted-foreground"><ShieldCheck className="size-4 text-teal-600" /> No overrides today. Queue order is exactly what the rules decided.</p>
+        <p className="flex items-center gap-2 text-sm text-muted-foreground"><ShieldCheck className="size-4 text-scrub" /> No overrides today. Queue order is exactly what the rules decided.</p>
       ) : (
         <ul className="max-h-72 space-y-2 overflow-y-auto">
           {reviewed.map((r) => (
-            <li key={r.id} className={cn("rounded-xl border p-2.5 text-sm", r.flags.some((f) => f.severity === "high") ? "border-triage-red/50 bg-triage-red/5" : r.flags.length ? "border-amber-400/60 bg-amber-50/60 dark:bg-amber-950/30" : "")}>
+            <li key={r.id} className={cn("rounded-md border p-2.5 text-sm", r.flags.some((f) => f.severity === "high") ? "border-triage-red/50 bg-triage-red/5" : r.flags.length ? "border-amber-400/60 bg-amber-50/60 dark:bg-amber-950/30" : "")}>
               <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                 <span className="font-semibold">Token {r.token ?? "?"}</span>
                 <Lvl l={r.from} /><ArrowRight className="size-3.5 text-muted-foreground" /><Lvl l={r.to} />
@@ -48,6 +49,7 @@ export function TransparencyPanel({ audit, patients, now }: { audit: AuditEntry[
           ))}
         </ul>
       )}
+      </div>
     </div>
   );
 }

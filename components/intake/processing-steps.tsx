@@ -25,9 +25,9 @@ export function ProcessingSteps({ current }: { current: number }) {
                 animate={active ? { scale: [1, 1.08, 1] } : { scale: 1 }}
                 transition={active ? { repeat: Infinity, duration: 1.1 } : { duration: 0.2 }}
                 className={cn(
-                  "grid size-14 place-items-center rounded-2xl border-2 transition-colors duration-300",
-                  done && "border-teal-600 bg-teal-600 text-white",
-                  active && "border-teal-600 bg-teal-50 text-teal-700 dark:bg-teal-950 dark:text-teal-300",
+                  "grid size-14 place-items-center rounded-lg border-2 transition-colors duration-300",
+                  done && "border-scrub bg-scrub text-white",
+                  active && "border-scrub bg-scrub-tint text-scrub",
                   !done && !active && "border-border text-muted-foreground",
                 )}
               >
@@ -38,7 +38,7 @@ export function ProcessingSteps({ current }: { current: number }) {
           );
         })}
       </ol>
-      <div className="grid gap-4 rounded-2xl border bg-card p-6 shadow-sm">
+      <div className="grid gap-4 rounded-lg border bg-card p-6 shadow-sm">
         <Skeleton className="ml-auto h-8 w-3/4" />
         <Skeleton className="ml-auto h-8 w-1/2" />
         <Skeleton className="h-5 w-2/3" />

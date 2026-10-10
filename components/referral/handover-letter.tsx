@@ -39,7 +39,7 @@ export function HandoverLetter({ patient, note, facility }: { patient: Patient; 
         .awaaz-letter { position: fixed; inset: 0; padding: 24px; background: white; color: black; }
         .awaaz-no-print { display: none !important; }
       }`}</style>
-      <article className="awaaz-letter space-y-3 rounded-xl border bg-background p-5 text-base">
+      <article className="awaaz-letter space-y-3 rounded-md border bg-background p-5 text-base">
         <header className="flex items-start justify-between gap-4 border-b pb-3">
           <div>
             <div className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">PIMS Medicine OPD · Referral / handover</div>
@@ -58,7 +58,7 @@ export function HandoverLetter({ patient, note, facility }: { patient: Patient; 
         <p className="urdu rounded-lg bg-muted/60 px-3 text-lg" dir="rtl">{e.transcript_ur}</p>
         {SECTIONS.map(([k, label]) => (
           <section key={k}>
-            <h4 className="text-xs font-bold tracking-widest text-teal-700 uppercase dark:text-teal-400">{label}</h4>
+            <h4 className="text-xs font-bold tracking-widest text-scrub uppercase">{label}</h4>
             <p className="leading-relaxed">{note.sbar[k]}</p>
           </section>
         ))}
@@ -73,13 +73,13 @@ export function HandoverLetter({ patient, note, facility }: { patient: Patient; 
         {!signedAt && (
           <>
             <input value={signer} onChange={(ev) => setSigner(ev.target.value)} placeholder="Doctor's name" aria-label="Doctor's name"
-              className="h-10 w-56 rounded-xl border bg-background px-3 outline-none focus:ring-3 focus:ring-teal-600/30" />
-            <Button className="h-10 rounded-xl bg-teal-600 text-white hover:bg-teal-700" disabled={signer.trim().length < 2} onClick={sign}>
+              className="h-10 w-56 rounded-md border bg-background px-3 outline-none focus:ring-3 focus:ring-scrub/30" />
+            <Button className="h-10 rounded-md bg-scrub text-white hover:bg-scrub-deep" disabled={signer.trim().length < 2} onClick={sign}>
               <PenLine className="size-4" /> Sign
             </Button>
           </>
         )}
-        <Button variant="outline" className="h-10 rounded-xl" onClick={() => window.print()}><Printer className="size-4" /> Print</Button>
+        <Button variant="outline" className="h-10 rounded-md" onClick={() => window.print()}><Printer className="size-4" /> Print</Button>
       </div>
     </div>
   );

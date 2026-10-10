@@ -18,14 +18,14 @@ const ACTION_STYLE: Partial<Record<AuditEntry["action"], string>> = {
   override: "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300",
   cache_hit: "bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300",
   fallback: "bg-violet-100 text-violet-800 dark:bg-violet-950 dark:text-violet-300",
-  confirm: "bg-teal-100 text-teal-800 dark:bg-teal-950 dark:text-teal-300",
+  confirm: "bg-scrub-tint text-scrub",
 };
 
 function Select<T extends string>({ value, onChange, options, label }: { value: T | "all"; onChange: (v: T | "all") => void; options: readonly T[]; label: string }) {
   return (
     <label className="flex items-center gap-2 text-sm">
       <span className="text-muted-foreground">{label}</span>
-      <select value={value} onChange={(e) => onChange(e.target.value as T | "all")} className="h-10 rounded-xl border bg-background px-3 text-base">
+      <select value={value} onChange={(e) => onChange(e.target.value as T | "all")} className="h-10 rounded-md border bg-background px-3 text-base">
         <option value="all">All</option>
         {options.map((o) => <option key={o} value={o}>{o}</option>)}
       </select>
@@ -80,25 +80,25 @@ export default function AuditPage() {
 
   return (
     <main className="mx-auto w-full max-w-[1800px] flex-1 space-y-5 px-6 py-5">
-      <header className="flex flex-wrap items-center gap-4 rounded-2xl border bg-card px-5 py-4 shadow-sm">
+      <header className="flex flex-wrap items-center gap-4 rounded-lg border bg-card px-5 py-4 shadow-sm">
         <div className="mr-auto">
-          <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight"><ScrollText className="size-6 text-teal-600" /> Audit log</h1>
+          <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight"><ScrollText className="size-6 text-scrub" /> Audit log</h1>
           <p className="text-muted-foreground">Every AI output, rule fired, cache hit, fallback, confirmation and override.</p>
         </div>
         <Select label="Actor" value={actor} onChange={setActor} options={ACTORS} />
         <Select label="Action" value={action} onChange={setAction} options={ACTIONS} />
         <label className="flex items-center gap-2 text-sm">
           <span className="text-muted-foreground">Patient</span>
-          <select value={patient} onChange={(e) => setPatient(e.target.value)} className="h-10 rounded-xl border bg-background px-3 text-base">
+          <select value={patient} onChange={(e) => setPatient(e.target.value)} className="h-10 rounded-md border bg-background px-3 text-base">
             <option value="all">All</option>
             {patientIds.map((id) => <option key={id} value={id}>{tokenOf(id) ? `Token ${tokenOf(id)}` : id.slice(0, 10)}</option>)}
           </select>
         </label>
-        {!USE_MOCK && <Button variant="outline" className="h-10 rounded-xl" onClick={() => setReload((n) => n + 1)}><RefreshCw className="size-4" /> Refresh</Button>}
-        <Button className="h-10 rounded-xl bg-teal-600 text-white hover:bg-teal-700" onClick={download} disabled={!rows.length}><Download className="size-4" /> Download JSON</Button>
+        {!USE_MOCK && <Button variant="outline" className="h-10 rounded-md" onClick={() => setReload((n) => n + 1)}><RefreshCw className="size-4" /> Refresh</Button>}
+        <Button className="h-10 rounded-md bg-scrub text-white hover:bg-scrub-deep" onClick={download} disabled={!rows.length}><Download className="size-4" /> Download JSON</Button>
       </header>
 
-      <section className="overflow-hidden rounded-2xl border bg-card shadow-sm">
+      <section className="overflow-hidden rounded-lg border bg-card shadow-sm">
         <table className="w-full text-left text-base">
           <thead className="border-b bg-muted/50 text-xs tracking-wide text-muted-foreground uppercase">
             <tr>
@@ -138,7 +138,7 @@ export default function AuditPage() {
                     <tr className="bg-muted/30">
                       <td />
                       <td colSpan={7} className="px-3 pb-4">
-                        <pre className="max-h-80 overflow-auto rounded-xl bg-slate-950 p-4 font-mono text-xs leading-relaxed text-slate-100">
+                        <pre className="max-h-80 overflow-auto rounded-md bg-slate-950 p-4 font-mono text-xs leading-relaxed text-slate-100">
                           {JSON.stringify(e, null, 2)}
                         </pre>
                       </td>

@@ -16,17 +16,17 @@ export function TriageBadge({ level, size = "md", className }: { level: TriageLe
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full font-semibold tracking-wide text-white uppercase shadow-sm",
+        "inline-flex items-center gap-1.5 rounded-[3px] font-semibold text-white uppercase",
         m.bg,
-        size === "sm" && "px-2 py-0.5 text-xs",
-        size === "md" && "px-3 py-1 text-sm",
-        size === "xl" && "gap-3 px-6 py-3 text-3xl",
+        size === "sm" && "px-1.5 py-0.5 font-mono text-[11px] tracking-[0.1em]",
+        size === "md" && "px-2 py-1 font-mono text-xs tracking-[0.12em]",
+        size === "xl" && "signage gap-3 px-5 py-3 text-5xl font-extrabold",
         className,
       )}
     >
-      <Icon className={cn(size === "xl" ? "size-8" : size === "md" ? "size-4" : "size-3.5")} aria-hidden />
+      <Icon className={cn(size === "xl" ? "size-9" : size === "md" ? "size-3.5" : "size-3")} aria-hidden />
       {m.label}
-      {size === "xl" && <span className="text-xl font-medium normal-case opacity-90">· {m.hint}</span>}
+      {size === "xl" && <span className="font-sans text-xl font-semibold tracking-normal normal-case opacity-90">{m.hint}</span>}
     </span>
   );
 }
@@ -34,28 +34,30 @@ export function TriageBadge({ level, size = "md", className }: { level: TriageLe
 /** Lists every rule that fired with its "why" and source. */
 export function RuleExplainer({ hits, escalated, className }: { hits: RuleHit[]; escalated?: boolean; className?: string }) {
   return (
-    <ul className={cn("space-y-2", className)}>
+    <ul className={cn("divide-y border-y", className)}>
       {hits.map((h) => {
         const m = LEVEL_META[h.level];
         const Icon = m.icon;
         return (
-          <li key={h.id} className={cn("flex gap-3 rounded-xl border-l-4 bg-muted/50 p-3", m.border)}>
-            <Icon className={cn("mt-0.5 size-5 shrink-0", m.text)} aria-hidden />
+          <li key={h.id} className="grid grid-cols-[auto_1fr] gap-x-3 py-3">
+            <span className={cn("mt-0.5 inline-flex h-6 items-center gap-1 rounded-[3px] border px-1.5 font-mono text-xs font-semibold", m.text, m.border)}>
+              <Icon className="size-3" aria-hidden />{h.id}
+            </span>
             <div className="min-w-0">
-              <div className="font-semibold">
-                <span className="font-mono">{h.id}</span> · {h.title}
-              </div>
+              <div className="font-semibold">{h.title}</div>
               <div className="text-muted-foreground">{h.why}</div>
-              <div className="mt-0.5 text-xs text-muted-foreground/80">Source: {h.source}</div>
+              <div className="mt-1 font-mono text-[11px] tracking-wide text-mute uppercase">{h.source}</div>
             </div>
           </li>
         );
       })}
       {escalated && (
-        <li className="flex gap-3 rounded-xl border-l-4 border-dashed border-foreground/30 bg-muted/50 p-3 text-sm">
-          <AlertTriangle className="mt-0.5 size-5 shrink-0" aria-hidden />
+        <li className="grid grid-cols-[auto_1fr] gap-x-3 py-3 text-sm">
+          <span className="mt-0.5 inline-flex h-6 items-center gap-1 rounded-[3px] border border-dashed px-1.5 font-mono text-xs font-semibold">
+            <AlertTriangle className="size-3" aria-hidden />R20
+          </span>
           <div>
-            <span className="font-semibold">R20 · Escalated for uncertainty</span>
+            <span className="font-semibold">Escalated for uncertainty</span>
             <div className="text-muted-foreground">Low confidence or missing info — level raised one step. Missing data never lowers a level.</div>
           </div>
         </li>

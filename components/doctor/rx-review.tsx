@@ -65,7 +65,7 @@ function FieldCell({ field, resolved, onChange, onResolve }: { field: RxField<st
         )}
       </div>
       <div className="flex items-center gap-1.5 pl-2">
-        {resolved ? <span className="text-[11px] font-semibold text-teal-700 dark:text-teal-400">✓ doctor-confirmed</span> : <ConfChip c={field.confidence} />}
+        {resolved ? <span className="text-[11px] font-semibold text-scrub">✓ doctor-confirmed</span> : <ConfChip c={field.confidence} />}
       </div>
     </div>
   );
@@ -83,7 +83,7 @@ export function InteractionBanners({ interactions }: { interactions: Interaction
             key={x.pair.join("+")}
             role="alert"
             className={cn(
-              "flex gap-3 rounded-xl border-l-4 p-4",
+              "flex gap-3 rounded-md border-l-4 p-4",
               major ? "border-triage-red bg-triage-red/10" : "border-amber-500 bg-amber-50 dark:bg-amber-950/40",
             )}
           >
@@ -110,7 +110,7 @@ export function RxTable({
   onResolve: (i: number, k: FieldKey) => void;
 }) {
   return (
-    <div className="overflow-hidden rounded-xl border">
+    <div className="overflow-hidden rounded-md border">
       <div className="grid grid-cols-[1.5fr_1fr_1fr_1fr] gap-3 border-b bg-muted/50 px-4 py-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
         <span>Drug as written → generic</span>
         {FIELDS.map((f) => <span key={f.key}>{f.label}</span>)}
@@ -128,7 +128,7 @@ export function RxTable({
               <div className="mt-1 flex flex-wrap items-center gap-1 pl-2 text-sm text-muted-foreground">
                 {it.brand_match ? <span className="font-medium text-foreground">{it.brand_match}</span> : <span className="italic">no brand match</span>}
                 <ArrowRight className="size-3.5" />
-                <span className="rounded bg-teal-50 px-1.5 font-medium text-teal-800 dark:bg-teal-950 dark:text-teal-300">{it.generic ?? "unknown generic"}</span>
+                <span className="rounded bg-scrub-tint px-1.5 font-medium text-scrub">{it.generic ?? "unknown generic"}</span>
               </div>
             </div>
             {FIELDS.map((f) => (
