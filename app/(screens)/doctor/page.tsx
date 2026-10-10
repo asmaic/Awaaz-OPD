@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { motion } from "motion/react";
-import { CheckCheck, FileScan, Loader2, RotateCcw, ScanText, UserRound } from "lucide-react";
+import { CheckCheck, FileScan, Hospital, Loader2, RotateCcw, ScanText, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ErrorCard } from "@/components/error-card";
@@ -9,6 +9,9 @@ import { CapturePanel, SAMPLES } from "@/components/doctor/capture-panel";
 import { urlToJpeg, type Captured } from "@/components/doctor/image";
 import { InteractionBanners, RxTable, needsReview, type FieldKey } from "@/components/doctor/rx-review";
 import { VoiceBack } from "@/components/doctor/voice-back";
+import { StockPanel } from "@/components/doctor/stock-panel";
+import { ReferralDialog } from "@/components/referral/referral-dialog";
+import type { Substitute } from "@/types/features";
 import { useHydrated } from "@/components/shell/app-shell";
 import { TriageBadge } from "@/components/triage";
 import { api } from "@/lib/mock";
@@ -34,6 +37,7 @@ export default function DoctorPage() {
   const [resolved, setResolved] = useState<Set<string>>(new Set());
   const [urdu, setUrdu] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [referOpen, setReferOpen] = useState(false);
 
   const unresolved = rx ? rx.items.reduce((n, it, i) => n + KEYS.filter((k) => needsReview(it[k]) && !resolved.has(`${i}.${k}`)).length, 0) : 0;
 
@@ -71,6 +75,16 @@ export default function DoctorPage() {
     setPhase("confirmed");
   }
 
+  /** Doctor-approved swap to an in-stock brand of the same generic + strength. The written name stays as evidence. */
+  function onSwap(i: number, sub: Substitute) {
+    if (!rx) return;
+    const from = rx.items[i].brand_match ?? rx.items[i].drug_raw.value;
+    setRx({ ...rx, items: rx.items.map((it, j) => (j === i ? { ...it, brand_match: sub.brand } : it)) });
+    log({ actor: "doctor", action: "override", patientId: patient?.id,
+      reason: `Substituted ${from} → ${sub.brand} (${sub.generic} ${sub.strength}): out of stock${sub.savesPerCourse ? `, saves Rs ${sub.savesPerCourse}` : ""}`,
+      payload: { kind: "rx_substitute", index: i, from, to: sub.brand, generic: sub.generic, savesPerCourse: sub.savesPerCourse } });
+  }
+
   const restart = () => { setPhase("capture"); setCaptured(null); setRx(null); setUrdu(null); };
 
   return (
@@ -90,6 +104,9 @@ export default function DoctorPage() {
             </select>
             <TriageBadge level={effectiveLevel(patient)} />
             <span className="min-w-0 flex-1 truncate text-lg text-muted-foreground">{patient.extraction.chief_complaint}</span>
+            <Button variant="outline" className="h-11 rounded-xl" onClick={() => setReferOpen(true)}>
+              <Hospital className="size-4" /> Refer + handover letter
+            </Button>
           </>
         ) : <span className="text-muted-foreground">No patients in the queue — add one at Intake.</span>}
       </section>
@@ -156,6 +173,7 @@ export default function DoctorPage() {
               <div className={phase === "confirmed" ? "pointer-events-none opacity-80" : undefined}>
                 <RxTable items={rx.items} resolved={resolved} onField={onField} onResolve={onResolve} />
               </div>
+              <StockPanel items={rx.items} disabled={phase === "confirmed"} onSwap={onSwap} />
               {phase !== "confirmed" ? (
                 <div className="flex items-center justify-end gap-3">
                   <span className="text-sm text-muted-foreground">Amber fields must be edited or confirmed before saving.</span>
@@ -175,6 +193,7 @@ export default function DoctorPage() {
           )}
         </section>
       </div>
+      <ReferralDialog patient={referOpen ? patient ?? null : null} prescription={phase === "confirmed" ? rx ?? undefined : undefined} onClose={() => setReferOpen(false)} />
     </main>
   );
 }

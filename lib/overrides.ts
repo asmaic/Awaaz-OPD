@@ -7,7 +7,7 @@ import { OverridePayloadZ, type OverrideEvent, type OverrideFlag, type ReviewedO
 const rank = (l: TriageLevel) => TRIAGE_LEVELS.indexOf(l); // 0 = RED
 
 /** Reasons that describe a person, not a clinical finding. */
-const NON_CLINICAL = /\b(vip|sifarish|sifaarish|relative|rishtedar|known|friend|staff|colleague|request|reference|ref|mna|mpa|officer|minister|sahab|boss|important|family)\b/i;
+const NON_CLINICAL = /\b(vip|sifarish|sifaarish|relative|rishtedar|friend|staff|colleague|request|reference|ref|mna|mpa|officer|minister|sahab|boss|important)\b/i;
 export const MIN_REASON = 15;
 /** Upgrades of GREEN patients by one person in a day before it is flagged as a pattern. */
 export const PATTERN_THRESHOLD = 3;

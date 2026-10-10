@@ -77,5 +77,7 @@ describe("clinical reasons with everyday words are not flagged", () => {
   it("'urgent' / 'please' alone don't make a reason vague", () => {
     expect(flagsFor({ id: "x", ts: "2026-10-10T01:00:00Z", patientId: "p", by: "Dr. Bilal", from: "YELLOW", to: "ORANGE", rulesLevel: "YELLOW",
       reason: "Collapsed in waiting area, urgent, please reassess" })).toEqual([]);
+    expect(flagsFor({ id: "y", ts: "2026-10-10T01:00:00Z", patientId: "p", by: "Dr. Bilal", from: "YELLOW", to: "ORANGE", rulesLevel: "YELLOW",
+      reason: "Known diabetic, family history of MI, now sweaty" })).toEqual([]);
   });
 });

@@ -9,6 +9,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
 import { OverrideDialog } from "@/components/dashboard/override-dialog";
 import { PatientCard } from "@/components/dashboard/patient-card";
+import { TransparencyPanel } from "@/components/dashboard/transparency-panel";
+import { ReferralDialog } from "@/components/referral/referral-dialog";
 import { useHydrated } from "@/components/shell/app-shell";
 import { LEVEL_META } from "@/components/triage";
 import { cn } from "@/lib/utils";
@@ -38,6 +40,7 @@ export default function DashboardPage() {
   const doctors = useQueue((s) => s.doctorsOnDuty);
   const { setDoctorsOnDuty, updateStatus } = useQueue.getState();
   const [overrideFor, setOverrideFor] = useState<Patient | null>(null);
+  const [referFor, setReferFor] = useState<Patient | null>(null);
   const now = useNow();
 
   const queue = activePatients(patients);
@@ -116,6 +119,7 @@ export default function DashboardPage() {
                       onDone={() => updateStatus(p.id, "done")}
                       onSendER={() => updateStatus(p.id, "sent_to_er")}
                       onOverride={() => setOverrideFor(p)}
+                      onRefer={() => setReferFor(p)}
                     />
                   ))}
                 </AnimatePresence>
@@ -137,10 +141,12 @@ export default function DashboardPage() {
             <h2 className="mb-2 flex items-center gap-2 text-base font-semibold"><Activity className="size-5 text-teal-600" /> Recent AI activity</h2>
             {hydrated && <ActivityFeed entries={audit} patients={patients} />}
           </div>
+          {hydrated && <TransparencyPanel audit={audit} patients={patients} now={now} />}
         </aside>
       </div>
 
       <OverrideDialog patient={overrideFor} onClose={() => setOverrideFor(null)} />
+      <ReferralDialog patient={referFor} onClose={() => setReferFor(null)} />
     </main>
   );
 }

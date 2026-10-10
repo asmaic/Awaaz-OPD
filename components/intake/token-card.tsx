@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { TriageBadge } from "@/components/triage";
 import { effectiveLevel } from "@/store/queue";
+import { tokenCode } from "@/lib/overrides";
 import type { Patient } from "@/types/contracts";
 
 /** Printable-style token slip shown after a patient joins the queue. */
@@ -24,6 +25,7 @@ export function TokenCard({ patient, onNext }: { patient: Patient; onNext: () =>
         <div className="space-y-4 px-6 py-8 text-center">
           <div className="text-[7rem] leading-none font-bold tracking-tighter tabular-nums">{patient.token}</div>
           <div className="text-xl font-semibold">{patient.name}</div>
+          <div className="font-mono text-sm tracking-[0.3em] text-muted-foreground" title="Shown on the queue board when you are called">CHECK #{tokenCode(patient)}</div>
           <div className="flex items-center justify-center gap-3">
             <TriageBadge level={level} />
             <span className="flex items-center gap-1 text-muted-foreground"><Clock className="size-4" /> est. {patient.estWaitMin} min</span>
