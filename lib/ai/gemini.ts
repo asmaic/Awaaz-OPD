@@ -89,9 +89,8 @@ export async function urduInstructions(items: RxItem[], model = env("GEMINI_MODE
 export async function tts(text: string, voice = "Kore", model = env("GEMINI_TTS_MODEL")): Promise<Buffer> {
   const r = await ai().models.generateContent({
     model,
-    // Without a language hint the voice reads Urdu with an English accent.
-    contents: `Read this aloud in clear, slow Pakistani Urdu, as a pharmacist explaining medicines to a patient:
-${text}`,
+    // Only the text to speak goes in contents (the TTS model reads everything aloud); languageCode stops it reading Urdu as English.
+    contents: text,
     config: {
       responseModalities: ["AUDIO"],
       speechConfig: { languageCode: "ur", voiceConfig: { prebuiltVoiceConfig: { voiceName: voice } } },
