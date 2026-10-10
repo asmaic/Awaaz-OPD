@@ -4,6 +4,7 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { MapContainer, Marker, Polyline, TileLayer, Tooltip } from "react-leaflet";
 import type { ReferralPlan } from "@/types/features";
+import { useMapKey } from "@/components/map/use-map-key";
 
 // Cached per colour/size: a new icon each render makes react-leaflet rebuild the marker (the dashboard re-renders every second).
 const dots = new Map<string, L.DivIcon>();
@@ -16,11 +17,12 @@ const dot = (bg: string, size = 14) => {
 
 /** Origin → best facility as a straight line (approximate: no road routing offline). Other options shown as grey dots. */
 export default function ReferralMap({ plan }: { plan: ReferralPlan }) {
+  const mapKey = useMapKey();
   const { origin, best, options } = plan;
   const pts: [number, number][] = [[origin.lat, origin.lng], ...(best ? [[best.facility.lat, best.facility.lng] as [number, number]] : [])];
   const bounds = L.latLngBounds(options.map((o) => [o.facility.lat, o.facility.lng] as [number, number]).concat([[origin.lat, origin.lng]]));
   return (
-    <MapContainer bounds={bounds.pad(0.15)} scrollWheelZoom={false} className="size-full">
+    <MapContainer key={mapKey} bounds={bounds.pad(0.15)} scrollWheelZoom={false} className="size-full">
       <TileLayer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="&copy; OpenStreetMap" />
       {options.map((o) => o !== best && (
         <Marker key={o.facility.id} position={[o.facility.lat, o.facility.lng]} icon={dot(Number.isFinite(o.score) ? "#64748b" : "#cbd5e1", 12)}>

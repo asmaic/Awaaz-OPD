@@ -4,6 +4,7 @@ import "leaflet/dist/leaflet.css";
 import { CircleMarker, MapContainer, TileLayer, Tooltip } from "react-leaflet";
 import type { LocalityStat } from "@/lib/surveillance";
 import { findLocality } from "@/lib/localities";
+import { useMapKey } from "@/components/map/use-map-key";
 
 const STATUS = {
   alert: { fill: "#DC2626", label: "⚠ ALERT" },
@@ -13,12 +14,13 @@ const STATUS = {
 
 /** One circle per locality: area ∝ cases this week; colour = status (always repeated as text in the tooltip). */
 export default function OutbreakMap({ stats, focus, onPick }: { stats: LocalityStat[]; focus?: string; onPick: (locality: string) => void }) {
+  const mapKey = useMapKey();
   const placed = stats.flatMap((s) => {
     const l = findLocality(s.locality);
     return l ? [{ s, lat: l.lat, lng: l.lng }] : [];
   });
   return (
-    <MapContainer center={[33.65, 73.06]} zoom={11} scrollWheelZoom={false} className="size-full">
+    <MapContainer key={mapKey} center={[33.65, 73.06]} zoom={11} scrollWheelZoom={false} className="size-full">
       <TileLayer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="&copy; OpenStreetMap" />
       {placed.map(({ s, lat, lng }) => {
         const st = STATUS[s.alert ?? "none"];
