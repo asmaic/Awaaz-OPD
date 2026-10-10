@@ -5,7 +5,7 @@ AICON'26 · Build With AI · **Health Operations** · NUST SEECS, Islamabad
 
 | | |
 |---|---|
-| **Live demo** | `<deployed link>` — no login. Demo mode (Alt+Shift+D) replays saved AI answers, so it works without API keys or Wi-Fi. |
+| **Live demo** | **https://awaaz-opd.vercel.app** — no login. Demo mode (Alt+Shift+D) replays saved AI answers, so it works without API keys or Wi-Fi. |
 | **Repository** | https://github.com/asmaic/Awaaz-OPD |
 | **Try it in 2 minutes** | [Walkthrough for judges](#try-it-judges-walkthrough) |
 
