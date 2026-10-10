@@ -31,9 +31,15 @@ export interface ReferralOption {
 }
 export interface ReferralPlan {
   needs: Need[];
+  /** Always this OPD's hospital: the patient is already here. */
   origin: { label: string; lat: number; lng: number; isPatientLocality: boolean };
-  options: ReferralOption[]; // best first
-  best: ReferralOption | null;
+  /** treat_here: this hospital covers every need · transfer: stabilise here, then send to `best` · no_option: nobody covers it, escalate. */
+  decision: "treat_here" | "transfer" | "no_option";
+  /** Why this hospital can't cover the patient right now (empty when treat_here). ER crowding is never a reason. */
+  homeGaps: string[];
+  home: ReferralOption | null;
+  options: ReferralOption[]; // this hospital first, then transfer targets best first
+  best: ReferralOption | null; // transfer target; null when treat_here or no_option
 }
 export type FacilitiesRes = { asOf: string; facilities: FacilityStatus[] };
 

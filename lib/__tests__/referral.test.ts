@@ -24,32 +24,62 @@ describe("needsFor", () => {
 });
 
 describe("planReferral", () => {
-  it("heart attack from Saddar goes to a free cath lab, not PIMS (cath lab busy, ER full)", () => {
-    const plan = planReferral(patient(["chest_pain", "sweating", "arm_jaw_pain"], { locality: "Saddar" }), statusAt(NOW));
-    expect(plan.origin).toMatchObject({ label: "Saddar", isPatientLocality: true });
+  const board = () => statusAt(NOW);
+  const withHome = (patch: Partial<FacilityStatus>) => board().map((f) => (f.id === "pims" ? { ...f, ...patch } : f));
+
+  it("heart attack: PIMS cath lab busy → stabilise here, transfer to a free cath lab (RIC)", () => {
+    const plan = planReferral(patient(["chest_pain", "sweating", "arm_jaw_pain"]), board());
+    expect(plan.decision).toBe("transfer");
+    expect(plan.homeGaps).toEqual(["cath lab busy at PIMS"]);
     expect(plan.best?.facility.id).toBe("ric");
-    expect(plan.best?.why).toMatch(/^cath lab free · \d+ min from Saddar · ER \d+% full/);
-    const pims = plan.options.find((o) => o.facility.id === "pims")!;
-    expect(pims.busy).toEqual(["cath_lab"]);
+    expect(plan.best?.why).toMatch(/^cath lab free · \d+ min from PIMS · ER \d+% full/);
     // Facilities without a cath lab are excluded, not just penalised.
     expect(plan.options.filter((o) => o.missing.length).every((o) => o.score === Infinity)).toBe(true);
   });
 
-  it("unknown locality starts from this OPD (PIMS)", () => {
-    const plan = planReferral(patient(["chest_pain", "sweating"]), statusAt(NOW));
+  it("heart attack with PIMS cath lab free → treat here", () => {
+    const plan = planReferral(patient(["chest_pain", "sweating"]), withHome({ busy: [] }));
+    expect(plan.decision).toBe("treat_here");
+    expect(plan.best).toBeNull();
+    expect(plan.home?.why).toMatch(/you are here/);
+  });
+
+  it("origin is always PIMS (the patient is in our OPD), even when they name their neighbourhood", () => {
+    const plan = planReferral(patient(["chest_pain", "sweating"], { locality: "Saddar" }), board());
     expect(plan.origin).toMatchObject({ label: "PIMS", isPatientLocality: false });
+    expect(plan.options[0].facility.id).toBe("pims");
+    expect(plan.options[0].travelMin).toBe(0);
   });
 
-  it("no facility with every capability → best is null", () => {
-    const only: FacilityStatus[] = [{ id: "x", name: "X", short: "X", city: "", lat: 33.6, lng: 73.0, capabilities: ["er"], erLoad: 0.1, freeBeds: 5, busy: [] }];
-    expect(planReferral(patient(["chest_pain", "sweating"]), only).best).toBeNull();
+  it("a crowded ER alone never sends an urgent patient away (dengue ORANGE, PIMS ER 100% full)", () => {
+    const p = patient(["fever", "abdominal_pain", "bleeding_gums"], { age_years: 28, duration_days: 4, locality: "Dhok Hassu" });
+    expect(p.triage.level).toBe("ORANGE");
+    const plan = planReferral(p, withHome({ erLoad: 1, freeBeds: 0 }));
+    expect(plan.decision).toBe("treat_here");
+    expect(plan.homeGaps).toEqual([]);
   });
 
-  it("a full ER with no beds loses to a slightly farther open one", () => {
-    const base = { city: "", capabilities: ["er" as const], busy: [] };
-    const near: FacilityStatus = { ...base, id: "near", name: "Near", short: "Near", lat: 33.6, lng: 73.05, erLoad: 1, freeBeds: 0 };
-    const far: FacilityStatus = { ...base, id: "far", name: "Far", short: "Far", lat: 33.62, lng: 73.07, erLoad: 0.3, freeBeds: 4 };
-    expect(planReferral(patient(["poisoning"], { locality: "Saddar" }), [near, far]).best?.facility.id).toBe("far");
+  it("no free bed matters only when the patient needs admitting (ICU)", () => {
+    const fits = planReferral(patient(["poisoning"], { age_years: 24 }), withHome({ freeBeds: 0 }));
+    expect(fits.decision).toBe("treat_here"); // ER-only need
+    const icu = planReferral(patient(["convulsion"], { age_years: 40 }), withHome({ freeBeds: 0 }));
+    expect(icu.decision).toBe("transfer");
+    expect(icu.homeGaps).toContain("no free bed at PIMS");
+  });
+
+  it("nobody else covers the gap → no_option (stabilise and escalate)", () => {
+    const only = board().filter((f) => f.id === "pims");
+    const plan = planReferral(patient(["chest_pain", "sweating"]), only);
+    expect(plan.decision).toBe("no_option");
+    expect(plan.best).toBeNull();
+  });
+
+  it("among transfer targets, a full ER with no beds loses to a slightly farther open one", () => {
+    const base = { city: "", capabilities: ["er" as const, "icu" as const], busy: [] };
+    const near: FacilityStatus = { ...base, id: "near", name: "Near", short: "Near", lat: 33.7, lng: 73.06, erLoad: 1, freeBeds: 0 };
+    const far: FacilityStatus = { ...base, id: "far", name: "Far", short: "Far", lat: 33.72, lng: 73.08, erLoad: 0.3, freeBeds: 4 };
+    const pimsFull = board().filter((f) => f.id === "pims").map((f) => ({ ...f, freeBeds: 0 }));
+    expect(planReferral(patient(["convulsion"], { age_years: 40 }), [...pimsFull, near, far]).best?.facility.id).toBe("far");
   });
 });
 

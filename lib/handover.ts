@@ -99,7 +99,7 @@ export function templateSbar(r: HandoverRecord): Sbar {
       ...r.interactions.map((i) => `${i.severity === "major" ? "Major" : "Moderate"} interaction alert: ${i.pair.join(" + ")}.`),
     ].filter(Boolean).join(" "),
     recommendation: [
-      r.referral ? `Referred to ${r.referral.facility}${r.referral.needs.length ? ` for ${list(r.referral.needs)}` : ""}.` : "Please assess on arrival.",
+      r.referral ? `Stabilised in our ER; transferred to ${r.referral.facility}${r.referral.needs.length ? ` for ${list(r.referral.needs)}` : ""}.` : "Please assess on arrival.",
       r.medicines.length ? `Prescribed: ${r.medicines.map((m) => `${m.name} ${m.strength} ${m.frequency} for ${m.duration}`).join("; ")}.` : "No medicines prescribed yet.",
     ].join(" "),
   };

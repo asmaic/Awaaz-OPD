@@ -86,7 +86,7 @@ export const PatientCard = forwardRef<HTMLLIElement, Props>(function PatientCard
           <CardAction icon={PhoneCall} label="Call in" onClick={onCallIn} primary />
         )}
         <CardAction icon={Ambulance} label="Send to ER" onClick={onSendER} danger />
-        {onRefer && (level === "RED" || level === "ORANGE") && <CardAction icon={Hospital} label="Find bed" onClick={onRefer} />}
+        {onRefer && (level === "RED" || level === "ORANGE") && <CardAction icon={Hospital} label="Transfer?" onClick={onRefer} />}
         <CardAction icon={Hand} label="Override" onClick={onOverride} />
       </div>
     </motion.li>

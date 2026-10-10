@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
-import { Ban, Check, Clock, Hospital, Loader2, PhoneCall, Route, TriangleAlert } from "lucide-react";
+import { Ban, Check, Clock, Hospital, Loader2, PhoneCall, Route, ShieldCheck, TriangleAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -16,7 +16,7 @@ import { CAPABILITY_LABEL, type FacilityStatus, type HandoverRes } from "@/types
 
 const ReferralMap = dynamic(() => import("@/components/referral/referral-map"), { ssr: false, loading: () => <Skeleton className="size-full rounded-none" /> });
 
-/** "Where should this patient go?" — live facility board, rules-based pick, route, and a one-tap call-ahead handover letter. */
+/** "Treat here or transfer?" — our ER by default; a transfer only when this hospital lacks or is busy on a service the patient needs. */
 export function ReferralDialog({ patient, prescription, onClose }: { patient: Patient | null; prescription?: Prescription; onClose: () => void }) {
   const log = useQueue((s) => s.log);
   const [facilities, setFacilities] = useState<FacilityStatus[] | null>(null);
@@ -62,11 +62,12 @@ export function ReferralDialog({ patient, prescription, onClose }: { patient: Pa
       <DialogContent className="max-h-[92vh] overflow-y-auto rounded-2xl p-6 sm:max-w-6xl">
         <DialogHeader>
           <DialogTitle className="flex flex-wrap items-center gap-3 text-xl">
-            <Hospital className="size-6 text-teal-600" /> Where should Token {patient?.token} go?
+            <Hospital className="size-6 text-teal-600" /> Treat here or transfer? · Token {patient?.token}
             {patient && <TriageBadge level={effectiveLevel(patient)} size="sm" />}
           </DialogTitle>
           <DialogDescription className="text-base">
-            Rules pick the facility from capability, travel time, ER load and free beds. Facility status is <b>simulated</b> for the demo
+            The patient stays in our ER unless we lack, or are busy on, a service they need. A crowded ER alone is never a reason to send them away.
+            Facility status is <b>simulated</b> for the demo
             {asOf && ` · updated ${new Date(asOf).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`}.
           </DialogDescription>
         </DialogHeader>
@@ -83,14 +84,21 @@ export function ReferralDialog({ patient, prescription, onClose }: { patient: Pa
                 {plan.needs.map((n) => (
                   <span key={n.capability} className="rounded-full bg-muted px-2.5 py-0.5 font-medium" title={n.because}>{CAPABILITY_LABEL[n.capability]}</span>
                 ))}
-                <span className="text-muted-foreground">· from {plan.origin.label}{plan.origin.isPatientLocality ? "" : " (this OPD)"}</span>
+                <span className="text-muted-foreground">· patient is at {plan.origin.label}</span>
               </div>
 
-              {plan.best ? (
+              {plan.decision === "treat_here" ? (
                 <div className="rounded-2xl border-2 border-teal-600 bg-teal-50 p-4 dark:bg-teal-950/40">
                   <div className="text-xs font-semibold tracking-widest text-teal-700 uppercase dark:text-teal-400">Recommended</div>
-                  <div className="text-2xl font-bold">Send to {plan.best.facility.name}</div>
-                  <div className="mt-1 text-base">{plan.best.why}</div>
+                  <div className="flex items-center gap-2 text-2xl font-bold"><ShieldCheck className="size-6 text-teal-600" /> Treat here in the {plan.origin.label} ER</div>
+                  <div className="mt-1 text-base">{plan.origin.label} has everything this patient needs{plan.home ? ` · ${plan.home.why}` : ""}. No transfer needed.</div>
+                </div>
+              ) : plan.best ? (
+                <div className="rounded-2xl border-2 border-triage-orange bg-triage-orange/5 p-4">
+                  <div className="text-xs font-semibold tracking-widest text-triage-orange uppercase">Recommended</div>
+                  <div className="text-2xl font-bold">Stabilise here, then transfer to {plan.best.facility.name}</div>
+                  <div className="mt-1 text-base"><b>Why not {plan.origin.label}:</b> {plan.homeGaps.join("; ")}.</div>
+                  <div className="text-base text-muted-foreground">{plan.best.why}</div>
                   <div className="mt-3 flex flex-wrap items-center gap-2">
                     <Button onClick={callAhead} disabled={writing} className="h-11 rounded-xl bg-teal-600 px-4 text-base text-white hover:bg-teal-700">
                       {writing ? <Loader2 className="size-5 animate-spin" /> : <PhoneCall className="size-5" />} Call ahead + handover note
@@ -101,7 +109,7 @@ export function ReferralDialog({ patient, prescription, onClose }: { patient: Pa
               ) : (
                 <div className="flex gap-2 rounded-2xl border-2 border-triage-red bg-triage-red/5 p-4">
                   <TriangleAlert className="size-5 shrink-0 text-triage-red" />
-                  <div>No facility offers every capability this patient needs. Stabilise here and escalate to the on-call consultant.</div>
+                  <div><b>{plan.homeGaps.join("; ")}</b>, and no other facility can cover it right now. Stabilise here and escalate to the on-call consultant.</div>
                 </div>
               )}
 
@@ -114,8 +122,8 @@ export function ReferralDialog({ patient, prescription, onClose }: { patient: Pa
                     {plan.options.map((o) => {
                       const ok = Number.isFinite(o.score);
                       return (
-                        <tr key={o.facility.id} className={cn(o === plan.best && "bg-teal-50/70 dark:bg-teal-950/30", !ok && "text-muted-foreground")}>
-                          <td className="px-3 py-2 font-medium">{o.facility.short}<div className="text-xs font-normal text-muted-foreground">{o.facility.city}</div></td>
+                        <tr key={o.facility.id} className={cn((o === plan.best || (plan.decision === "treat_here" && o === plan.home)) && "bg-teal-50/70 dark:bg-teal-950/30", !ok && "text-muted-foreground")}>
+                          <td className="px-3 py-2 font-medium">{o.facility.short}{o === plan.home && <span className="ml-1.5 rounded-full bg-teal-100 px-1.5 py-0.5 text-[11px] font-semibold text-teal-800 dark:bg-teal-950 dark:text-teal-300">you are here</span>}<div className="text-xs font-normal text-muted-foreground">{o.facility.city}</div></td>
                           <td className="px-2">
                             {o.missing.length ? <span className="flex items-center gap-1"><Ban className="size-3.5" /> no {o.missing.map((c) => CAPABILITY_LABEL[c].toLowerCase()).join(", ")}</span>
                               : o.busy.length ? <span className="flex items-center gap-1 text-amber-700 dark:text-amber-400"><Clock className="size-3.5" /> {o.busy.map((c) => CAPABILITY_LABEL[c].toLowerCase()).join(", ")} busy</span>
@@ -130,7 +138,7 @@ export function ReferralDialog({ patient, prescription, onClose }: { patient: Pa
                             </div>
                           </td>
                           <td className="px-2 text-center tabular-nums">{o.facility.freeBeds}</td>
-                          <td className="px-3 text-right tabular-nums">{o.travelMin} min</td>
+                          <td className="px-3 text-right tabular-nums">{o === plan.home ? "—" : `${o.travelMin} min`}</td>
                         </tr>
                       );
                     })}
