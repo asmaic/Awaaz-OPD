@@ -15,7 +15,7 @@ export function ErrorCard({ message, onRetry, onSample }: { message: string; onR
       </div>
       <div className="flex gap-3">
         {onRetry && <Button variant="outline" className="h-11 rounded-md px-4" onClick={onRetry}><RotateCw className="size-4" /> Retry</Button>}
-        {onSample && <Button className="h-11 rounded-md bg-scrub px-4 text-white hover:bg-scrub-deep" onClick={onSample}><Sparkles className="size-4" /> Use sample</Button>}
+        {onSample && <Button className="h-11 rounded-md bg-scrub px-4 text-primary-foreground hover:bg-scrub-deep" onClick={onSample}><Sparkles className="size-4" /> Use sample</Button>}
       </div>
     </div>
   );

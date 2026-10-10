@@ -102,7 +102,7 @@ function CardAction({ icon: Icon, label, onClick, primary, danger }: { icon: typ
       onClick={onClick}
       className={cn(
         "flex h-7 items-center gap-2 rounded-[3px] px-2 text-sm font-semibold transition-colors",
-        primary ? "bg-scrub text-white hover:bg-scrub-deep" : danger ? "text-triage-red hover:bg-triage-red/10" : "text-mute hover:bg-muted hover:text-foreground",
+        primary ? "bg-scrub text-primary-foreground hover:bg-scrub-deep" : danger ? "text-triage-red hover:bg-triage-red/10" : "text-mute hover:bg-muted hover:text-foreground",
       )}
     >
       <Icon className="size-4" /> {label}

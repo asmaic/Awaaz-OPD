@@ -102,7 +102,7 @@ export function IntakeResult({ res, meta, onAdd, onReset }: { res: ExtractRes; m
                 className="h-12 w-full rounded-md border bg-background pr-3 pl-9 text-base outline-none focus:ring-3 focus:ring-scrub/30"
               />
             </label>
-            <Button type="submit" className="h-12 rounded-md bg-scrub px-5 text-base text-white hover:bg-scrub-deep">
+            <Button type="submit" className="h-12 rounded-md bg-scrub px-5 text-base text-primary-foreground hover:bg-scrub-deep">
               <Plus className="size-5" /> Add to queue
             </Button>
           </form>

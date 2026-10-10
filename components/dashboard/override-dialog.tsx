@@ -85,7 +85,7 @@ export function OverrideDialog({ patient, onClose }: { patient: Patient | null; 
         <DialogFooter className="-mx-6 -mb-6 rounded-b-2xl p-4">
           <Button variant="outline" className="h-10 rounded-md" onClick={close}>Cancel</Button>
           <Button
-            className="h-10 rounded-md bg-scrub text-white hover:bg-scrub-deep"
+            className="h-10 rounded-md bg-scrub text-primary-foreground hover:bg-scrub-deep"
             disabled={!valid}
             onClick={() => { if (patient && chosen) { override(patient.id, chosen, reason, by.trim()); close(); } }}
           >

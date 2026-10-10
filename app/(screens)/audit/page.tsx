@@ -79,11 +79,11 @@ export default function AuditPage() {
   const toggle = (id: string) => setOpen((s) => { const n = new Set(s); if (n.has(id)) n.delete(id); else n.add(id); return n; });
 
   return (
-    <main className="mx-auto w-full max-w-[1800px] flex-1 space-y-5 px-6 py-5">
-      <header className="flex flex-wrap items-center gap-4 rounded-lg border bg-card px-5 py-4 shadow-sm">
+    <main className="mx-auto w-full max-w-[1800px] flex-1 space-y-6 px-6 py-6">
+      <header className="flex flex-wrap items-end gap-4 border-b-2 border-ink pb-4">
         <div className="mr-auto">
-          <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight"><ScrollText className="size-6 text-scrub" /> Audit log</h1>
-          <p className="text-muted-foreground">Every AI output, rule fired, cache hit, fallback, confirmation and override.</p>
+          <div className="register-label flex items-center gap-1.5"><ScrollText className="size-3.5" /> Every AI output, rule, fallback, confirmation and override</div>
+          <h1 className="signage text-6xl font-extrabold uppercase">Audit log <span className="urdu text-3xl font-normal normal-case text-mute">ریکارڈ</span></h1>
         </div>
         <Select label="Actor" value={actor} onChange={setActor} options={ACTORS} />
         <Select label="Action" value={action} onChange={setAction} options={ACTIONS} />
@@ -95,12 +95,12 @@ export default function AuditPage() {
           </select>
         </label>
         {!USE_MOCK && <Button variant="outline" className="h-10 rounded-md" onClick={() => setReload((n) => n + 1)}><RefreshCw className="size-4" /> Refresh</Button>}
-        <Button className="h-10 rounded-md bg-scrub text-white hover:bg-scrub-deep" onClick={download} disabled={!rows.length}><Download className="size-4" /> Download JSON</Button>
+        <Button className="h-10 rounded-md bg-scrub text-primary-foreground hover:bg-scrub-deep" onClick={download} disabled={!rows.length}><Download className="size-4" /> Download JSON</Button>
       </header>
 
-      <section className="overflow-hidden rounded-lg border bg-card shadow-sm">
+      <section className="overflow-hidden rounded-md border bg-card">
         <table className="w-full text-left text-base">
-          <thead className="border-b bg-muted/50 text-xs tracking-wide text-muted-foreground uppercase">
+          <thead className="border-b bg-muted/50 font-mono text-[11px] tracking-[0.12em] text-mute uppercase">
             <tr>
               <th className="w-8 px-3 py-2.5" />
               <th className="px-3 py-2.5">Time</th>
@@ -127,7 +127,7 @@ export default function AuditPage() {
                     <td className="px-3 py-2.5 whitespace-nowrap tabular-nums">{new Date(e.ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</td>
                     <td className="px-3 py-2.5"><span className="flex items-center gap-2 capitalize"><Icon className="size-4 text-muted-foreground" />{e.actor}</span></td>
                     <td className="px-3 py-2.5">
-                      <span className={cn("rounded-full bg-muted px-2.5 py-0.5 text-sm font-medium", ACTION_STYLE[e.action])}>{e.action}</span>
+                      <span className={cn("rounded-[3px] bg-muted px-1.5 py-0.5 font-mono text-xs font-medium", ACTION_STYLE[e.action])}>{e.action}</span>
                     </td>
                     <td className="px-3 py-2.5 tabular-nums">{tokenOf(e.patientId) ?? "—"}</td>
                     <td className="px-3 py-2.5 text-sm text-muted-foreground">{[e.model, e.promptVersion].filter(Boolean).join(" · ") || "—"}</td>

@@ -26,7 +26,7 @@ export function ProcessingSteps({ current }: { current: number }) {
                 transition={active ? { repeat: Infinity, duration: 1.1 } : { duration: 0.2 }}
                 className={cn(
                   "grid size-14 place-items-center rounded-lg border-2 transition-colors duration-300",
-                  done && "border-scrub bg-scrub text-white",
+                  done && "border-scrub bg-scrub text-primary-foreground",
                   active && "border-scrub bg-scrub-tint text-scrub",
                   !done && !active && "border-border text-muted-foreground",
                 )}

@@ -13,7 +13,7 @@ export function StockPanel({ items, disabled, onSwap }: { items: RxItem[]; disab
   const checks = checkStock(items);
   return (
     <div className="rounded-md border">
-      <div className="flex items-center gap-2 border-b bg-muted/50 px-4 py-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+      <div className="flex items-center gap-2 border-b bg-muted/50 px-4 py-2 font-mono text-[11px] font-semibold tracking-[0.12em] text-mute uppercase">
         <Pill className="size-4" /> Hospital pharmacy · mock stock
       </div>
       <ul className="divide-y">
@@ -33,7 +33,7 @@ export function StockPanel({ items, disabled, onSwap }: { items: RxItem[]; disab
                   <ArrowRight className="size-4 text-muted-foreground" />
                   <span>{best.brand.toLowerCase().includes(best.generic) ? <b>{best.brand}</b> : <><b className="capitalize">{best.generic}</b> ({best.brand})</>} in stock · {rs(best.unitPrice)}/tab</span>
                   {best.savesPerCourse !== undefined && best.savesPerCourse > 0 && (
-                    <span className="rounded-full bg-scrub-tint px-2 py-0.5 font-semibold text-scrub">saves {rs(best.savesPerCourse)}</span>
+                    <span className="rounded-[3px] bg-scrub-tint px-1.5 py-0.5 font-mono text-xs font-semibold text-scrub">saves {rs(best.savesPerCourse)}</span>
                   )}
                   <Button size="sm" disabled={disabled} onClick={() => onSwap(c.index, best)} className="h-8 rounded-lg bg-amber-500 text-white hover:bg-amber-600">
                     <Repeat className="size-4" /> Swap

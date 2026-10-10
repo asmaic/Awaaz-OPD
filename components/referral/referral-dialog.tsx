@@ -100,7 +100,7 @@ export function ReferralDialog({ patient, prescription, onClose }: { patient: Pa
                   <div className="mt-1 text-base"><b>Why not {plan.origin.label}:</b> {plan.homeGaps.join("; ")}.</div>
                   <div className="text-base text-muted-foreground">{plan.best.why}</div>
                   <div className="mt-3 flex flex-wrap items-center gap-2">
-                    <Button onClick={callAhead} disabled={writing} className="h-11 rounded-md bg-scrub px-4 text-base text-white hover:bg-scrub-deep">
+                    <Button onClick={callAhead} disabled={writing} className="h-11 rounded-md bg-scrub px-4 text-base text-primary-foreground hover:bg-scrub-deep">
                       {writing ? <Loader2 className="size-5 animate-spin" /> : <PhoneCall className="size-5" />} Call ahead + handover note
                     </Button>
                     {error && <span className="text-sm text-triage-red">{error}</span>}

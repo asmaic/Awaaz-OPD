@@ -19,7 +19,7 @@ export function TokenCard({ patient, onNext }: { patient: Patient; onNext: () =>
       className="mx-auto w-full max-w-md"
     >
       <div className="relative overflow-hidden rounded-lg border bg-card shadow-sm">
-        <div className="bg-scrub px-6 py-3 text-center text-sm font-medium tracking-widest text-white uppercase">
+        <div className="bg-scrub px-6 py-3 text-center text-sm font-medium tracking-widest text-primary-foreground uppercase">
           PIMS Medicine OPD · Token
         </div>
         <div className="space-y-4 px-6 py-8 text-center">
@@ -39,7 +39,7 @@ export function TokenCard({ patient, onNext }: { patient: Patient; onNext: () =>
         <div className="flex gap-2 p-4">
           <Button variant="outline" className="h-11 flex-1 rounded-md" onClick={() => window.print()}><Printer className="size-4" /> Print</Button>
           <Button variant="outline" className="h-11 flex-1 rounded-md" nativeButton={false} render={<Link href="/dashboard" />}>Queue board</Button>
-          <Button className="h-11 flex-1 rounded-md bg-scrub text-white hover:bg-scrub-deep" onClick={onNext}>Next patient <ArrowRight className="size-4" /></Button>
+          <Button className="h-11 flex-1 rounded-md bg-scrub text-primary-foreground hover:bg-scrub-deep" onClick={onNext}>Next patient <ArrowRight className="size-4" /></Button>
         </div>
       </div>
     </motion.div>

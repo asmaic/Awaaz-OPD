@@ -88,22 +88,28 @@ export default function DoctorPage() {
   const restart = () => { setPhase("capture"); setCaptured(null); setRx(null); setUrdu(null); };
 
   return (
-    <main className="mx-auto w-full max-w-[1800px] flex-1 space-y-5 px-6 py-5">
+    <main className="mx-auto w-full max-w-[1800px] flex-1 space-y-6 px-6 py-6">
       {/* Patient strip */}
-      <section className="flex flex-wrap items-center gap-4 rounded-lg border bg-card px-5 py-4 shadow-sm">
-        <UserRound className="size-6 text-scrub" />
-        {!hydrated ? <Skeleton className="h-8 w-80" /> : patient ? (
+      <section className="flex flex-wrap items-end gap-x-6 gap-y-3 border-b-2 border-ink pb-4">
+        {!hydrated ? <Skeleton className="h-14 w-96" /> : patient ? (
           <>
+            <div>
+              <div className="register-label flex items-center gap-1.5"><UserRound className="size-3.5" /> Now seeing</div>
+              <div className="flex items-baseline gap-3">
+                <span className="signage text-6xl font-extrabold tabular-nums">{patient.token}</span>
+                <span className="text-2xl font-bold">{patient.name}</span>
+              </div>
+            </div>
             <select
               value={patient.id}
               onChange={(e) => setPickedId(e.target.value)}
               aria-label="Patient being seen"
-              className="h-11 rounded-md border bg-background px-3 text-lg font-semibold"
+              className="h-10 rounded-md border bg-card px-3 text-base"
             >
               {active.map((p) => <option key={p.id} value={p.id}>Token {p.token} · {p.name}{p.status === "with_doctor" ? " (with doctor)" : ""}</option>)}
             </select>
             <TriageBadge level={effectiveLevel(patient)} />
-            <span className="min-w-0 flex-1 truncate text-lg text-muted-foreground">{patient.extraction.chief_complaint}</span>
+            <span className="min-w-0 flex-1 truncate pb-2 text-lg text-mute">{patient.extraction.chief_complaint}</span>
             <Button variant="outline" className="h-11 rounded-md" onClick={() => setReferOpen(true)}>
               <Hospital className="size-4" /> Treat here or transfer?
             </Button>
@@ -113,9 +119,9 @@ export default function DoctorPage() {
 
       <div className="grid gap-5 lg:grid-cols-[minmax(340px,0.8fr)_minmax(0,1.4fr)]">
         {/* Left: capture / photo */}
-        <section className="space-y-3 rounded-lg border bg-card p-5 shadow-sm">
+        <section className="space-y-3 rounded-md border bg-card p-5">
           <header className="flex items-center justify-between">
-            <h2 className="flex items-center gap-2 text-lg font-semibold"><FileScan className="size-5 text-scrub" /> Prescription photo</h2>
+            <h2 className="register-label flex items-center gap-1.5"><FileScan className="size-3.5 text-scrub" /> Prescription photo</h2>
             {captured && <Button variant="ghost" className="rounded-md" onClick={restart}><RotateCcw className="size-4" /> New photo</Button>}
           </header>
           {captured ? (
@@ -127,9 +133,9 @@ export default function DoctorPage() {
         </section>
 
         {/* Right: extraction & confirmation */}
-        <section className="space-y-4 rounded-lg border bg-card p-5 shadow-sm">
+        <section className="space-y-4 rounded-md border bg-card p-5">
           <header className="flex items-center justify-between gap-3">
-            <h2 className="flex items-center gap-2 text-lg font-semibold"><ScanText className="size-5 text-scrub" /> What the AI read</h2>
+            <h2 className="register-label flex items-center gap-1.5"><ScanText className="size-3.5 text-scrub" /> What the AI read · check every amber field</h2>
             {rx && phase !== "confirmed" && (
               <span className={unresolved ? "rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-800 dark:bg-amber-950 dark:text-amber-300" : "rounded-full bg-scrub-tint px-3 py-1 text-sm font-medium text-scrub"}>
                 {unresolved ? `${unresolved} field${unresolved > 1 ? "s need" : " needs"} your review` : "All fields reviewed"}
@@ -180,7 +186,7 @@ export default function DoctorPage() {
                   <Button
                     onClick={confirm}
                     disabled={!!unresolved || phase === "confirming"}
-                    className="h-12 rounded-md bg-scrub px-5 text-base text-white hover:bg-scrub-deep"
+                    className="h-12 rounded-md bg-scrub px-5 text-base text-primary-foreground hover:bg-scrub-deep"
                   >
                     {phase === "confirming" ? <Loader2 className="size-5 animate-spin" /> : <CheckCheck className="size-5" />}
                     Confirm prescription

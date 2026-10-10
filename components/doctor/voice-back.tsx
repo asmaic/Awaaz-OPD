@@ -78,7 +78,7 @@ export function VoiceBack({ rxId, urdu, patientId }: { rxId: string; urdu: strin
     >
       <div className="flex items-center justify-between gap-4">
         <h3 className="text-lg font-semibold">Patient instructions · اردو</h3>
-        <Button onClick={onPlay} disabled={state !== "idle"} className="h-12 rounded-md bg-scrub px-5 text-base text-white hover:bg-scrub-deep">
+        <Button onClick={onPlay} disabled={state !== "idle"} className="h-12 rounded-md bg-scrub px-5 text-base text-primary-foreground hover:bg-scrub-deep">
           {state === "loading" ? <Loader2 className="size-5 animate-spin" /> : <Volume2 className={state === "playing" ? "size-5 animate-pulse" : "size-5"} />}
           {state === "playing" ? "Playing…" : "Play in Urdu"}
         </Button>

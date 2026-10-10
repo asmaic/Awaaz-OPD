@@ -20,7 +20,7 @@ function ConfChip({ c }: { c: number }) {
     <span
       title="Model confidence"
       className={cn(
-        "rounded-full px-1.5 py-0.5 text-[11px] font-semibold tabular-nums",
+        "rounded-[3px] px-1 py-0.5 font-mono text-[11px] font-semibold tabular-nums",
         c >= 0.8 ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
           : c >= 0.6 ? "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"
           : "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300",
@@ -111,7 +111,7 @@ export function RxTable({
 }) {
   return (
     <div className="overflow-hidden rounded-md border">
-      <div className="grid grid-cols-[1.5fr_1fr_1fr_1fr] gap-3 border-b bg-muted/50 px-4 py-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+      <div className="grid grid-cols-[1.5fr_1fr_1fr_1fr] gap-3 border-b bg-muted/50 px-4 py-2 font-mono text-[11px] font-semibold tracking-[0.12em] text-mute uppercase">
         <span>Drug as written → generic</span>
         {FIELDS.map((f) => <span key={f.key}>{f.label}</span>)}
       </div>

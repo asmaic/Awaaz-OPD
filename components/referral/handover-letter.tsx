@@ -74,7 +74,7 @@ export function HandoverLetter({ patient, note, facility }: { patient: Patient; 
           <>
             <input value={signer} onChange={(ev) => setSigner(ev.target.value)} placeholder="Doctor's name" aria-label="Doctor's name"
               className="h-10 w-56 rounded-md border bg-background px-3 outline-none focus:ring-3 focus:ring-scrub/30" />
-            <Button className="h-10 rounded-md bg-scrub text-white hover:bg-scrub-deep" disabled={signer.trim().length < 2} onClick={sign}>
+            <Button className="h-10 rounded-md bg-scrub text-primary-foreground hover:bg-scrub-deep" disabled={signer.trim().length < 2} onClick={sign}>
               <PenLine className="size-4" /> Sign
             </Button>
           </>
