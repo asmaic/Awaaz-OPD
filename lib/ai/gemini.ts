@@ -89,10 +89,12 @@ export async function urduInstructions(items: RxItem[], model = env("GEMINI_MODE
 export async function tts(text: string, voice = "Kore", model = env("GEMINI_TTS_MODEL")): Promise<Buffer> {
   const r = await ai().models.generateContent({
     model,
-    contents: text,
+    // Without a language hint the voice reads Urdu with an English accent.
+    contents: `Read this aloud in clear, slow Pakistani Urdu, as a pharmacist explaining medicines to a patient:
+${text}`,
     config: {
       responseModalities: ["AUDIO"],
-      speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: voice } } },
+      speechConfig: { languageCode: "ur", voiceConfig: { prebuiltVoiceConfig: { voiceName: voice } } },
       abortSignal: AbortSignal.timeout(SLOW_TIMEOUT_MS),
     },
   });

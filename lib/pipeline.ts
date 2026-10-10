@@ -142,7 +142,7 @@ export async function runTts(req: TtsReq, demo: boolean): Promise<Out<{ audioUrl
   const model = env("GEMINI_TTS_MODEL");
   const voice = req.voice ?? "Kore";
   return runAi({
-    route: "tts", model, promptVersion: "tts-v1", input: [voice, req.text], demo, action: "tts",
+    route: "tts", model, promptVersion: "tts-v2", input: [voice, req.text], demo, action: "tts",
     attempts: [{
       label: "primary", model,
       run: async (key) => {
