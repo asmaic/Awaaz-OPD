@@ -21,6 +21,8 @@ export function Waveform({ analyser, className }: { analyser: AnalyserNode | nul
       ctx.clearRect(0, 0, w, h);
       if (analyser && data) analyser.getByteTimeDomainData(data);
       const gap = 4, bw = (w - gap * (BARS - 1)) / BARS;
+      // Canvas collapses to ~0 width while the screen transitions; a negative roundRect radius throws.
+      if (bw <= 0) { raf = requestAnimationFrame(draw); return; }
       for (let i = 0; i < BARS; i++) {
         let amp: number;
         if (data) {
