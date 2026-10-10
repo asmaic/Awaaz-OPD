@@ -42,7 +42,7 @@ PIMS Islamabad was built for 2,000–3,000 outpatients a day and now receives **
   - Treat `null` fields as missing.
   - A backup rule catches poisoning when the model quotes the phrase but forgets the tag.
   - The handover letter is rejected if it contains any number that is not in the patient record.
-- **Fallback chain on every AI call:** cache → primary model → fallback model → Groq → saved answer → (for instructions and letters) a fixed-phrase template. Each call times out at 6 s (15 s for vision and speech).
+- **Fallback chain on every AI call:** cache → primary model → fallback model → Groq → saved answer → (for instructions and letters) a fixed-phrase template. Text calls time out at 6 s; audio, vision and speech at 15 s.
 - **Audit:** every AI output, cache hit, fallback, rule hit, override and doctor confirmation is logged (`/audit`).
 
 ## Measured results

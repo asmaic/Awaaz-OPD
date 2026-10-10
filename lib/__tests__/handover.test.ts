@@ -33,7 +33,7 @@ describe("templateSbar", () => {
     expect(sbar.assessment).toContain("R02 Possible heart attack");
     expect(sbar.assessment).toContain("ER was notified");
     expect(sbar.assessment).toContain("Major interaction alert: clarithromycin + atorvastatin");
-    expect(sbar.recommendation).toContain("To be stabilised in our ER, then transferred to Rawalpindi Institute of Cardiology for cath lab");
+    expect(sbar.recommendation).toContain("To be stabilised in our ER, then transferred to Rawalpindi Institute of Cardiology, which has the cath lab the patient needs.");
     expect(sbar.recommendation).toContain("Klaricid 500 mg");
   });
   it("never introduces a number that is not in the record", () => {
