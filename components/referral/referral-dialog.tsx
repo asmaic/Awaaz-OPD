@@ -75,7 +75,8 @@ export function ReferralDialog({ patient, prescription, onClose }: { patient: Pa
         {!plan ? (
           error ? <p className="text-triage-red">{error}</p> : <div className="grid gap-3"><Skeleton className="h-24 rounded-md" /><Skeleton className="h-64 rounded-md" /></div>
         ) : note && patient ? (
-          <HandoverLetter patient={patient} note={note} facility={plan.best?.facility.name} />
+          <HandoverLetter patient={patient} note={note} facility={plan.best?.facility.name} prescription={prescription}
+            transfer={{ needs: plan.needs.filter((n) => n.capability !== "er").map((n) => CAPABILITY_LABEL[n.capability].toLowerCase()), whyNotHere: plan.homeGaps, destinationWhy: plan.best?.why }} />
         ) : (
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]">
             <div className="space-y-3">
