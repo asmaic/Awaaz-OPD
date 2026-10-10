@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1600" viewBox="0 0 1200 1600">
+  <!-- Synthetic demo prescription (not a real patient or clinician). -->
+  <defs>
+    <pattern id="lines" width="1200" height="64" patternUnits="userSpaceOnUse">
+      <line x1="60" y1="63" x2="1140" y2="63" stroke="#b9d3e8" stroke-width="2"/>
+    </pattern>
+    <filter id="paper"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" result="n"/><feColorMatrix in="n" type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope="0.06"/></feComponentTransfer><feBlend in="SourceGraphic" mode="multiply"/></filter>
+  </defs>
+  <rect width="1200" height="1600" fill="#fbf8f0"/>
+  <rect width="1200" height="1600" filter="url(#paper)" fill="#fbf8f0"/>
+  <rect x="0" y="0" width="1200" height="230" fill="#e8f1f8"/>
+  <text x="600" y="90" text-anchor="middle" font-family="Georgia, serif" font-size="54" font-weight="bold" fill="#1d4e7a">Medicine OPD — Demo Hospital</text>
+  <text x="600" y="145" text-anchor="middle" font-family="Georgia, serif" font-size="30" fill="#1d4e7a">Outpatient Prescription · Synthetic sample</text>
+  <line x1="60" y1="230" x2="1140" y2="230" stroke="#1d4e7a" stroke-width="4"/>
+  <rect x="0" y="260" width="1200" height="1260" fill="url(#lines)"/>
+  <g font-family="'Segoe Print', 'Segoe Script', 'Bradley Hand', 'Comic Sans MS', cursive" fill="#1a2a6c">
+    <text x="80" y="310" font-size="34">Pt: Token 48   Age 55 / M         9/10/26</text>
+    <text x="80" y="440" font-size="96" font-family="Georgia, serif" font-style="italic">℞</text>
+    <text x="120" y="560" font-size="56" transform="rotate(-1.2 120 560)">1) Tab. Klaricid 500mg</text>
+    <text x="260" y="630" font-size="48" transform="rotate(-1 260 630)">1 + 0 + 1   BD  x 7/7</text>
+    <text x="120" y="770" font-size="56" transform="rotate(-0.8 120 770)">2) Tab. Lipiget 40mg</text>
+    <text x="260" y="840" font-size="48" transform="rotate(-1.4 260 840)">0 + 0 + 1   OD  x 1/12</text>
+    <text x="120" y="980" font-size="56" transform="rotate(-1.6 120 980)">3) Cap. Risek 20mg</text>
+    <text x="260" y="1050" font-size="48" transform="rotate(-0.6 260 1050)">1 + 0 + 0   OD (before bkfst)  x</text>
+    <path d="M905 1040 c 10 -30 25 25 38 -6 s 18 22 30 -4 s 12 14 22 -2" stroke="#1a2a6c" stroke-width="5" fill="none"/>
+    <text x="760" y="1380" font-size="44" transform="rotate(-4 760 1380)">Dr. A. Demo</text>
+    <path d="M740 1400 q 120 -40 300 -10" stroke="#1a2a6c" stroke-width="3" fill="none"/>
+  </g>
+  <text x="600" y="1560" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" fill="#94a3b8">SYNTHETIC DEMO DOCUMENT — NOT A REAL PRESCRIPTION</text>
+</svg>
