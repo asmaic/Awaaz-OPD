@@ -1,5 +1,7 @@
 // pnpm warm — run the demo path + all 20 cases live (cached), then copy every entry into .cache/golden (committed),
 // so demo mode works from a fresh clone with no network.
+// pnpm warm --from-audit — instead promote every AI response used in a browser rehearsal (from .data/audit.jsonl):
+// the doctor screen's sample photo is a browser-made JPEG this script can't reproduce, so rehearse once, then run this.
 import { runExtractAndTriage, runInstructions, runPrescription, runTts, demoConfirmedItems } from "@/lib/pipeline";
 import { promote } from "@/lib/cache";
 import { ALL_CASES, DEMO_CASES, caseAudio, demoRxImage } from "./demo-inputs";
@@ -20,7 +22,16 @@ async function step<T extends { meta: { cached: boolean; fallback?: string }; ke
   }
 }
 
+async function fromAudit() {
+  const { readAudit } = await import("@/lib/audit");
+  const hashes = new Set((await readAudit(100_000)).filter((e) => e.inputHash && (e.actor === "ai" || e.action === "cache_hit")).map((e) => e.inputHash!));
+  let promoted = 0;
+  for (const k of hashes) if (await promote(k)) promoted++;
+  console.log(`Promoted ${promoted}/${hashes.size} rehearsal entries to .cache/golden.`);
+}
+
 async function main() {
+  if (process.argv.includes("--from-audit")) return fromAudit();
   // Every case as text ("Play sample case"), plus recorded audio where it exists.
   for (const caseId of [...DEMO_CASES, ...ALL_CASES.filter((c) => !DEMO_CASES.includes(c))]) {
     await step(`extract ${caseId}`, () => runExtractAndTriage({ caseId }, false));

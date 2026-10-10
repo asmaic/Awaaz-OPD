@@ -39,6 +39,11 @@ describe("normalize", async () => {
     expect(normalizeFrequency("1+0+1")).toBe("twice daily");
     expect(normalizeFrequency("0+0+1")).toBe("once daily");
     expect(normalizeFrequency("[UNCLEAR]")).toBe("[UNCLEAR]");
+    expect(normalizeFrequency("1 + 0 + 1 BD")).toBe("twice daily");
+    expect(normalizeFrequency("0 + 0 + 1 OD")).toBe("once daily");
+    expect(normalizeFrequency("1 + 0 + 0 OD (before bkfst)")).toBe("once daily (before bkfst)");
+    expect(normalizeFrequency("1 + 0 + 0 OD (bef")).toBe("once daily (bef)");
+    expect(normalizeFrequency("as directed")).toBe("as directed");
   });
   it("durations", () => {
     expect(normalizeDuration("x 5/7")).toBe("5 days");

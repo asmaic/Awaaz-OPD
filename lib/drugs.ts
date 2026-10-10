@@ -34,13 +34,18 @@ const FREQ: Record<string, string> = {
 };
 const PER_DAY = ["", "once daily", "twice daily", "three times daily", "four times daily"];
 
-/** "BD" → "twice daily", "1+0+1" → "twice daily"; anything unrecognised is returned unchanged. */
+/**
+ * "BD" → "twice daily", "1+0+1 BD" → "twice daily", "1+0+0 OD (before bkfst)" → "once daily (before bkfst)".
+ * Anything unrecognised is returned unchanged.
+ */
 export function normalizeFrequency(v: string): string {
-  const t = v.trim().toUpperCase().replace(/\./g, "");
-  if (FREQ[t]) return FREQ[t];
-  const doses = /^(\d)\s*\+\s*(\d)\s*\+\s*(\d)$/.exec(t);
-  if (doses) return PER_DAY[doses.slice(1).filter((d) => d !== "0").length] || v;
-  return v;
+  const t = v.toUpperCase().replace(/\./g, "");
+  const abbr = Object.keys(FREQ).find((k) => new RegExp(`\\b${k}\\b`).test(t));
+  const doses = /(\d)\s*\+\s*(\d)\s*\+\s*(\d)/.exec(t);
+  const base = abbr ? FREQ[abbr] : doses ? PER_DAY[doses.slice(1).filter((d) => d !== "0").length] : "";
+  if (!base) return v;
+  const note = /\(([^)]*)\)?/.exec(v)?.[1]?.trim();
+  return note ? `${base} (${note})` : base;
 }
 
 /** "x 5/7" → "5 days", "2/52" → "2 weeks", "1/12" → "1 month". */

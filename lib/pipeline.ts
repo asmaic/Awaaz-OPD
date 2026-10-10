@@ -66,10 +66,8 @@ export async function runExtractAndTriage(req: ExtractReq, demo: boolean): Promi
 
 // ---------- prescription ----------
 
-type RxOut = { items: RxItem[]; interactions: Interaction[] };
-
 /** Normalise abbreviations, match brands, check interactions. Doctor confirmation always starts false. */
-export function postProcessRx(read: RxRead): RxOut {
+export function postProcessRx(read: RxRead): { items: RxItem[]; interactions: Interaction[] } {
   const items: RxItem[] = read.items.map((it) => {
     const m = it.drug_raw.value === UNCLEAR ? null : matchBrand(it.drug_raw.value);
     const norm = (f: { value: string; confidence: number }, fn: (s: string) => string) =>
@@ -86,16 +84,18 @@ export function postProcessRx(read: RxRead): RxOut {
 export async function runPrescription(req: PrescriptionReq, demo: boolean): Promise<Out<Prescription>> {
   const vision = env("GEMINI_VISION_MODEL");
   const fallback = env("GEMINI_FALLBACK_MODEL");
-  const { data, meta, key } = await runAi<RxOut>({
+  // Cache the raw model reading; brand match / normalisation / interactions run after the cache so fixes apply to cached reads too.
+  const { data, meta, key } = await runAi<RxRead>({
     route: "prescription", model: vision, promptVersion: PRESCRIPTION_PROMPT_VERSION,
     input: [req.mime, Buffer.from(req.imageB64, "base64")], demo, action: "rx_read", patientId: req.patientId,
     attempts: [
-      { label: "primary", model: vision, run: async () => postProcessRx(await readPrescription(req.imageB64, req.mime, vision)) },
-      { label: "fallback-model", model: fallback, run: async () => postProcessRx(await readPrescription(req.imageB64, req.mime, fallback)) },
+      { label: "primary", model: vision, run: () => readPrescription(req.imageB64, req.mime, vision) },
+      { label: "fallback-model", model: fallback, run: () => readPrescription(req.imageB64, req.mime, fallback) },
     ],
     golden: async () => (await goldenFixture<{ prescription: Prescription }>(req.caseId, "prescription"))?.prescription ?? null,
   });
-  return { data: { id: `rx-${randomUUID()}`, patientId: req.patientId, items: data.items, interactions: data.interactions }, meta, key };
+  const { items, interactions } = postProcessRx(data);
+  return { data: { id: `rx-${randomUUID()}`, patientId: req.patientId, items, interactions }, meta, key };
 }
 
 // ---------- Urdu instructions ----------

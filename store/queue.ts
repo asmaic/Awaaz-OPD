@@ -5,6 +5,7 @@ import type { AuditEntry, Extraction, Patient, Prescription, RxItem, TriageLevel
 import { setDemoMode as setApiDemoMode } from "@/lib/mock";
 import seedPatients from "@/fixtures/seed-patients.json";
 import localitiesFile from "@/fixtures/localities.json";
+import { findLocality } from "@/lib/localities";
 
 export const LEVEL_RANK: Record<TriageLevel, number> = { RED: 0, ORANGE: 1, YELLOW: 2, GREEN: 3 };
 /** Average consult minutes per level, used for the "est." wait. */
@@ -46,8 +47,8 @@ function jitter(seed: string, salt: number) {
 
 function geoFor(e: Extraction, t: TriageResult, seed: string): Patient["geo"] {
   if (!e.locality || !t.hits.some((h) => DENGUE_RULES.includes(h.id))) return undefined;
-  const key = e.locality.toLowerCase().replace(/[^a-z0-9]/g, "");
-  const l = LOCALITIES.find((x) => x.name.toLowerCase().replace(/[^a-z0-9]/g, "") === key);
+  // Same fuzzy matcher as rule R17, so "Dhoke Hassu", "G9" or Urdu names still get a pin.
+  const l = findLocality(e.locality);
   return l ? { lat: l.lat + jitter(seed, 7), lng: l.lng + jitter(seed, 13), label: l.name } : undefined;
 }
 
