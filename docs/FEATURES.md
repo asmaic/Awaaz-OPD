@@ -107,7 +107,7 @@ For any patient PIMS can handle (e.g. the dengue ORANGE case, even with the ER f
 ## Testing
 
 ```bash
-pnpm test            # all unit tests (92)
+pnpm test            # all unit tests (98)
 pnpm dev             # then:
 curl localhost:3000/api/facilities | jq '.data.facilities[] | [.short, .erLoad, .freeBeds, .busy]'
 ```
