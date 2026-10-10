@@ -27,7 +27,7 @@ PIMS Islamabad was built for 2,000–3,000 outpatients a day and now receives **
 | **3. Live queue** | Triaged patients | — | Colour-coded board; RED slides to the top and the ER is notified; estimated waits; dengue map |
 | **4. Prescription reader** | Photo of a handwritten prescription | **Gemini vision** reads each medicine with a confidence per field and writes `[UNCLEAR]` instead of guessing; brand names are fuzzy-matched to generics | Editable table, drug-interaction alerts, pharmacy stock and cheaper same-generic substitutes. The doctor must confirm any unclear field. |
 | **5. Urdu voice-back** | Doctor-confirmed medicines only | **Gemini** writes simple Urdu instructions; **Gemini TTS** speaks them | Spoken + on-screen Urdu instructions |
-| **6. Referral + handover** | RED/ORANGE patient | Rules pick the hospital (needed service, travel, load, beds); **Gemini** drafts an SBAR handover letter, rejected if it adds any number not in the record | Recommended facility + route + signed, printable letter with QR |
+| **6. Treat here or transfer + handover** | RED/ORANGE patient | Rules keep the patient in our ER unless we lack, or are busy on, a service they need (or have no bed for an admission); a crowded ER alone never sends anyone away. Only then do rules pick the transfer hospital (service, travel from here, load, beds). **Gemini** drafts an SBAR handover letter, rejected if it adds any number not in the record | "Treat here", or "Stabilise here, then transfer to X" with the reason + route + signed, printable letter with QR |
 | **7. Accountability** | Every AI output, rule, override and confirmation | — | Audit log; a public "Priority changes today" panel flags queue-jumping |
 
 **Design principle: the LLM extracts and drafts, rules decide, a clinician confirms.** The model never assigns the triage level, never picks the hospital and never finalises a prescription.
@@ -71,7 +71,7 @@ Run `pnpm eval` over **20 synthetic Urdu cases** (6 RED, 6 ORANGE, 4 YELLOW, 4 G
 Open the live demo. Use two browser windows side by side: **/intake** and **/dashboard**.
 1. **Intake →** pick *C07 · Dengue Dhok Hassu* → **Play sample case** → ORANGE with rule R10 and its WHO source → **Add to queue**. A pin drops on the dengue map.
 2. **Intake →** *C01 · Heart Attack* → RED, R02 → **Add to queue**. On the dashboard the card **slides to the top** and the "ER notified" alert appears.
-3. **Dashboard →** **Find bed** on the RED card → recommended facility with route → **Call ahead + handover note** → **Sign**.
+3. **Dashboard →** **Transfer?** on the ORANGE dengue card → *"Treat here in the PIMS ER"*: our ER can handle it, even when it's crowded. Then **Transfer?** on the RED heart-attack card → *"Stabilise here, then transfer to Rawalpindi Institute of Cardiology"* because the PIMS cath lab is busy → **Call ahead + handover note** → **Sign**.
 4. **Dashboard →** **Override** a GREEN patient to RED with the reason *"VIP patient"*. It is flagged on **Priority changes today**.
 5. **Doctor →** **Call in** the RED patient → **Use the sample prescription** → type **14 days** for the unclear Risek field → note the interaction alert → **Swap** Klaricid for Claritek → **Confirm** → **Play in Urdu**.
 6. **Audit →** the full chain from voice to signed letter.
@@ -107,7 +107,7 @@ pnpm check-cache                # confirms the demo works offline
   - The synthetic Urdu cases.
 - **Team:**
   - **Asma Imran:** AI pipeline, prompts, rules engine, evaluation, backend, caching and demo mode, and the logic for the referral, handover, pharmacy and transparency features.
-  - **`<teammate name>`:** UI/UX and all screens, queue store and animations, demo and pitch.
+  - **Sohaib Amir:** UI/UX and all screens, queue store and animations, the treat-here referral logic, Urdu voice-back fixes, demo and pitch.
 
 ## Acknowledgements and licences
 - **AI services:**
