@@ -1,11 +1,17 @@
 "use client"
 
-import { useTheme } from "next-themes"
+import { useSyncExternalStore } from "react"
 import { Toaster as Sonner, type ToasterProps } from "sonner"
 import { CircleCheckIcon, InfoIcon, TriangleAlertIcon, OctagonXIcon, Loader2Icon } from "lucide-react"
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme()
+  // Follow the app's own light/dark switch (the "dark" class on <html>), not the OS setting: with the OS in dark mode
+  // and the app in light mode, sonner used dark-mode text (near-white) on the app's light card — unreadable.
+  const theme = useSyncExternalStore(
+    (cb) => { const o = new MutationObserver(cb); o.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] }); return () => o.disconnect() },
+    () => (document.documentElement.classList.contains("dark") ? "dark" : "light"),
+    () => "light",
+  )
 
   return (
     <Sonner
@@ -39,6 +45,9 @@ const Toaster = ({ ...props }: ToasterProps) => {
       toastOptions={{
         classNames: {
           toast: "cn-toast",
+          // App text tokens, so title/description always contrast with --normal-bg (≥ 4.5:1 in both themes).
+          title: "text-popover-foreground! font-semibold",
+          description: "text-muted-foreground!",
         },
       }}
       {...props}
