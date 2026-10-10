@@ -13,7 +13,11 @@ const ageSex = (p: Patient) => {
   return `${age} · ${p.extraction.sex ?? "?"}`;
 };
 
-const firstClause = (ur: string) => ur.split(/[۔،.]/)[0];
+/** The first clause that carries the complaint: skips short openers like "ڈاکٹر صاحب" (Doctor sahab) and "… سے آیا ہوں" (I've come from …). */
+const firstClause = (ur: string) => {
+  const parts = ur.split(/[۔،.؟?!]/).map((s) => s.trim()).filter(Boolean);
+  return parts.find((s) => s.split(/\s+/).length >= 3 && !/(آیا|آئی) ہوں/.test(s)) ?? parts[0] ?? "";
+};
 
 type Props = {
   patient: Patient;
