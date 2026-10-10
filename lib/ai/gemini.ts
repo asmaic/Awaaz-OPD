@@ -45,21 +45,33 @@ async function json(model: string, system: string, parts: Part[], schema: unknow
   return parseJson(r.text);
 }
 
-/** Run `call`, retry once if the Urdu came back in Devanagari, then give up with ScriptError. */
+/** Urdu written mostly in Latin letters ("din mein do baar"). English words like BP or ECG inside Urdu are fine. */
+const ARABIC_LETTERS = /[\u0600-\u06FF]/g;
+const LATIN_LETTERS = /[A-Za-z]/g;
+const isRoman = (s: string) => {
+  const ur = s.match(ARABIC_LETTERS)?.length ?? 0, en = s.match(LATIN_LETTERS)?.length ?? 0;
+  return en >= 12 && ur < en; // more Latin than Urdu letters
+};
+
+/**
+ * Run `call`; retry once if the Urdu came back in Devanagari or mostly in Roman letters.
+ * Devanagari twice → ScriptError (next model). Roman twice → keep it (the patient may really have spoken English).
+ */
 export async function urduOnly<T>(call: () => Promise<T>, urdu: (t: T) => string): Promise<T> {
   const first = await call();
-  if (!DEVANAGARI.test(urdu(first))) return first;
+  if (!DEVANAGARI.test(urdu(first)) && !isRoman(urdu(first))) return first;
   stats.devanagariRetries++;
   const second = await call();
   if (DEVANAGARI.test(urdu(second))) throw new ScriptError("model returned Devanagari instead of Urdu script twice");
   return second;
 }
 
-const extract = (input: Part, model: string): Promise<Extraction> =>
-  urduOnly(async () => cleanExtraction(ExtractionZ.parse(await json(model, EXTRACTION_PROMPT, [input], extractionJsonSchema))), (e) => e.transcript_ur);
+const extract = (input: Part, model: string, timeoutMs = TIMEOUT_MS): Promise<Extraction> =>
+  urduOnly(async () => cleanExtraction(ExtractionZ.parse(await json(model, EXTRACTION_PROMPT, [input], extractionJsonSchema, timeoutMs))), (e) => e.transcript_ur);
 
+// Audio is slow: measured 3.7–26 s for a 15 s Urdu clip, so 6 s cut off working requests. Text stays at TIMEOUT_MS.
 export const extractFromAudio = (b64: string, mime: string, model = env("GEMINI_MODEL")) =>
-  extract({ inlineData: { mimeType: baseMime(mime), data: b64 } }, model);
+  extract({ inlineData: { mimeType: baseMime(mime), data: b64 } }, model, SLOW_TIMEOUT_MS);
 
 export const extractFromText = (text: string, model = env("GEMINI_MODEL")) =>
   extract({ text: `Patient said:\n${text}` }, model);
