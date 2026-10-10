@@ -13,7 +13,7 @@ export function buildRecord(req: HandoverReq) {
   return {
     age_years: e.age_years, sex: e.sex,
     chief_complaint: e.chief_complaint, patient_words_en: e.translation_en,
-    symptoms: e.symptoms.map((s) => s.replaceAll("_", " ")), duration_days: e.duration_days, vitals: e.vitals,
+    symptoms: e.symptoms.map((s) => s.replaceAll("_", " ")), duration: humanDuration(e.duration_days), vitals: e.vitals,
     red_flags_mentioned: e.red_flags_mentioned, locality: e.locality,
     triage: {
       level: p.override?.level ?? p.triage.level,
@@ -27,6 +27,15 @@ export function buildRecord(req: HandoverReq) {
   };
 }
 export type HandoverRecord = ReturnType<typeof buildRecord>;
+
+/** 0.02 → "about 30 minutes", 0.25 → "about 6 hours", 4 → "4 days". Models store short durations as day fractions. */
+export function humanDuration(days?: number): string | undefined {
+  if (days === undefined) return undefined;
+  if (days >= 1) return `${Math.round(days)} day${Math.round(days) === 1 ? "" : "s"}`;
+  const hours = days * 24;
+  if (hours >= 1) return `about ${Math.round(hours)} hour${Math.round(hours) === 1 ? "" : "s"}`;
+  return `about ${Math.max(5, Math.round((hours * 60) / 5) * 5)} minutes`;
+}
 
 const confirmedMeds = (rx?: Prescription) =>
   rx?.items.filter((i) => i.confirmedByDoctor).map((i) => ({
@@ -67,7 +76,7 @@ export function templateSbar(r: HandoverRecord): Sbar {
   return {
     situation: `${who}, triaged ${r.triage.level} at OPD. Main complaint: ${r.chief_complaint}. In their words: "${r.patient_words_en}"`,
     background: [
-      r.symptoms.length && `Reported symptoms: ${list(r.symptoms)}${r.duration_days !== undefined ? ` for ${r.duration_days} day${r.duration_days === 1 ? "" : "s"}` : ""}.`,
+      r.symptoms.length && `Reported symptoms: ${list(r.symptoms)}${r.duration ? ` for ${r.duration}` : ""}.`,
       vitals.length ? `Vitals recorded: ${list(vitals)}.` : "No vitals recorded at intake.",
       r.red_flags_mentioned.length && `Red flags mentioned: ${r.red_flags_mentioned.map((f) => `"${f}"`).join(", ")}.`,
       r.locality && `From ${r.locality}.`,

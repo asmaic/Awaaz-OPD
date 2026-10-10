@@ -62,3 +62,14 @@ describe("handoverQrText", () => {
     expect(t.length).toBeLessThanOrEqual(900);
   });
 });
+
+describe("humanDuration", async () => {
+  const { humanDuration } = await import("@/lib/handover");
+  it("turns day fractions into readable durations", () => {
+    expect(humanDuration(0.02)).toBe("about 30 minutes");
+    expect(humanDuration(0.25)).toBe("about 6 hours");
+    expect(humanDuration(1)).toBe("1 day");
+    expect(humanDuration(4)).toBe("4 days");
+    expect(humanDuration(undefined)).toBeUndefined();
+  });
+});

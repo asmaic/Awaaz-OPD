@@ -31,7 +31,7 @@ export function StockPanel({ items, disabled, onSwap }: { items: RxItem[]; disab
               {out && best && (
                 <span className="ml-auto flex flex-wrap items-center gap-2 text-sm">
                   <ArrowRight className="size-4 text-muted-foreground" />
-                  <span><b className="capitalize">{best.generic}</b> ({best.brand}) in stock · {rs(best.unitPrice)}/tab</span>
+                  <span>{best.brand.toLowerCase().includes(best.generic) ? <b>{best.brand}</b> : <><b className="capitalize">{best.generic}</b> ({best.brand})</>} in stock · {rs(best.unitPrice)}/tab</span>
                   {best.savesPerCourse !== undefined && best.savesPerCourse > 0 && (
                     <span className="rounded-full bg-teal-100 px-2 py-0.5 font-semibold text-teal-800 dark:bg-teal-950 dark:text-teal-300">saves {rs(best.savesPerCourse)}</span>
                   )}
