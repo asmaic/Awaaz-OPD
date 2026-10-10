@@ -5,9 +5,11 @@ import { EXTRACTION_PROMPT, INSTRUCTIONS_PROMPT, PRESCRIPTION_PROMPT } from "./p
 import { z } from "zod";
 import { ensureWav } from "@/lib/wav";
 import { SbarZ, type Sbar } from "@/types/features";
+import { SitrepZ, type Sitrep } from "@/lib/sitrep";
 
 export class ScriptError extends Error {}
-export const DEVANAGARI = /[ऀ-ॿ]/;
+// Any Indic script (Devanagari … Sinhala, U+0900–U+0DFF). Seen live: "dengue" came back partly in Malayalam + Bengali letters.
+export const DEVANAGARI = /[\u0900-\u0DFF]/;
 /** Per-call timeouts before falling back. Vision and TTS are slower than text/audio extraction. */
 export const TIMEOUT_MS = 6000;
 const SLOW_TIMEOUT_MS = 15000;
@@ -45,21 +47,33 @@ async function json(model: string, system: string, parts: Part[], schema: unknow
   return parseJson(r.text);
 }
 
-/** Run `call`, retry once if the Urdu came back in Devanagari, then give up with ScriptError. */
+/** Urdu written mostly in Latin letters ("din mein do baar"). English words like BP or ECG inside Urdu are fine. */
+const ARABIC_LETTERS = /[\u0600-\u06FF]/g;
+const LATIN_LETTERS = /[A-Za-z]/g;
+const isRoman = (s: string) => {
+  const ur = s.match(ARABIC_LETTERS)?.length ?? 0, en = s.match(LATIN_LETTERS)?.length ?? 0;
+  return en >= 12 && ur < en; // more Latin than Urdu letters
+};
+
+/**
+ * Run `call`; retry once if the Urdu came back in Devanagari or mostly in Roman letters.
+ * Devanagari twice → ScriptError (next model). Roman twice → keep it (the patient may really have spoken English).
+ */
 export async function urduOnly<T>(call: () => Promise<T>, urdu: (t: T) => string): Promise<T> {
   const first = await call();
-  if (!DEVANAGARI.test(urdu(first))) return first;
+  if (!DEVANAGARI.test(urdu(first)) && !isRoman(urdu(first))) return first;
   stats.devanagariRetries++;
   const second = await call();
-  if (DEVANAGARI.test(urdu(second))) throw new ScriptError("model returned Devanagari instead of Urdu script twice");
+  if (DEVANAGARI.test(urdu(second))) throw new ScriptError("model returned Indic script instead of Urdu (Perso-Arabic) twice");
   return second;
 }
 
-const extract = (input: Part, model: string): Promise<Extraction> =>
-  urduOnly(async () => cleanExtraction(ExtractionZ.parse(await json(model, EXTRACTION_PROMPT, [input], extractionJsonSchema))), (e) => e.transcript_ur);
+const extract = (input: Part, model: string, timeoutMs = TIMEOUT_MS): Promise<Extraction> =>
+  urduOnly(async () => cleanExtraction(ExtractionZ.parse(await json(model, EXTRACTION_PROMPT, [input], extractionJsonSchema, timeoutMs))), (e) => e.transcript_ur);
 
+// Audio is slow: measured 3.7–26 s for a 15 s Urdu clip, so 6 s cut off working requests. Text stays at TIMEOUT_MS.
 export const extractFromAudio = (b64: string, mime: string, model = env("GEMINI_MODEL")) =>
-  extract({ inlineData: { mimeType: baseMime(mime), data: b64 } }, model);
+  extract({ inlineData: { mimeType: baseMime(mime), data: b64 } }, model, SLOW_TIMEOUT_MS);
 
 export const extractFromText = (text: string, model = env("GEMINI_MODEL")) =>
   extract({ text: `Patient said:\n${text}` }, model);
@@ -105,4 +119,9 @@ export async function tts(text: string, voice = "Kore", model = env("GEMINI_TTS_
 /** SBAR handover draft. Validation + the "no new numbers" check happen in lib/pipeline.ts. */
 export async function handoverNote(record: unknown, system: string, model = env("GEMINI_MODEL")): Promise<Sbar> {
   return SbarZ.parse(await json(model, system, [{ text: JSON.stringify(record) }], z.toJSONSchema(SbarZ)));
+}
+
+/** Outbreak alert draft. The number check happens in lib/pipeline.ts. */
+export async function sitrepNote(facts: unknown, system: string, model = env("GEMINI_MODEL")): Promise<Sitrep> {
+  return urduOnly(async () => SitrepZ.parse(await json(model, system, [{ text: JSON.stringify(facts) }], z.toJSONSchema(SitrepZ))), (r) => r.urdu_summary);
 }

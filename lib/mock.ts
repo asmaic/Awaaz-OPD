@@ -7,6 +7,7 @@ import { DEMO_HEADER } from "@/types/contracts";
 import type { FacilitiesRes, HandoverReq, HandoverRes } from "@/types/features";
 import { buildRecord, templateSbar } from "@/lib/handover";
 import { statusAt } from "@/lib/referral";
+import { templateSitrep, type SitrepReq, type SitrepRes } from "@/lib/sitrep";
 import cases from "@/fixtures/cases.json";
 import goldenC01 from "@/fixtures/golden/c01-heart-attack.extract.json";
 import goldenC07 from "@/fixtures/golden/c07-dengue-dhok-hassu.extract.json";
@@ -20,6 +21,7 @@ export interface AwaazApi {
   tts(req: TtsReq): Promise<ApiResult<TtsRes>>;
   handover(req: HandoverReq): Promise<ApiResult<HandoverRes>>;
   facilities(): Promise<ApiResult<FacilitiesRes>>;
+  sitrep(req: SitrepReq): Promise<ApiResult<SitrepRes>>;
 }
 
 let demoMode = false;
@@ -106,6 +108,11 @@ const mockApi: AwaazApi = {
     const now = new Date();
     return ok({ asOf: now.toISOString(), facilities: statusAt(now) }, now.getTime());
   },
+  async sitrep(req) {
+    const t0 = Date.now();
+    await delay();
+    return ok({ sitrep: templateSitrep(req.syndromeId, req.facts), generatedBy: "template" }, t0);
+  },
 };
 
 // ---------- real ----------
@@ -128,6 +135,7 @@ const realApi: AwaazApi = {
   instructions: (req) => post("instructions", req),
   tts: (req) => post("tts", req),
   handover: (req) => post("handover", req),
+  sitrep: (req) => post("sitrep", req),
   facilities: async () => {
     try {
       return (await (await fetch("/api/facilities")).json()) as ApiResult<FacilitiesRes>;

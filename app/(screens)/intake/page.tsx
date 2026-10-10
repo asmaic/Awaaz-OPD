@@ -102,18 +102,18 @@ export default function IntakePage() {
     <main className="mx-auto w-full max-w-[1400px] flex-1 px-6 py-8">
       <AnimatePresence mode="wait">
         {phase.k === "idle" && (
-          <motion.div key="idle" exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} className="flex flex-col items-center gap-8 pt-4 text-center">
-            <div>
-              <p className="urdu mb-3 text-4xl leading-[2.6]">اپنی تکلیف بتائیں</p>
-              <h1 className="mt-1 text-3xl font-bold tracking-tight">Tell us what’s wrong</h1>
-              <p className="mt-2 text-lg text-muted-foreground">Hold the button and speak in Urdu or English. Up to 30 seconds.</p>
+          <motion.div key="idle" exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} className="flex min-h-[calc(100dvh-10rem)] flex-col items-center gap-7 pt-2 text-center">
+            <div className="flex flex-col items-center">
+              <p className="urdu text-6xl leading-[2.4] lg:text-7xl" lang="ur">اپنی تکلیف بتائیں</p>
+              <h1 className="signage mt-1 text-4xl font-extrabold uppercase">Tell us what’s wrong</h1>
+              <p className="mt-3 max-w-md text-lg text-mute">Press and hold the button, speak in Urdu or English, then let go. Up to 30 seconds.</p>
             </div>
 
             <div className="relative grid place-items-center">
               {recorder.recording && (
                 <>
-                  <span className="absolute size-56 animate-ping rounded-full bg-triage-red/15" />
-                  <span className="absolute size-64 rounded-full border-2 border-triage-red/20" />
+                  <span className="absolute size-60 animate-ping rounded-full bg-triage-red/10" />
+                  <span className="absolute size-72 rounded-full border border-triage-red/30" />
                 </>
               )}
               <button
@@ -123,8 +123,8 @@ export default function IntakePage() {
                 onClick={onClick}
                 aria-label={recorder.recording ? "Stop recording" : "Start recording"}
                 className={cn(
-                  "relative grid size-48 touch-none place-items-center rounded-full text-white shadow-2xl transition-all duration-300 select-none",
-                  recorder.recording ? "scale-105 bg-triage-red shadow-triage-red/40" : "bg-teal-600 shadow-teal-600/40 hover:scale-105 hover:bg-teal-700",
+                  "relative grid size-52 touch-none place-items-center rounded-full ring-8 transition-colors duration-200 select-none",
+                  recorder.recording ? "bg-triage-red text-white ring-triage-red/15" : "bg-scrub text-primary-foreground ring-scrub/12 hover:bg-scrub-deep",
                 )}
               >
                 {recorder.recording ? <Square className="size-16 fill-current" /> : <Mic className="size-20" strokeWidth={1.75} />}
@@ -133,21 +133,22 @@ export default function IntakePage() {
 
             <div className="flex w-full max-w-xl flex-col items-center gap-2">
               <Waveform analyser={recorder.analyser} className="h-20 w-full" />
-              <div className="h-6 text-lg tabular-nums text-muted-foreground">
+              <div className="h-6 font-mono text-base tabular-nums text-mute">
                 {recorder.recording ? `${fmt(recorder.elapsed)} / 0:30 · tap or release to stop` : recorder.error ?? ""}
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center justify-center gap-3">
+            <div className="mt-auto flex w-full max-w-3xl flex-wrap items-center justify-center gap-3 border-t pt-4">
+              <span className="register-label mr-2">For staff</span>
               <button
                 type="button"
                 onClick={() => fileRef.current?.click()}
-                className="flex h-12 items-center gap-2 rounded-xl border bg-card px-4 text-base font-medium shadow-sm hover:bg-muted"
+                className="flex h-11 items-center gap-2 rounded-md border bg-card px-4 text-base font-medium hover:bg-muted"
               >
                 <Upload className="size-4" /> Upload clip
               </button>
               <input ref={fileRef} type="file" accept="audio/*" hidden onChange={(e) => onUpload(e.target.files?.[0])} />
-              <div className="flex h-12 items-center overflow-hidden rounded-xl border bg-card shadow-sm">
+              <div className="flex h-11 items-center overflow-hidden rounded-md border bg-card">
                 <select
                   value={sample}
                   onChange={(e) => setSample(e.target.value)}

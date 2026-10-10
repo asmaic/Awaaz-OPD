@@ -9,7 +9,13 @@ const label = (s: Symptom) => s.replaceAll("_", " ");
 /** Symptoms from `list` that are present. */
 const present = (e: Extraction, ...list: Symptom[]) => list.filter((s) => e.symptoms.includes(s));
 const has = (e: Extraction, ...list: Symptom[]) => present(e, ...list).length > 0;
-const ageTxt = (e: Extraction) => (e.age_years === undefined ? "age unknown" : `age ${e.age_years}`);
+// Under a year, say months ("age 1 month", not "age 0.12").
+const ageTxt = (e: Extraction) => {
+  if (e.age_years === undefined) return "age unknown";
+  if (e.age_years >= 1) return `age ${e.age_years}`;
+  const mo = Math.max(1, Math.round(e.age_years * 12));
+  return `age ${mo} month${mo === 1 ? "" : "s"}`;
+};
 const flagMatches = (e: Extraction, re: RegExp) => e.red_flags_mentioned.some((f) => re.test(f));
 
 export const DENGUE_WARNING: Symptom[] = ["abdominal_pain", "persistent_vomiting", "bleeding_gums", "nosebleed", "lethargy", "restlessness"];

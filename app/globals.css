@@ -8,7 +8,15 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+  --font-signage: var(--font-signage);
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-scrub: var(--scrub);
+  --color-scrub-deep: var(--scrub-deep);
+  --color-scrub-tint: var(--scrub-tint);
+  --color-rule: var(--rule);
+  --color-mute: var(--mute);
   --font-urdu: var(--font-urdu);
   --color-triage-red: #DC2626;
   --color-triage-orange: #EA580C;
@@ -54,72 +62,90 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* Ward paper, ink, surgical-scrub green. The four triage colours are the only other hues. */
+  --paper: #f2f4f1;
+  --ink: #15201d;
+  --scrub: #1e5b52;
+  --scrub-deep: #164740;
+  --scrub-tint: #e3eeea;
+  --rule: #d3dad5;
+  --mute: #5a6a64;
+
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: #fbfcfa;
+  --card-foreground: var(--ink);
+  --popover: #fbfcfa;
+  --popover-foreground: var(--ink);
+  --primary: var(--scrub);
+  --primary-foreground: #f2f4f1;
+  --secondary: #e7ebe8;
+  --secondary-foreground: var(--ink);
+  --muted: #e7ebe8;
+  --muted-foreground: var(--mute);
+  --accent: var(--scrub-tint);
+  --accent-foreground: var(--ink);
+  --destructive: #dc2626;
+  --border: var(--rule);
+  --input: var(--rule);
+  --ring: var(--scrub);
+  --chart-1: #1e5b52;
+  --chart-2: #5a6a64;
+  --chart-3: #93a39d;
+  --chart-4: #c9d3ce;
+  --chart-5: #15201d;
+  --radius: 0.375rem;
+  --sidebar: var(--paper);
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--scrub);
+  --sidebar-primary-foreground: #f2f4f1;
+  --sidebar-accent: var(--scrub-tint);
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border: var(--rule);
+  --sidebar-ring: var(--scrub);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* The ward at night: the queue board's own palette. */
+  --paper: #0f1614;
+  --ink: #e8eeeb;
+  --scrub: #5fb8a8;
+  --scrub-deep: #4a9e8f;
+  --scrub-tint: #17302b;
+  --rule: #26332f;
+  --mute: #93a39d;
+
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: #151e1b;
+  --card-foreground: var(--ink);
+  --popover: #151e1b;
+  --popover-foreground: var(--ink);
+  --primary: var(--scrub);
+  --primary-foreground: #0f1614;
+  --secondary: #1c2724;
+  --secondary-foreground: var(--ink);
+  --muted: #1c2724;
+  --muted-foreground: var(--mute);
+  --accent: var(--scrub-tint);
+  --accent-foreground: var(--ink);
+  --destructive: #ef4444;
+  --border: var(--rule);
+  --input: #2f3d39;
+  --ring: var(--scrub);
+  --chart-1: #5fb8a8;
+  --chart-2: #93a39d;
+  --chart-3: #5a6a64;
+  --chart-4: #26332f;
+  --chart-5: #e8eeeb;
+  --sidebar: var(--paper);
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--scrub);
+  --sidebar-primary-foreground: #0f1614;
+  --sidebar-accent: var(--scrub-tint);
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border: var(--rule);
+  --sidebar-ring: var(--scrub);
 }
 
 @layer base {
@@ -135,10 +161,39 @@
   html {
     @apply font-sans;
   }
+  :focus-visible {
+    outline: 2px solid var(--scrub);
+    outline-offset: 2px;
+  }
 }
 /* Urdu text: Nastaliq, right-to-left, tall line-height for the script's descenders */
 @utility urdu {
   font-family: var(--font-urdu), serif;
   direction: rtl;
   line-height: 2.2;
+}
+
+/* Signage: condensed public-wayfinding face for token numbers and section signs. */
+@utility signage {
+  font-family: var(--font-signage), "Arial Narrow", sans-serif;
+  font-variation-settings: "opsz" 72;
+  letter-spacing: 0.01em;
+  line-height: 0.9;
+}
+/* Small uppercase label above a value, like a form field on a hospital register. */
+@utility register-label {
+  font-family: var(--font-plex-mono), ui-monospace, monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+/* Perforation line on a triage tag: the tear-off strip starts here. */
+@utility perforation {
+  background-image: radial-gradient(circle, var(--rule) 1.2px, transparent 1.6px);
+  background-size: 2px 7px;
+  background-repeat: repeat-y;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }

@@ -3,9 +3,10 @@ import { randomUUID } from "node:crypto";
 import type {
   ExtractReq, ExtractRes, Extraction, Interaction, InstructionsReq, PrescriptionReq, Prescription, RxItem, RxRead, TtsReq,
 } from "@/types/contracts";
-import { extractFromAudio, extractFromText, handoverNote, readPrescription, tts as geminiTts, urduInstructions, env } from "@/lib/ai/gemini";
+import { extractFromAudio, extractFromText, handoverNote, sitrepNote, readPrescription, tts as geminiTts, urduInstructions, env } from "@/lib/ai/gemini";
 import { HANDOVER_PROMPT, HANDOVER_PROMPT_VERSION, buildRecord, templateSbar, unsupportedNumbers } from "@/lib/handover";
 import type { HandoverReq, HandoverRes, Sbar } from "@/types/features";
+import { SITREP_PROMPT, SITREP_PROMPT_VERSION, numbersNotIn, templateSitrep, type Sitrep, type SitrepReq, type SitrepRes } from "@/lib/sitrep";
 import { groqExtract, groqTranscribe } from "@/lib/ai/groq";
 import { EXTRACTION_PROMPT_VERSION, INSTRUCTIONS_PROMPT_VERSION, PRESCRIPTION_PROMPT_VERSION } from "@/lib/ai/prompts";
 import { blobGet, blobSet, goldenFixture, runAi, type Attempt, type RunMeta } from "@/lib/cache";
@@ -181,6 +182,28 @@ export async function runHandover(req: HandoverReq, demo: boolean): Promise<Out<
     template: () => templateSbar(record),
   });
   return { data: { sbar: data, generatedBy: meta.fallback === "template" ? "template" : "ai" }, meta, key };
+}
+
+// ---------- outbreak alert (sitrep) ----------
+
+export async function runSitrep(req: SitrepReq, demo: boolean): Promise<Out<SitrepRes>> {
+  const primary = env("GEMINI_MODEL");
+  const fallback = env("GEMINI_FALLBACK_MODEL");
+  const checked = (model: string) => async (): Promise<Sitrep> => {
+    const r = await sitrepNote(req.facts, SITREP_PROMPT, model);
+    const bad = numbersNotIn([r.headline, r.situation, ...r.recommended_actions].join(" "), req.facts);
+    if (bad.length) throw new Error(`alert contains numbers not in the facts: ${bad.join(", ")}`);
+    return r;
+  };
+  const { data, meta, key } = await runAi<Sitrep>({
+    route: "sitrep", model: primary, promptVersion: SITREP_PROMPT_VERSION, input: [req.syndromeId, JSON.stringify(req.facts)], demo, action: "confirm",
+    attempts: [
+      { label: "primary", model: primary, run: checked(primary) },
+      { label: "fallback-model", model: fallback, run: checked(fallback) },
+    ],
+    template: () => templateSitrep(req.syndromeId, req.facts),
+  });
+  return { data: { sitrep: data, generatedBy: meta.fallback === "template" ? "template" : "ai" }, meta, key };
 }
 
 export { blobGet };

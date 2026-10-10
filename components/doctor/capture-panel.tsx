@@ -35,7 +35,7 @@ function CameraCapture({ onCapture }: { onCapture: (c: Captured) => void }) {
   };
 
   return (
-    <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-slate-900">
+    <div className="relative aspect-[4/3] overflow-hidden rounded-md bg-slate-900">
       <video ref={video} playsInline muted className="size-full object-cover" />
       {/* guide frame */}
       <div className="pointer-events-none absolute inset-[8%_18%] rounded-lg border-2 border-dashed border-white/80 shadow-[0_0_0_9999px_rgba(0,0,0,0.35)]" />
@@ -76,11 +76,11 @@ export function CapturePanel({ onCapture }: { onCapture: (c: Captured) => void }
               key={s.url}
               type="button"
               onClick={async () => onCapture(await urlToJpeg(s.url, s.caseId))}
-              className="group overflow-hidden rounded-xl border bg-card text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+              className="group overflow-hidden rounded-md border bg-card text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={s.url} alt="" className="aspect-[3/4] w-full object-cover object-top" />
-              <div className="flex items-center gap-2 p-2.5 text-sm font-medium"><FileImage className="size-4 text-teal-600" />{s.label}</div>
+              <div className="flex items-center gap-2 p-2.5 text-sm font-medium"><FileImage className="size-4 text-scrub" />{s.label}</div>
             </button>
           ))}
         </div>
@@ -94,8 +94,8 @@ export function CapturePanel({ onCapture }: { onCapture: (c: Captured) => void }
           onDragLeave={() => setDrag(false)}
           onDrop={(e) => { e.preventDefault(); setDrag(false); void onFile(e.dataTransfer.files[0]); }}
           className={cn(
-            "flex aspect-[4/3] w-full flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed text-muted-foreground transition",
-            drag ? "border-teal-600 bg-teal-50 dark:bg-teal-950/40" : "hover:bg-muted/60",
+            "flex aspect-[4/3] w-full flex-col items-center justify-center gap-3 rounded-md border-2 border-dashed text-muted-foreground transition",
+            drag ? "border-scrub bg-scrub-tint" : "hover:bg-muted/60",
           )}
         >
           <ImageUp className="size-10" />

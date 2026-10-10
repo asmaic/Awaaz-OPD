@@ -51,11 +51,15 @@ export function useRecorder(onDone: (blob: Blob, mime: string) => void, maxMs = 
       const tick = setInterval(() => setElapsed(performance.now() - t0), 100);
       const auto = setTimeout(() => recorder.state === "recording" && recorder.stop(), maxMs);
 
+      // Runs from onstop and again on unmount: must be safe to call twice (closing a closed AudioContext throws).
+      let released = false;
       cleanup.current = () => {
+        if (released) return;
+        released = true;
         clearInterval(tick);
         clearTimeout(auto);
         stream.getTracks().forEach((t) => t.stop());
-        void ctx.close();
+        if (ctx.state !== "closed") ctx.close().catch(() => {});
       };
       recorder.ondataavailable = (e) => e.data.size && chunks.push(e.data);
       recorder.onstop = () => {
@@ -75,7 +79,12 @@ export function useRecorder(onDone: (blob: Blob, mime: string) => void, maxMs = 
     }
   }, [maxMs]);
 
-  useEffect(() => () => cleanup.current(), []);
+  // Leaving the page mid-recording: drop the clip silently instead of sending it.
+  useEffect(() => () => {
+    const r = rec.current;
+    if (r && r.state === "recording") { r.onstop = null; r.stop(); }
+    cleanup.current();
+  }, []);
 
   return { recording, elapsed, analyser, error, start, stop };
 }

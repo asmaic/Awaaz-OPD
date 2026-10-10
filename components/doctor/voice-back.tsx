@@ -74,11 +74,11 @@ export function VoiceBack({ rxId, urdu, patientId }: { rxId: string; urdu: strin
       ref={box}
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-4 rounded-2xl border-2 border-teal-600/40 bg-teal-50/60 p-6 dark:bg-teal-950/30"
+      className="space-y-4 rounded-lg border-2 border-scrub bg-scrub-tint p-6"
     >
       <div className="flex items-center justify-between gap-4">
         <h3 className="text-lg font-semibold">Patient instructions · اردو</h3>
-        <Button onClick={onPlay} disabled={state !== "idle"} className="h-12 rounded-xl bg-teal-600 px-5 text-base text-white hover:bg-teal-700">
+        <Button onClick={onPlay} disabled={state !== "idle"} className="h-12 rounded-md bg-scrub px-5 text-base text-primary-foreground hover:bg-scrub-deep">
           {state === "loading" ? <Loader2 className="size-5 animate-spin" /> : <Volume2 className={state === "playing" ? "size-5 animate-pulse" : "size-5"} />}
           {state === "playing" ? "Playing…" : "Play in Urdu"}
         </Button>

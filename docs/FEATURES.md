@@ -107,7 +107,7 @@ For any patient PIMS can handle (e.g. the dengue ORANGE case, even with the ER f
 ## Testing
 
 ```bash
-pnpm test            # all unit tests (98)
+pnpm test            # all unit tests (118)
 pnpm dev             # then:
 curl localhost:3000/api/facilities | jq '.data.facilities[] | [.short, .erLoad, .freeBeds, .busy]'
 ```
@@ -118,3 +118,41 @@ Manual check (verified in Chrome on 10 Oct 2026):
 3. **Doctor:** sample prescription → Klaricid out of stock → **Swap** to Claritek (saves Rs 644). The table and audit update.
 
 In demo mode (Alt+Shift+D) the facility board and pharmacy need no network at all. The handover note serves a cached rehearsal or the template.
+
+---
+
+## 11. Outbreak explorer (syndromic surveillance)
+
+**Problem.** Outbreaks (dengue every autumn, flu or COVID-like waves, diarrhoea from contaminated water) are spotted late, from paper registers, after they've spread.
+
+**How it works** (`lib/surveillance.ts`, pure and unit-tested):
+- **Case definitions, not diagnoses.** Patients are grouped the way WHO / Pakistan IDSR surveillance does, by symptoms:
+
+  | Syndrome | Definition (short) | Source |
+  |---|---|---|
+  | Suspected dengue | fever + ≥ 2 of aches, headache, retro-orbital pain, rash, vomiting, bleeding, abdominal pain, lethargy (or R09/R10/R17), **no cough** | WHO 2009 |
+  | Influenza-like illness | fever + cough, onset ≤ 10 days (flu, COVID-19…) | WHO ILI |
+  | SARI | ILI + breathlessness, low SpO2 or RED/ORANGE | WHO SARI |
+  | Acute watery diarrhoea | diarrhoea < 14 days | WHO / IDSR |
+  | Undifferentiated fever | fever without cough, diarrhoea or dengue signs. **Malaria and typhoid sit here**: they need a rapid test, not symptoms | IDSR AFI |
+
+- **Data.** A **synthetic** 28-day history (`fixtures/surveillance-history.json`, 367 cases from `pnpm gen:surveillance`, seeded). Every case runs through the real rules engine. The rows store "days ago", so the demo never goes stale. Today's live queue is added on top.
+- **Outbreak detection per locality.** This week's count vs the mean of the previous 3 weeks, as a **Poisson test** (minimum baseline 1.5/week so tiny areas don't false-alarm).
+  - **ALERT:** ≥ 4 cases and p < 0.005.
+  - **WATCH:** ≥ 3 cases and p < 0.05.
+  - Also reported: week-on-week growth, doubling time, age bands, sex split.
+- **On the synthetic data the detector finds exactly the planted events:**
+  - Dengue alerts in Dhok Hassu and Pirwadhai.
+  - A flu-like wave in G-9 / G-10 / G-11 (G-7 on watch).
+  - **No** alert for a diarrhoea cluster in Tench Bhata that ended two weeks ago.
+  - No false alarms for background fever.
+- **AI alert to the District Health Officer** (`lib/sitrep.ts`, `POST /api/sitrep`):
+  - Gemini writes the computed numbers up as an alert with recommended actions and a 1–2 line Urdu summary for community health workers.
+  - The draft is **rejected if it contains any number not in the facts**, then falls back to another model and finally a template.
+  - It says "suspected", never "confirmed".
+- **UI** (`/outbreaks`, `components/outbreaks/*`):
+  - Syndrome tabs with ALERT badges, stat tiles, a map (circle size = cases this week, colour + label = status, click to filter), an epidemic curve (hover any day), alerts with p-values, a by-locality table, recent cases (today's queue marked), the case definition and source, age bands.
+  - **Draft alert** button.
+- **From a patient:** `<SyndromeLinks patient={p} />` (`components/outbreaks/syndrome-link.tsx`) renders chips such as "Suspected dengue" that open `/outbreaks?syndrome=dengue&focus=<patientId>`. The patient's locality is outlined.
+
+**Found while testing live:** the model wrote "dengue" partly in **Malayalam and Bengali letters** inside the Urdu summary. The script guard now rejects **all Indic scripts** (U+0900–U+0DFF), not just Devanagari, for every Urdu output in the app.
