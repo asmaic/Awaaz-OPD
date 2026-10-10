@@ -44,7 +44,7 @@ const confirmedMeds = (rx?: Prescription) =>
     frequency: i.frequency.value, duration: i.duration.value,
   })) ?? [];
 
-export const HANDOVER_PROMPT_VERSION = "sbar-v2";
+export const HANDOVER_PROMPT_VERSION = "sbar-v3";
 export const HANDOVER_PROMPT = `You write a short clinical handover note in SBAR format (Situation, Background, Assessment, Recommendation) for the doctor receiving a patient referred from a Pakistani government hospital OPD. Input is a JSON record.
 Rules:
 - Use ONLY facts in the record. Do not add diagnoses, test results, examination findings, doses, times or treatments that are not in it.
@@ -54,7 +54,7 @@ Rules:
 - Situation: who, triage level and the main complaint in the patient's own words.
 - Background: symptoms, duration, vitals and red flags that were reported.
 - Assessment: which triage rules fired and why, any clinician override, interaction alerts.
-- Recommendation: the referral destination if given, and medicines already prescribed. referral.patient_needs are services the PATIENT needs and the destination provides: write "transfer to <facility>, which has the <service> the patient needs" — never imply the destination needs anything.
+- Recommendation: the referral destination if given, and medicines already prescribed. referral.patient_needs are services the PATIENT needs and the destination provides: write "transfer to <facility> for the <service>" — never imply the destination needs anything.
 Return JSON {"situation","background","assessment","recommendation"}.`;
 
 /** Numbers in the note that are not in the record (a cheap hallucination check). */
@@ -100,7 +100,7 @@ export function templateSbar(r: HandoverRecord): Sbar {
       ...r.interactions.map((i) => `${i.severity === "major" ? "Major" : "Moderate"} interaction alert: ${i.pair.join(" + ")}.`),
     ].filter(Boolean).join(" "),
     recommendation: [
-      r.referral ? `To be stabilised in our ER, then transferred to ${r.referral.facility}${r.referral.patient_needs.length ? `, which has the ${list(r.referral.patient_needs)} the patient needs` : ""}.` : "Please assess on arrival.",
+      r.referral ? `To be stabilised in our ER, then transferred to ${r.referral.facility}${r.referral.patient_needs.length ? ` for the ${list(r.referral.patient_needs)}` : ""}.` : "Please assess on arrival.",
       r.medicines.length ? `Prescribed: ${r.medicines.map((m) => `${m.name} ${m.strength} ${m.frequency} for ${m.duration}`).join("; ")}.` : "No medicines prescribed yet.",
     ].join(" "),
   };
