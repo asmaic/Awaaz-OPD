@@ -29,7 +29,6 @@ PIMS Islamabad was built for 2,000–3,000 outpatients a day and now receives **
 | **5. Urdu voice-back** | Doctor-confirmed medicines only | **Gemini** writes simple Urdu instructions; **Gemini TTS** speaks them | Spoken + on-screen Urdu instructions |
 | **6. Treat here or transfer + handover** | RED/ORANGE patient | Rules keep the patient in our ER unless we lack, or are busy on, a service they need (or have no bed for an admission); a crowded ER alone never sends anyone away. Only then do rules pick the transfer hospital (service, travel from here, load, beds). **Gemini** drafts an SBAR handover letter, rejected if it adds any number not in the record | "Treat here", or "Stabilise here, then transfer to X" with the reason + route + signed, printable letter with QR |
 | **7. Outbreak explorer** | Every patient (28-day history + today) | **None for detection.** WHO/IDSR symptom case definitions + a per-locality Poisson outbreak test. **Gemini** drafts the alert to the District Health Officer, rejected if it adds any number | Click "Suspected dengue" on a patient → map, epidemic curve, alerting localities, doubling time, ready-to-send alert with an Urdu summary |
-| **8. WhatsApp intake** | Voice note or text from home | Same Gemini extraction + rules | Fixed Urdu/English reply with priority, "come now / call 1122" for RED, and a counter code; the patient joins the queue |
 | **9. Accountability** | Every AI output, rule, override and confirmation | — | Audit log; a public "Priority changes today" panel flags queue-jumping |
 
 **Design principle: the LLM extracts and drafts, rules decide, a clinician confirms.** The model never assigns the triage level, never picks the hospital and never finalises a prescription.
@@ -56,7 +55,7 @@ Run `pnpm eval` over **20 synthetic Urdu cases** (6 RED, 6 ORANGE, 4 YELLOW, 4 G
 | Symptom extraction precision / recall | **98% / 98%** |
 | Urdu returned in the wrong script | 0 retries needed |
 | Live latency (one call each) | voice/text → triage ≈ 1.5–2 s · prescription read < 10 s · Urdu speech ≈ 6–8 s · handover letter ≈ 3 s |
-| Automated tests | **118** (`pnpm test`): every triage rule with boundary cases, all 20 cases, drug matching, referral, handover, pharmacy, override flags, outbreak case definitions + detection, WhatsApp signature and safety |
+| Automated tests | **116** (`pnpm test`): every triage rule with boundary cases, all 20 cases, drug matching, referral, handover, pharmacy, override flags, outbreak case definitions + detection |
 | Outbreak detection (synthetic 28 days) | Flags exactly the planted events (dengue in Dhok Hassu/Pirwadhai, a flu-like wave in G-9/10/11); no alert for an ended diarrhoea cluster; no false alarms on background fever |
 
 *Caveat:* the cases are synthetic scripts written by the team and run as text. Recorded-audio accuracy has been spot-checked live, not benchmarked.

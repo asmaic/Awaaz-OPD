@@ -39,7 +39,7 @@ lib/rules/*               engine, rules, __tests__                             (
 lib/{cache,audit,drugs,interactions,wav}.ts                                    (A)
 lib/mock.ts               `api` client, mock ↔ real switch                     (shared)
 lib/{referral,handover,pharmacy,overrides}.ts  add-on feature logic, pure      (A) — docs/FEATURES.md
-lib/{surveillance,sitrep,whatsapp}.ts  outbreak explorer + WhatsApp intake    (A) — docs/FEATURES.md §11–12
+lib/{surveillance,sitrep}.ts  outbreak explorer                             (A) — docs/FEATURES.md §11
 types/features.ts         add-on feature types                                 (shared)
 app/api/*/route.ts        extract, transcribe, prescription, instructions, tts, audit, handover, facilities   (A)
 app/(screens)/*           intake, dashboard, doctor, audit                     (B)

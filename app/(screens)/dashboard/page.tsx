@@ -11,7 +11,6 @@ import { OverrideDialog } from "@/components/dashboard/override-dialog";
 import { PatientCard } from "@/components/dashboard/patient-card";
 import { TransparencyPanel } from "@/components/dashboard/transparency-panel";
 import { ReferralDialog } from "@/components/referral/referral-dialog";
-import { useRemoteIntake } from "@/components/remote/use-remote-intake";
 import { useHydrated } from "@/components/shell/app-shell";
 import { LEVEL_META } from "@/components/triage";
 import { cn } from "@/lib/utils";
@@ -43,7 +42,6 @@ export default function DashboardPage() {
   const [overrideFor, setOverrideFor] = useState<Patient | null>(null);
   const [referFor, setReferFor] = useState<Patient | null>(null);
   const now = useNow();
-  useRemoteIntake();
 
   const queue = activePatients(patients);
   const denguePins = patients.filter((p) => p.geo && p.status !== "done" && p.triage.hits.some((h) => DENGUE_RULES.includes(h.id)));
