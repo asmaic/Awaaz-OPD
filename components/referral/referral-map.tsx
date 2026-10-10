@@ -5,9 +5,14 @@ import L from "leaflet";
 import { MapContainer, Marker, Polyline, TileLayer, Tooltip } from "react-leaflet";
 import type { ReferralPlan } from "@/types/features";
 
-const dot = (bg: string, size = 14) =>
-  L.divIcon({ className: "", iconSize: [size, size], iconAnchor: [size / 2, size / 2],
-    html: `<div style="width:${size}px;height:${size}px;border-radius:9999px;background:${bg};border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,.4)"></div>` });
+// Cached per colour/size: a new icon each render makes react-leaflet rebuild the marker (the dashboard re-renders every second).
+const dots = new Map<string, L.DivIcon>();
+const dot = (bg: string, size = 14) => {
+  const k = `${bg}|${size}`;
+  if (!dots.has(k)) dots.set(k, L.divIcon({ className: "", iconSize: [size, size], iconAnchor: [size / 2, size / 2],
+    html: `<div style="width:${size}px;height:${size}px;border-radius:9999px;background:${bg};border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,.4)"></div>` }));
+  return dots.get(k)!;
+};
 
 /** Origin → best facility as a straight line (approximate: no road routing offline). Other options shown as grey dots. */
 export default function ReferralMap({ plan }: { plan: ReferralPlan }) {

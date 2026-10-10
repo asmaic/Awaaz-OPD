@@ -1,0 +1,10 @@
+# Upload only what git tracks: never local secrets or runtime data.
+.env*
+!.env.example
+.data
+.cache/*
+!.cache/golden
+.next
+node_modules
+public/generated
+.vercel
