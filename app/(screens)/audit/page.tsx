@@ -57,7 +57,8 @@ export default function AuditPage() {
 
   const tokenOf = (id?: string) => patients.find((p) => p.id === id)?.token;
   const seen = new Set<string>();
-  const all = [...server, ...local]
+  // Real mode: the server log already holds every event (human actions are POSTed by the store), so don't merge local copies.
+  const all = (USE_MOCK ? local : server)
     .filter((e) => (seen.has(e.id) ? false : (seen.add(e.id), true)))
     .sort((a, b) => b.ts.localeCompare(a.ts));
   const rows = all.filter((e) =>

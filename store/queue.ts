@@ -81,8 +81,13 @@ export interface QueueState {
 export const useQueue = create<QueueState>()(
   persist(
     (set, get) => {
-      const log = (entry: NewAudit) =>
+      const log = (entry: NewAudit) => {
         set((s) => ({ audit: [{ id: uid(), ts: new Date().toISOString(), ...entry }, ...s.audit].slice(0, 500) }));
+        // Real mode: human/system actions also go to the server audit log (AI + rules events are written there by the API).
+        if (process.env.NEXT_PUBLIC_USE_MOCK !== "true" && (entry.actor === "nurse" || entry.actor === "doctor" || entry.actor === "system")) {
+          void fetch("/api/audit", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(entry) }).catch(() => {});
+        }
+      };
       const setPatients = (fn: (ps: Patient[]) => Patient[]) =>
         set((s) => ({ patients: withWaits(fn(s.patients), s.doctorsOnDuty) }));
 
