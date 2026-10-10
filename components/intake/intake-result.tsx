@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Typewriter } from "@/components/intake/typewriter";
 import { LEVEL_META, RuleExplainer, TriageBadge, ageSexLabel, prettySymptom } from "@/components/triage";
 import { humanDuration } from "@/lib/handover";
+import { spokenName } from "@/lib/patient-name";
 import { cn } from "@/lib/utils";
 import type { ApiResult, ExtractRes } from "@/types/contracts";
 
@@ -16,7 +17,9 @@ const fade = (delay: number) => ({ initial: { opacity: 0, y: 12 }, animate: { op
 export function IntakeResult({ res, meta, onAdd, onReset }: { res: ExtractRes; meta: Meta; onAdd: (name: string) => void; onReset: () => void }) {
   const { extraction: e, triage: t } = res;
   const [typed, setTyped] = useState(false);
-  const [name, setName] = useState("");
+  // Pre-filled when the patient said their name ("mera naam Sabina hai"); the nurse checks it before adding.
+  const heard = spokenName(e);
+  const [name, setName] = useState(heard ?? "");
   const onTyped = useCallback(() => setTyped(true), []);
   const m = LEVEL_META[t.level];
 
@@ -90,8 +93,11 @@ export function IntakeResult({ res, meta, onAdd, onReset }: { res: ExtractRes; m
             <div className="register-label mb-1">Why this level · {t.rulesVersion}</div>
             <RuleExplainer hits={t.hits} escalated={t.escalatedForUncertainty} />
           </div>
+          {heard && name === heard && (
+            <p className="mt-auto -mb-3 text-sm text-muted-foreground">Name heard in the recording: <b className="text-foreground">{heard}</b>. Please check the spelling.</p>
+          )}
           <form
-            className="mt-auto flex gap-3"
+            className={cn("flex gap-3", !(heard && name === heard) && "mt-auto")}
             onSubmit={(ev) => { ev.preventDefault(); onAdd(name); }}
           >
             <label className="relative flex-1">
