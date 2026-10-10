@@ -10,3 +10,4 @@ pnpm dev                     # http://localhost:3000
 ```
 
 See `CLAUDE.md` for project rules, ownership and commands. Contracts: `types/contracts.ts`.
+Add-on features (referral and bed finder, SBAR handover letter, pharmacy stock, override transparency): `docs/FEATURES.md`.

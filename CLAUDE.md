@@ -14,6 +14,7 @@ Next.js 16 (App Router, read AGENTS.md) + TypeScript strict + pnpm · Tailwind v
 
 ## Rules
 - `types/contracts.ts` is the single source of truth. NEVER modify it unless the user explicitly asks. Import types from it; never redefine them.
+- Add-on features (referral, handover letter, pharmacy, override transparency) keep their types in `types/features.ts` — same rules. See `docs/FEATURES.md`.
 - Ownership:
   - **Person A** edits only `lib/**`, `app/api/**`, `scripts/**`, `fixtures/golden/**`.
   - **Person B** edits only `app/(screens)/**`, `components/**`, `store/**`, `public/**`.
@@ -32,12 +33,14 @@ Next.js 16 (App Router, read AGENTS.md) + TypeScript strict + pnpm · Tailwind v
 ## Layout
 ```
 types/contracts.ts        shared, FROZEN
-fixtures/                 cases.json (20 cases), localities.json, seed-patients.json, golden/, audio/, rx/
+fixtures/                 cases.json (20 cases), localities.json, seed-patients.json, facilities.json + pharmacy.json (mock), golden/, audio/, rx/
 lib/ai/*                  gemini, groq, prompts, schemas                       (A)
 lib/rules/*               engine, rules, __tests__                             (A)
 lib/{cache,audit,drugs,interactions,wav}.ts                                    (A)
 lib/mock.ts               `api` client, mock ↔ real switch                     (shared)
-app/api/*/route.ts        extract, transcribe, prescription, instructions, tts, audit   (A)
+lib/{referral,handover,pharmacy,overrides}.ts  add-on feature logic, pure      (A) — docs/FEATURES.md
+types/features.ts         add-on feature types                                 (shared)
+app/api/*/route.ts        extract, transcribe, prescription, instructions, tts, audit, handover, facilities   (A)
 app/(screens)/*           intake, dashboard, doctor, audit                     (B)
 components/, store/, public/                                                   (B)
 scripts/                  eval, warm-cache, check-cache                        (A)
@@ -46,6 +49,7 @@ scripts/                  eval, warm-cache, check-cache                        (
 
 ## Commands
 `pnpm dev` · `pnpm typecheck` · `pnpm lint` · `pnpm test` · `pnpm build` · `pnpm eval` · `pnpm warm` · `pnpm check-cache`
+After a browser rehearsal: `pnpm warm --from-audit` promotes every AI answer it used into `.cache/golden` (commit it) so demo mode replays it offline.
 
 ## Tools
 - Use Context7 for library docs whenever touching `@google/genai`, `groq-sdk`, `motion`, `react-leaflet`, `zustand` or Next.js APIs. Don't rely on memory for these; their APIs changed recently. For Next.js, `node_modules/next/dist/docs/` is authoritative.
