@@ -6,8 +6,11 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/mock";
 import { useQueue } from "@/store/queue";
+import goldenIns from "@/fixtures/golden/rx-demo.instructions.json";
 
 const FALLBACK_WAV = "/fallback/rx-demo.wav";
+// The pre-recorded WAV speaks exactly these instructions; never play it for different text (e.g. a doctor-edited dose).
+const FALLBACK_TEXT = goldenIns.urdu;
 const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK === "true";
 
 function play(url: string): Promise<void> {
@@ -55,6 +58,7 @@ export function VoiceBack({ rxId, urdu, patientId }: { rxId: string; urdu: strin
         await play(audioUrl.current);
       } catch {
         try {
+          if (urdu.trim() !== FALLBACK_TEXT.trim()) throw new Error("fallback WAV is for different instructions");
           await play(FALLBACK_WAV);
         } catch {
           if (!speakBrowser(urdu)) toast("Audio unavailable", { description: "Please read the instructions on screen to the patient." });

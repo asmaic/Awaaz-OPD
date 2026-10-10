@@ -1,0 +1,17 @@
+{
+  "_note": "MOCK data for the demo. Coordinates are approximate; capabilities are illustrative, not a statement about real hospital services. Live status is simulated by lib/referral.ts.",
+  "facilities": [
+    { "id": "pims", "name": "PIMS (Pakistan Institute of Medical Sciences)", "short": "PIMS", "city": "Islamabad", "lat": 33.7006, "lng": 73.0474,
+      "capabilities": ["er", "icu", "cath_lab", "picu", "labour_room", "stroke_unit"], "baseLoad": 0.95, "baseBeds": 1, "busy": ["cath_lab"] },
+    { "id": "polyclinic", "name": "Federal Government Polyclinic", "short": "Polyclinic", "city": "Islamabad", "lat": 33.7108, "lng": 73.0884,
+      "capabilities": ["er", "icu", "labour_room"], "baseLoad": 0.8, "baseBeds": 3, "busy": [] },
+    { "id": "cda", "name": "CDA Hospital", "short": "CDA Hospital", "city": "Islamabad", "lat": 33.7152, "lng": 73.0822,
+      "capabilities": ["er", "labour_room"], "baseLoad": 0.45, "baseBeds": 6, "busy": [] },
+    { "id": "hfh", "name": "Holy Family Hospital", "short": "Holy Family", "city": "Rawalpindi", "lat": 33.6391, "lng": 73.0702,
+      "capabilities": ["er", "icu", "picu", "labour_room", "stroke_unit"], "baseLoad": 0.85, "baseBeds": 2, "busy": [] },
+    { "id": "bbh", "name": "Benazir Bhutto Hospital", "short": "Benazir Bhutto", "city": "Rawalpindi", "lat": 33.6363, "lng": 73.0765,
+      "capabilities": ["er", "icu", "stroke_unit"], "baseLoad": 0.7, "baseBeds": 4, "busy": [] },
+    { "id": "ric", "name": "Rawalpindi Institute of Cardiology", "short": "RIC", "city": "Rawalpindi", "lat": 33.6358, "lng": 73.079,
+      "capabilities": ["er", "icu", "cath_lab"], "baseLoad": 0.55, "baseBeds": 5, "busy": [] }
+  ]
+}

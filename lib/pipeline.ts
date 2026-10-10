@@ -3,7 +3,9 @@ import { randomUUID } from "node:crypto";
 import type {
   ExtractReq, ExtractRes, Extraction, Interaction, InstructionsReq, PrescriptionReq, Prescription, RxItem, RxRead, TtsReq,
 } from "@/types/contracts";
-import { extractFromAudio, extractFromText, readPrescription, tts as geminiTts, urduInstructions, env } from "@/lib/ai/gemini";
+import { extractFromAudio, extractFromText, handoverNote, readPrescription, tts as geminiTts, urduInstructions, env } from "@/lib/ai/gemini";
+import { HANDOVER_PROMPT, HANDOVER_PROMPT_VERSION, buildRecord, templateSbar, unsupportedNumbers } from "@/lib/handover";
+import type { HandoverReq, HandoverRes, Sbar } from "@/types/features";
 import { groqExtract, groqTranscribe } from "@/lib/ai/groq";
 import { EXTRACTION_PROMPT_VERSION, INSTRUCTIONS_PROMPT_VERSION, PRESCRIPTION_PROMPT_VERSION } from "@/lib/ai/prompts";
 import { blobGet, blobSet, goldenFixture, runAi, type Attempt, type RunMeta } from "@/lib/cache";
@@ -154,6 +156,31 @@ export async function runTts(req: TtsReq, demo: boolean): Promise<Out<{ audioUrl
       return ins?.urdu === req.text ? { audioUrl: "/fallback/rx-demo.wav" } : null;
     },
   });
+}
+
+// ---------- handover / referral letter ----------
+
+/** AI-drafted SBAR, rejected (→ next model → template) if it contains numbers that are not in the record. */
+export async function runHandover(req: HandoverReq, demo: boolean): Promise<Out<HandoverRes>> {
+  const record = buildRecord(req);
+  const primary = env("GEMINI_MODEL");
+  const fallback = env("GEMINI_FALLBACK_MODEL");
+  const checked = (model: string) => async (): Promise<Sbar> => {
+    const sbar = await handoverNote(record, HANDOVER_PROMPT, model);
+    const bad = unsupportedNumbers(sbar, record);
+    if (bad.length) throw new Error(`note contains numbers not in the record: ${bad.join(", ")}`);
+    return sbar;
+  };
+  const { data, meta, key } = await runAi<Sbar>({
+    route: "handover", model: primary, promptVersion: HANDOVER_PROMPT_VERSION, input: [JSON.stringify(record)], demo, action: "confirm",
+    patientId: req.patient.id,
+    attempts: [
+      { label: "primary", model: primary, run: checked(primary) },
+      { label: "fallback-model", model: fallback, run: checked(fallback) },
+    ],
+    template: () => templateSbar(record),
+  });
+  return { data: { sbar: data, generatedBy: meta.fallback === "template" ? "template" : "ai" }, meta, key };
 }
 
 export { blobGet };

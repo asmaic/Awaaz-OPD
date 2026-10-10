@@ -121,8 +121,9 @@ export const useQueue = create<QueueState>()(
           if (!reason.trim()) throw new Error("Override needs a reason");
           const before = get().patients.find((p) => p.id === id);
           setPatients((ps) => ps.map((p) => (p.id === id ? { ...p, override: { level, by, reason } } : p)));
-          log({ actor: by === "doctor" ? "doctor" : "nurse", action: "override", patientId: id, reason,
-            payload: { from: before ? effectiveLevel(before) : undefined, to: level } });
+          // payload shape is OverridePayloadZ (types/features.ts) — read back by the transparency panel.
+          log({ actor: /^(dr\b|doctor)/i.test(by.trim()) ? "doctor" : "nurse", action: "override", patientId: id, reason,
+            payload: { from: before ? effectiveLevel(before) : level, to: level, rulesLevel: before?.triage.level ?? level, by, token: before?.token } });
           if (level === "RED") get().notifyER(id);
         },
 

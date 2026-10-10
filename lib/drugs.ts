@@ -4,7 +4,7 @@ import Fuse from "fuse.js";
 /** Common Pakistani brands → generic ("+" separates combination products). */
 export const BRANDS: Record<string, string> = {
   Risek: "omeprazole", Lipiget: "atorvastatin", Novidat: "ciprofloxacin", Brufen: "ibuprofen",
-  Arinac: "ibuprofen+pseudoephedrine", Klaricid: "clarithromycin", Flagyl: "metronidazole",
+  Arinac: "ibuprofen+pseudoephedrine", Klaricid: "clarithromycin", Claritek: "clarithromycin", Flagyl: "metronidazole",
   Ponstan: "mefenamic acid", Velosef: "cephradine", Augmentin: "amoxicillin+clavulanate", Amoxil: "amoxicillin",
   Calpol: "paracetamol", Panadol: "paracetamol", Ventolin: "salbutamol", Gravinate: "dimenhydrinate",
   Softin: "loratadine", Motilium: "domperidone", Concor: "bisoprolol", Glucophage: "metformin", Disprin: "aspirin",

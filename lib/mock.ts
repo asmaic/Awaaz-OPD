@@ -4,6 +4,9 @@ import type {
   PrescriptionReq, PrescriptionRes, TriageLevel, TtsReq, TtsRes,
 } from "@/types/contracts";
 import { DEMO_HEADER } from "@/types/contracts";
+import type { FacilitiesRes, HandoverReq, HandoverRes } from "@/types/features";
+import { buildRecord, templateSbar } from "@/lib/handover";
+import { statusAt } from "@/lib/referral";
 import cases from "@/fixtures/cases.json";
 import goldenC01 from "@/fixtures/golden/c01-heart-attack.extract.json";
 import goldenC07 from "@/fixtures/golden/c07-dengue-dhok-hassu.extract.json";
@@ -15,6 +18,8 @@ export interface AwaazApi {
   prescription(req: PrescriptionReq): Promise<ApiResult<PrescriptionRes>>;
   instructions(req: InstructionsReq): Promise<ApiResult<InstructionsRes>>;
   tts(req: TtsReq): Promise<ApiResult<TtsRes>>;
+  handover(req: HandoverReq): Promise<ApiResult<HandoverRes>>;
+  facilities(): Promise<ApiResult<FacilitiesRes>>;
 }
 
 let demoMode = false;
@@ -92,6 +97,15 @@ const mockApi: AwaazApi = {
     await delay();
     return ok({ audioUrl: "/fallback/rx-demo.wav" }, t0);
   },
+  async handover(req) {
+    const t0 = Date.now();
+    await delay();
+    return ok({ sbar: templateSbar(buildRecord(req)), generatedBy: "template" }, t0);
+  },
+  async facilities() {
+    const now = new Date();
+    return ok({ asOf: now.toISOString(), facilities: statusAt(now) }, now.getTime());
+  },
 };
 
 // ---------- real ----------
@@ -113,6 +127,14 @@ const realApi: AwaazApi = {
   prescription: (req) => post("prescription", req),
   instructions: (req) => post("instructions", req),
   tts: (req) => post("tts", req),
+  handover: (req) => post("handover", req),
+  facilities: async () => {
+    try {
+      return (await (await fetch("/api/facilities")).json()) as ApiResult<FacilitiesRes>;
+    } catch (e) {
+      return { ok: false, error: e instanceof Error ? e.message : "network error" };
+    }
+  },
 };
 
 export const api: AwaazApi = process.env.NEXT_PUBLIC_USE_MOCK === "true" ? mockApi : realApi;

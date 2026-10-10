@@ -1,7 +1,8 @@
 "use client";
 import { forwardRef } from "react";
 import { motion } from "motion/react";
-import { Ambulance, Check, Clock, Hand, PhoneCall, Siren, Stethoscope } from "lucide-react";
+import { Ambulance, Check, Clock, Hand, Hospital, PhoneCall, Siren, Stethoscope } from "lucide-react";
+import { tokenCode } from "@/lib/overrides";
 import { LEVEL_META, TriageBadge } from "@/components/triage";
 import { cn } from "@/lib/utils";
 import { effectiveLevel } from "@/store/queue";
@@ -26,9 +27,10 @@ type Props = {
   onDone: () => void;
   onSendER: () => void;
   onOverride: () => void;
+  onRefer?: () => void;
 };
 
-export const PatientCard = forwardRef<HTMLLIElement, Props>(function PatientCard({ patient: p, fresh, onCallIn, onDone, onSendER, onOverride }, ref) {
+export const PatientCard = forwardRef<HTMLLIElement, Props>(function PatientCard({ patient: p, fresh, onCallIn, onDone, onSendER, onOverride, onRefer }, ref) {
   const level = effectiveLevel(p);
   const m = LEVEL_META[level];
   const top = p.triage.hits[0];
@@ -51,6 +53,7 @@ export const PatientCard = forwardRef<HTMLLIElement, Props>(function PatientCard
       <div className={cn("flex w-24 shrink-0 flex-col items-center justify-center gap-0.5 text-white", m.bg)}>
         <span className="text-xs font-medium tracking-widest uppercase opacity-80">Token</span>
         <span className="text-4xl leading-none font-bold tabular-nums">{p.token}</span>
+        <span className="font-mono text-[11px] tracking-wider opacity-80" title="Check code printed on the token slip">#{tokenCode(p)}</span>
       </div>
 
       <div className="grid min-w-0 flex-1 grid-cols-[minmax(0,1fr)_auto] gap-x-4 gap-y-1 px-4 py-3">
@@ -83,6 +86,7 @@ export const PatientCard = forwardRef<HTMLLIElement, Props>(function PatientCard
           <CardAction icon={PhoneCall} label="Call in" onClick={onCallIn} primary />
         )}
         <CardAction icon={Ambulance} label="Send to ER" onClick={onSendER} danger />
+        {onRefer && (level === "RED" || level === "ORANGE") && <CardAction icon={Hospital} label="Find bed" onClick={onRefer} />}
         <CardAction icon={Hand} label="Override" onClick={onOverride} />
       </div>
     </motion.li>
